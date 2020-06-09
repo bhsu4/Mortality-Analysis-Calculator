@@ -1,0 +1,42 @@
+Index,Code,Country,COD File
+0,AUS,Australia,
+1,AUT,Austria,
+2,BLR,Belarus,
+3,BEL,Belgium,
+4,BGR,Bulgaria,
+5,CAN,Canada,COD_5x1_chapters_CAN.csv
+6,CHL,Chile,
+7,CZE,Czech Republic,COD_5x1_chapters_CZE.csv
+8,DNK,Denmark,
+9,EST,Estonia,
+10,FIN,Finland,
+11,FRATNP,France,COD_5x1_chapters_FRATNP.csv
+12,DEUTNP,Germany,
+13,GRC,Greece,
+14,HUN,Hungary,
+15,ISL,Iceland,
+16,IRL,Ireland,
+17,ISR,Israel,
+18,ITA,Italy,
+19,JPN,Japan,COD_5x1_chapters_JPN.csv
+20,KOR,Korea,
+21,LVA,Latvia,
+22,LTU,Lithuania,
+23,LUX,Luxembourg,
+24,NDL,Netherlands,
+25,NZL_NP,New Zealand,
+26,NOR,Norway,COD_5x1_chapters_NOR.csv
+27,POL,Poland,
+28,PRT,Portugal,
+29,RUS,Russia,
+30,SVK,Slovakia,
+31,SVN,Slovenia,
+32,ESP,Spain,
+33,SWE,Sweden,COD_5x1_chapters_SWE.csv
+34,CHE,Switzerland,
+35,TWN,Taiwan,
+36,GBRTENW,U.K.,COD_5x1_chapters_GBRTENW.csv
+37,GBR_SCO,Scotland,
+38,GBR_NIR,Northern Ireland,
+39,USA,U.S.A.,COD_5x1_chapters_USA.csv
+40,UKR,Ukraine,
