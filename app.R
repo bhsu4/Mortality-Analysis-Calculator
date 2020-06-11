@@ -158,7 +158,7 @@ dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('
                                       title = "Visit my Github"),
                                       class = "dropdown"),
                             tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
-                                      img(src = 'https://cpb-us-w2.wpmucdn.com/edblogs.columbia.edu/dist/9/953/files/2017/01/Columbia_University_School_of_Professional_Studies_logo.svg-12ypii6.png',
+                                      img(src = 'https://lh3.googleusercontent.com/proxy/HazKHxllUfv4y7ysbNSuHvy4Gpv3-kFlWYrPpXze36Yu-6pG_QN19c2W6rw7RZ87vSa26dwtoCIlY6gQsyEQM3IcWiTkyN9y3ZKlDFPNeG3scCAjg_M', #https://cpb-us-w2.wpmucdn.com/edblogs.columbia.edu/dist/9/953/files/2017/01/Columbia_University_School_of_Professional_Studies_logo.svg-12ypii6.png',
                                           title = "Contact Us", height = "20px")),
                                     class = 'dropdown') 
                             )
@@ -219,11 +219,23 @@ ui = dashboardPage(
                                         #                   c(Male = 'M', Female = 'F'), selected = 'M', inline = TRUE)
                                         #)
                                    ),
+                                   fluidRow(
+                                   column(width = 9,
                                       checkboxGroupButtons(
                                           inputId = "heatGender", label = "Gender", 
                                           choices = c("Male", "Female"), selected = "Male", 
-                                          justified = TRUE, status = "primary")
-                                  
+                                          justified = TRUE, status = "primary")),
+                                   
+                                   column(width = 3, 
+                                          
+                                          materialSwitch(
+                                              inputId = "heatAggregate", label = div(style = "margin-top:-20px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
+                                              right = FALSE, value = FALSE, status = "primary")
+                                          )
+                                   
+                                   
+                                   
+                                   )
                                
                                ), 
                               column(width = 9, 
@@ -690,9 +702,9 @@ server <- shinyServer(function(input, output, session){
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
             if (length(input$heatGender) == 1){
-                if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
-                else if (input$heatGender == "Female"){ res_gender <- res()[[2]]}
-            
+                if (input$heatGender == "Male" ){ res_gender <- res()[[1]] }
+                else if (input$heatGender == "Female" ){ res_gender <- res()[[2]]}
+
                 par(mar=c(5.1,2.1,1,2.1))
                 dim1 <- dim(res_gender)[[1]]
                 hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
@@ -710,27 +722,29 @@ server <- shinyServer(function(input, output, session){
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
-                           yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rownames(res_gender))),
+                           yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
                                         title = "Contribution", showgrid = F, showticklabels = TRUE))
             
             }
-            else{ res_gender <- res()[[3]] 
-                  par(mar=c(5.1,2.1,1,2.1))
-                  dim1 <- dim(res_gender)[[1]]
+            else{ 
+                if (input$heatAggregate == "FALSE"){ 
+                    res_gender <- res()[[3]]
+                    par(mar=c(5.1,2.1,1,2.1))
+                    dim1 <- dim(res_gender)[[1]]
                  
-                  #create hover text 
-                  row_contr <- create_hover_MF(c(rownames(res_gender)[-1], " ")) #byrow
-                  col_le <- create_hover_MF(colnames(res_gender)) #bycol
+                    #create hover text 
+                    row_contr <- create_hover_MF(c(rownames(res_gender)[-1], " ")) #byrow
+                    col_le <- create_hover_MF(colnames(res_gender)) #bycol
                   
-                  mat1 <- matrix(row_contr, byrow = TRUE, ncol = dim1)
-                  mat2 <- matrix(col_le, byrow = FALSE, ncol = dim1)
-                  mat3 <- ifelse(lower.tri(mat2), "Male", "Female")
+                    mat1 <- matrix(row_contr, byrow = TRUE, ncol = dim1)
+                    mat2 <- matrix(col_le, byrow = FALSE, ncol = dim1)
+                    mat3 <- ifelse(lower.tri(mat2), "Male", "Female")
                   
-                  mat4 <- matrix(paste(paste0(mat1, "<br>", mat2, "<br>", mat3, "<br>"), 
+                    mat4 <- matrix(paste(paste0(mat1, "<br>", mat2, "<br>", mat3, "<br>"), 
                                        round(res_gender, 4), sep = "Change: "), dim1, dim1)
-                  diag(mat4) <- NA #remove diag hover text
+                    diag(mat4) <- NA #remove diag hover text
                   
-                  heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
+                    heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
                             cexRow = 0.65, cexCol = 0.65, 
                             col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
                             main = paste0("Changes in Life Expectancy (", 
@@ -739,9 +753,32 @@ server <- shinyServer(function(input, output, session){
                             font = list(size = 10), custom_hovertext = mat4,
                             key.title = "Changes in Years", 
                             colorbar_xpos = 30, colorbar_ypos = 10) %>% 
-                      layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
-                             xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
-                             yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
+                            layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
+                                   xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
+                                   yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
+                }
+                else {
+                   res_gender <- res()[[1]] + res()[[2]] 
+                   par(mar=c(5.1,2.1,1,2.1))
+                   dim1 <- dim(res_gender)[[1]]
+                   hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
+                                                rep(rownames(res_gender), dim1), "<br>", 
+                                                rep("Aggregate", dim1*2), "<br>"),
+                                         byrow = FALSE, ncol = dim1)
+                   hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim1)
+                    
+                   heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                             cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                             plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
+                                                                       input$range_t[1], "-", input$range_t[2], ", ",
+                                                                       input$heatGender, ", ", input$heatCountry, ")"), 
+                              font = list(size = 10), custom_hovertext = hover_text2, 
+                              key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                             layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
+                                                showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                                   yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
+                                                title = "Contribution", showgrid = F, showticklabels = TRUE))
+                }
             }
         })
         
@@ -762,7 +799,8 @@ server <- shinyServer(function(input, output, session){
             #gender select
             if (length(input$heatGender) == 1){
                 if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
-                else if (input$heatGender == "Female"){ res_gender <- res()[[2]]}
+                else if (input$heatGender == "Female"){ res_gender <- res()[[2]] }
+                else if (input$heatGender == "Population"){ res_gender <- res()[[1]] + res()[[2]] }
             
             
             #ecalculation of total
@@ -791,37 +829,66 @@ server <- shinyServer(function(input, output, session){
                 
             }
             else{ 
-                res_gender1 = res()[[1]]
-                res_gender2 = res()[[2]]
-                
-                print(BarplotLE())
-                if (is.null(BarplotLE())){
-                    Total_male <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), row.names = colnames(res_gender1)) %>% 
-                        rownames_to_column() %>% mutate(curr_col = "#FDB863")
-                    Total_female <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), row.names = colnames(res_gender2)) %>% 
-                        rownames_to_column() %>% mutate(curr_col = "#FD6363")
+                if (input$heatAggregate == "FALSE"){ 
+                    res_gender1 = res()[[1]]
+                    res_gender2 = res()[[2]]
+                    
+                    print(BarplotLE())
+                    if (is.null(BarplotLE())){
+                        Total_male <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), row.names = colnames(res_gender1)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = "#FDB863")
+                        Total_female <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), row.names = colnames(res_gender2)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = "#FD6363")
+                    }
+                    else{
+                        Total_male <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), row.names = colnames(res_gender1)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = if_else(gsub("LE Age ", "", rowname) %in% BarplotLE(), "#8073AC", "#FDB863"))
+                        Total_female <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), row.names = colnames(res_gender2)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = if_else(gsub("LE Age ", "", rowname) %in% BarplotLE(), "#92CCDE", "#FD6363"))
+                    }
+                    
+                    p <- plot_ly(Total_male, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", name = 'Male',
+                                 source = "BarplotLE", marker = list(color = ~curr_col)) %>%  config(displayModeBar = FALSE) %>% 
+                          add_trace(data = Total_female, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", 
+                                     name = 'Female', marker = list(color = ~curr_col)) %>% 
+                          layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
+                                                                 input$range_t[1], "-", input$range_t[2], ", ",
+                                                                 paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"), 
+                                 font = list(size = 10),
+                                 xaxis = list(title = "Age", categoryarray = names(Total_male), 
+                                              categoryorder = "array", size = 8, tickangle = 0), 
+                                 yaxis = list(title = "Change (Years)"))
+                    p
                 }
                 else{
-                    Total_male <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), row.names = colnames(res_gender1)) %>% 
-                        rownames_to_column() %>% mutate(curr_col = if_else(gsub("LE Age ", "", rowname) %in% BarplotLE(), "#8073AC", "#FDB863"))
-                    Total_female <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), row.names = colnames(res_gender2)) %>% 
-                        rownames_to_column() %>% mutate(curr_col = if_else(gsub("LE Age ", "", rowname) %in% BarplotLE(), "#92CCDE", "#FD6363"))
+                    res_gender = res()[[1]] + res()[[2]]
+                    print(BarplotLE())
+                    if (is.null(BarplotLE())){
+                        Total_male <- data.frame(le = apply(res_gender, 2, sum, na.rm = TRUE), row.names = colnames(res_gender)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = "#FDB863")
+                    }
+                    else{
+                        Total_male <- data.frame(le = apply(res_gender, 2, sum, na.rm = TRUE), row.names = colnames(res_gender)) %>% 
+                            rownames_to_column() %>% mutate(curr_col = if_else(gsub("LE Age ", "", rowname) %in% BarplotLE(), "#8073AC", "#FDB863"))
+                    }
+                    
+                    p <- plot_ly(Total_male, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", 
+                                 source = "BarplotLE", marker = list(color = ~curr_col)) %>% 
+                        config(displayModeBar = FALSE)
+                    p <- layout(p, barmode="overlay",
+                                title = paste0("Changes in Life Expectancy (", 
+                                               input$range_t[1], "-", input$range_t[2], ", ",
+                                               "Aggregate", ", ", input$heatCountry, ")"),
+                                font = list(size = 10),
+                                xaxis = list(title = "Age", categoryarray = names(Total_male), 
+                                             categoryorder = "array", size = 8, tickangle = 0), 
+                                yaxis = list(title = "Change (Years)"))
+                    p 
+                    
+                    
                 }
-                
-                p <- plot_ly(Total_male, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", name = 'Male',
-                             source = "BarplotLE", marker = list(color = ~curr_col)) %>%  config(displayModeBar = FALSE) %>% 
-                      add_trace(data = Total_female, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", 
-                                 name = 'Female', marker = list(color = ~curr_col)) %>% 
-                      layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
-                                                             input$range_t[1], "-", input$range_t[2], ", ",
-                                                             paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"), 
-                             font = list(size = 10),
-                             xaxis = list(title = "Age", categoryarray = names(Total_male), 
-                                          categoryorder = "array", size = 8, tickangle = 0), 
-                             yaxis = list(title = "Change (Years)"))
-                p
-                }
-            })
+            }
+        })
         
         
         
@@ -829,6 +896,7 @@ server <- shinyServer(function(input, output, session){
             if (length(input$heatGender) == 1){
                 if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
                 else if (input$heatGender == "Female"){ res_gender <- res()[[2]]}
+                else if (input$heatGender == "Population") { res_gender <- res()[[1]] + res()[[2]] }
                 
                 if (is.null(BarplotLE())){  
                     p <- plotly_empty(type = "scatter", mode = "markers") %>%
@@ -853,34 +921,64 @@ server <- shinyServer(function(input, output, session){
                            yaxis = list(title = "Contribution (Years)"))
                 }
             else{
-                if (is.null(BarplotLE())) return(NULL)
-                
-                res_gender1 = res()[[1]]
-                res_gender2 = res()[[2]]
-                
-                d1 <- data.frame(contribution = res_gender1[, paste("LE Age", BarplotLE())]) %>% 
-                    rownames_to_column() %>% mutate(curr_color = "#8073AC") 
-                d2 <- data.frame(contribution = res_gender2[, paste("LE Age", BarplotLE())]) %>% 
-                    rownames_to_column() %>% mutate(curr_col = "#92CCDE") 
-                
-                p <- plot_ly(data = d1, x = ~gsub("Contribution Age", "", rowname), y = ~contribution, source = "BarplotLE_specific", 
-                             type = "bar", marker = list(color = ~curr_color), name = "Male") %>%  config(displayModeBar = FALSE)  %>% 
-                     add_trace(data = d2, x = ~gsub("Contribution Age", "", rowname),
-                              y = ~contribution, type = "bar", name = "Female", marker = list(color = ~curr_col)) %>% 
-                     layout(barmode="group",
-                            title = paste0("Change in Life Expectancy (", 
-                                           input$range_t[1], "-", input$range_t[2], ", ",
-                                           paste0(input$heatGender, collapse = "/"), ", ", BarplotLE(), ", ", 
-                                           input$heatCountry, ")"), 
-                            font = list(size = 10),
-                            xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
-                                         categoryorder = "array", size = 8, tickangle = 0),
-                            yaxis = list(title = "Life Expectancy Change (Years)"))
-                p
-                
-                
+                if (input$heatAggregate == "FALSE"){ 
+                    if (is.null(BarplotLE())){
+                        p <- plotly_empty(type = "scatter", mode = "markers") %>%
+                            config(displayModeBar = FALSE) %>%
+                            layout(title = list(text = "Click on Each Bar for Decomposition Details", yref = "paper", y = 0.5))
+                        return(p)
+                    } 
+                    
+                    res_gender1 = res()[[1]]
+                    res_gender2 = res()[[2]]
+                    
+                    d1 <- data.frame(contribution = res_gender1[, paste("LE Age", BarplotLE())]) %>% 
+                        rownames_to_column() %>% mutate(curr_color = "#8073AC") 
+                    d2 <- data.frame(contribution = res_gender2[, paste("LE Age", BarplotLE())]) %>% 
+                        rownames_to_column() %>% mutate(curr_col = "#92CCDE") 
+                    
+                    p <- plot_ly(data = d1, x = ~gsub("Contribution Age", "", rowname), y = ~contribution, source = "BarplotLE_specific", 
+                                 type = "bar", marker = list(color = ~curr_color), name = "Male") %>%  config(displayModeBar = FALSE)  %>% 
+                         add_trace(data = d2, x = ~gsub("Contribution Age", "", rowname),
+                                  y = ~contribution, type = "bar", name = "Female", marker = list(color = ~curr_col)) %>% 
+                         layout(barmode="group",
+                                title = paste0("Change in Life Expectancy (", 
+                                               input$range_t[1], "-", input$range_t[2], ", ",
+                                               paste0(input$heatGender, collapse = "/"), ", ", BarplotLE(), ", ", 
+                                               input$heatCountry, ")"), 
+                                font = list(size = 10),
+                                xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
+                                             categoryorder = "array", size = 8, tickangle = 0),
+                                yaxis = list(title = "Life Expectancy Change (Years)"))
+                    p
+                }
+                else{
+                    if (is.null(BarplotLE())){  
+                        p <- plotly_empty(type = "scatter", mode = "markers") %>%
+                            config(displayModeBar = FALSE) %>%
+                            layout(title = list(text = "Click on Each Bar for Decomposition Details", yref = "paper", y = 0.5))
+                        return(p)
+                    }
+                    res_gender <- res()[[1]] + res()[[2]]
+                    
+                    data.frame(contribution = res_gender[, paste("LE Age", BarplotLE())]) %>% 
+                        rownames_to_column() %>% mutate(curr_color = "#8073AC") %>%
+                        plot_ly(x = ~gsub("Contribution Age", "", rowname), y = ~contribution, source = "BarplotLE_specific", 
+                                type = "bar", marker = list(color = ~curr_color)) %>% 
+                        config(displayModeBar = FALSE) %>% 
+                        layout(barmode="overlay",
+                               title = paste0("Change in Life Expectancy (", 
+                                              input$range_t[1], "-", input$range_t[2], ", ",
+                                              "Aggregate", ", ", BarplotLE(), ", ", 
+                                              input$heatCountry, ")"), 
+                               font = list(size = 10),
+                               xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
+                                            categoryorder = "array", size = 8, tickangle = 0),
+                               yaxis = list(title = "Contribution (Years)"))
+                }
             }
-        })
+                
+         })
         
         
         
