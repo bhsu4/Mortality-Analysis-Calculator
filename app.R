@@ -222,7 +222,7 @@ ui = dashboardPage(
                                       checkboxGroupButtons(
                                           inputId = "heatGender", label = "Gender", 
                                           choices = c("Male", "Female"), selected = "Male", 
-                                          justified = TRUE, status = "default")
+                                          justified = TRUE, status = "primary")
                                   
                                
                                ), 
