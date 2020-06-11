@@ -41,12 +41,12 @@ options(HMD_password = "password999")
 logotitle <- shinyDashboardLogoDIY(boldText = "", mainText = "MortalityViz", textSize = 14, badgeText = "BETA",  
                                     badgeTextColor = "black", badgeTextSize = 2, badgeBackColor = "#DCDCDC", badgeBorderRadius = 2)
 
-sysfonts::font_add_google("Source Sans Pro", regular.wt = 400, bold.wt = 600)
+sysfonts::font_add_google("Roboto Condensed", regular.wt = 400, bold.wt = 700)
 
 theme_custom <- shinyDashboardThemeDIY(
     
     ### general
-    appFontFamily = "Source Sans Pro"
+    appFontFamily = "Roboto Condensed"
     ,appFontColor = "rgb(0,0,0)"
     ,primaryFontColor = "rgb(0,0,0)"
     ,infoFontColor = "rgb(0,0,0)"
@@ -86,7 +86,7 @@ theme_custom <- shinyDashboardThemeDIY(
     
     #for unselected sidebars = dark blue shading and grey text
     ,sidebarTabTextColor = "rgb(125,132,145)" #grey text color
-    ,sidebarTabTextSize = 13
+    ,sidebarTabTextSize = 15
     ,sidebarTabBorderStyle = "none none none none" #border clockwise from top
     ,sidebarTabBorderColor = ""
     ,sidebarTabBorderWidth = 0
@@ -149,7 +149,7 @@ theme_custom <- shinyDashboardThemeDIY(
 )
 
 
-dbHeader <- dashboardHeader(title = tags$a(href='http://google.com',
+dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('https://google.com', '_blank'))",
                                            tags$img(src='MortalityViz.png', class = 'img-center',
                                                      style = "float: center",height='45x',width='160px')
                                            ),
@@ -178,8 +178,8 @@ ui = dashboardPage(
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
         sidebarMenu(
-            menuItem("Decomposition of LE", tabName = "tab_le", icon = icon("desktop")),
-            menuItem("About", tabName = "tab_about", icon = icon("info"))
+            menuItem("DECOMPOSITION OF LE", tabName = "tab_le", icon = icon("desktop")),
+            menuItem("ABOUT", tabName = "tab_about", icon = icon("info"))
         )
     ),
     
@@ -189,11 +189,15 @@ ui = dashboardPage(
         theme_custom,
         
         #tabItems(
-        tags$head(tags$link(rel = "shortcut icon", 
-                            href = "https://www.columbia.edu/content/themes/custom/columbia/favicon-crown.png"), 
-                  tags$style(HTML('.main-sidebar { font-family: Source Sans Pro; font-weight: 30x}
+        tags$head(tags$style(HTML('.main-sidebar { font-size: 20px; font-weight: bold;}
                         .skin-blue .main-header .logo:hover {  background-color: #47b2ff; }
-                        .skin-blue .main-header .navbar {  background-color: "rgb(255,255,255); }   '))),
+                        .skin-blue .main-header .navbar {  background-color: "rgb(255,255,255)"; }   ')),
+                  #'.main-sidebar {font-weight: bold; font-family: Source Sans Pro
+                     # font-size: 30px; ')),
+                  
+                  tags$link(rel = "shortcut icon", 
+                            href = "https://www.columbia.edu/content/themes/custom/columbia/favicon-crown.png"), 
+                  ),
         
         
     tabItems(
@@ -478,13 +482,7 @@ ui = dashboardPage(
                          
                        )
                      ), 
-                   
-                column(width = 12,
-                       box(width = NULL, solidHeader = TRUE, #matrix heatmap plotly output
-                           plotlyOutput("HeatMap", height = 800), 
-                           textOutput("blah")
-                       )
-                ), 
+                
                 column(width = 12, 
                        box(width = NULL, solidHeader = TRUE, 
                            fluidRow(
@@ -494,11 +492,19 @@ ui = dashboardPage(
                                column(width = 6, 
                                       plotlyOutput("BarplotLE_specific", height = 350)
                                       
-                                  
+                                      
+                               )
                            )
                        )
-                   )
+                ),
+                column(width = 12,
+                       box(width = NULL, solidHeader = TRUE, #matrix heatmap plotly output
+                           plotlyOutput("HeatMap", height = 800), 
+                           textOutput("blah")
+                       )
                 )
+                
+
             )
         ),
                     
@@ -748,7 +754,7 @@ server <- shinyServer(function(input, output, session){
         observeEvent(event_data("plotly_click", source = "BarplotLE"), {
             BarplotLE(event_data("plotly_click", source = "BarplotLE")$x)
             BarplotLE_specific(NULL)
-            updateSelectInput(session, inputId = 'heatAge', selected = gsub("Age ", "", BarplotLE()))
+            #updateSelectInput(session, inputId = 'heatAge', selected = gsub("Age ", "", BarplotLE()))
         })
         
         
@@ -824,7 +830,12 @@ server <- shinyServer(function(input, output, session){
                 if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
                 else if (input$heatGender == "Female"){ res_gender <- res()[[2]]}
                 
-                if (is.null(BarplotLE())){  return(NULL) }
+                if (is.null(BarplotLE())){  
+                    p <- plotly_empty(type = "scatter", mode = "markers") %>%
+                          config(displayModeBar = FALSE) %>%
+                          layout(title = list(text = "Click on Each Bar for Decomposition Details", yref = "paper", y = 0.5))
+                    return(p)
+                }
                 
                 data.frame(contribution = res_gender[, paste("LE Age", BarplotLE())]) %>% 
                     rownames_to_column() %>% mutate(curr_color = "#8073AC") %>%
