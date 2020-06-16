@@ -911,7 +911,7 @@ server <- shinyServer(function(input, output, session){
                             type = "bar", marker = list(color = ~curr_color)) %>% 
                     config(displayModeBar = FALSE) %>% 
                     layout(barmode="overlay",
-                           title = paste0("Change in Life Expectancy (", 
+                           title = paste0("Contribution of Change in Life Expectancy (", 
                                           input$range_t[1], "-", input$range_t[2], ", ",
                                           input$heatGender, ", ", BarplotLE(), ", ", 
                                           input$heatCountry, ")"), 
@@ -942,7 +942,7 @@ server <- shinyServer(function(input, output, session){
                          add_trace(data = d2, x = ~gsub("Contribution Age", "", rowname),
                                   y = ~contribution, type = "bar", name = "Female", marker = list(color = ~curr_col)) %>% 
                          layout(barmode="group",
-                                title = paste0("Change in Life Expectancy (", 
+                                title = paste0("Contribution of Change in Life Expectancy (", 
                                                input$range_t[1], "-", input$range_t[2], ", ",
                                                paste0(input$heatGender, collapse = "/"), ", ", BarplotLE(), ", ", 
                                                input$heatCountry, ")"), 
@@ -967,7 +967,7 @@ server <- shinyServer(function(input, output, session){
                                 type = "bar", marker = list(color = ~curr_color)) %>% 
                         config(displayModeBar = FALSE) %>% 
                         layout(barmode="overlay",
-                               title = paste0("Change in Life Expectancy (", 
+                               title = paste0("Contribution of Change in Life Expectancy (", 
                                               input$range_t[1], "-", input$range_t[2], ", ",
                                               "Aggregate", ", ", BarplotLE(), ", ", 
                                               input$heatCountry, ")"), 
