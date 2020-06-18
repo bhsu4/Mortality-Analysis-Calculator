@@ -156,10 +156,12 @@ dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('
                             tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
                                       icon("github", "fa-1.5x"),
                                       title = "Visit my Github"),
-                                      class = "dropdown"),
+                                      class = "dropdown", 
+                                      style="color: #000; background-color: #b3b3b3; 
+                                                  font-size:135% ;"),
                             tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
-                                      img(src = 'https://lh3.googleusercontent.com/proxy/HazKHxllUfv4y7ysbNSuHvy4Gpv3-kFlWYrPpXze36Yu-6pG_QN19c2W6rw7RZ87vSa26dwtoCIlY6gQsyEQM3IcWiTkyN9y3ZKlDFPNeG3scCAjg_M', #https://cpb-us-w2.wpmucdn.com/edblogs.columbia.edu/dist/9/953/files/2017/01/Columbia_University_School_of_Professional_Studies_logo.svg-12ypii6.png',
-                                          title = "Contact Us", height = "20px")),
+                                      img(src = 'ColumbiaLogo.png',
+                                          title = "Contact Us", height = "20px", width = "20px")),
                                     class = 'dropdown') 
                             )
 
@@ -211,35 +213,39 @@ ui = dashboardPage(
                            fluidRow(
                                column(width = 3,
                                    fluidRow(
-                                       column(width = 12,
+                                       column(width = 10,
                                         selectInput("heatCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
-                                        ) #,
-                                       #column(width = 6, 
-                                        #      radioButtons('heatGender', 'Gender',
-                                        #                   c(Male = 'M', Female = 'F'), selected = 'M', inline = TRUE)
-                                        #)
+                                        ), 
+                                       column(width = 2, 
+                                       actionButton(
+                                           inputId = "heatQA",
+                                           label = "",
+                                           icon = icon("question-circle"),
+                                           style="color: #fff; background-color: #b3b3b3; 
+                                                  border-color: #b3b3b3; padding:2px; font-size:78% ; 
+                                                  width: 20px; height: 20px"
+                                       ))
+                                       
                                    ),
                                    fluidRow(
-                                   column(width = 9,
-                                      checkboxGroupButtons(
-                                          inputId = "heatGender", label = "Gender", 
-                                          choices = c("Male", "Female"), selected = "Male", 
-                                          justified = TRUE, status = "primary")),
-                                   
-                                   column(width = 3, 
-                                          
-                                          materialSwitch(
-                                              inputId = "heatAggregate", label = div(style = "margin-top:-20px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
-                                              right = FALSE, value = FALSE, status = "primary")
-                                          )
-                                   
-                                   
-                                   
+                                       column(width = 9,
+                                          checkboxGroupButtons(
+                                              inputId = "heatGender", label = "Gender", 
+                                              choices = c("Male", "Female"), selected = "Male", 
+                                              justified = TRUE, status = "primary")),
+                                       
+                                       column(width = 3, 
+                                              
+                                              materialSwitch(
+                                                  inputId = "heatAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
+                                                  right = FALSE, value = FALSE, status = "primary")
+                                              )
+
                                    )
                                
                                ), 
                               column(width = 9, 
-                                   # Input: Specification of range within an interval ----
+                                  # Input: Specification of range within an interval ----
                                    wellPanel( 
                                        conditionalPanel(
                                            condition = "input.heatCountry == 'Australia'",
@@ -488,7 +494,7 @@ ui = dashboardPage(
                                                        label = "Years Selected",
                                                        min = 1959, max = 2013, value = c(1959, 2013))
                                )
-                             )# wellPanel
+                             ) # wellPanel
                            ) # column
                          ), #fluidrow
                          
@@ -672,6 +678,24 @@ create_hover_MF <- function(x){
 }
 
 server <- shinyServer(function(input, output, session){ 
+    
+        observeEvent(input$heatQA, {
+            show_alert(
+                title = NULL,
+                text = tags$span(
+                    tags$h3("Decomposition of Mortality by Age",
+                            style = "color: steelblue;"), tags$br(),
+                    "Select country and time period along with gender", 
+                    tags$br(), tags$br(),
+                    "If Aggregate", tags$b("OFF"), "then male and female decomposition will be performed separately",
+                    tags$br(), tags$br(),
+                    "If Aggregate", tags$b("ON"), "both genders then population (male + female) decomposition will be performed",
+                    tags$br(), tags$br(),
+                    icon("far fa-smile")
+                ),
+                html = TRUE
+            )
+        })
     
         country_info <- reactive({
             read.csv("List_Countries.csv")
