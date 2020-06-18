@@ -179,10 +179,21 @@ ui = dashboardPage(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
+        sidebarUserPanel("Pork Chop",
+                         subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
+                         # Image file should be in www/ subdir
+                         image = "https://vignette.wikia.nocookie.net/fanfictiondisney/images/9/9e/Pumba_3.jpg/revision/latest?cb=20120708163413"
+        ),
         sidebarMenu(
-            menuItem("DECOMPOSITION OF LE", tabName = "tab_le", icon = icon("desktop")),
-            menuItem("ABOUT", tabName = "tab_about", icon = icon("info"))
-        )
+           # id = "tabs",
+            #convertMenuItem(
+            menuItem("DECOMP OF LE", tabName = "tab_le", 
+                         icon = icon("desktop"), selected = T,
+                menuSubItem("LE by Age", tabName = "LEAge"),
+                menuSubItem("LP by Age", tabName = "LPAge")),
+            menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")) #info
+            
+        )   
     ),
     
     # Dashboard Body ----------------------------------------------------------
@@ -201,12 +212,15 @@ ui = dashboardPage(
                             href = "https://www.columbia.edu/content/themes/custom/columbia/favicon-crown.png"), 
                   ),
         
-        
     tabItems(
         # About - tab_life exp -------------------------------------------------------
-            
         tabItem(
             "tab_le", 
+          column(width = 9, 
+                 box(Width = NULL, status = 'info'))
+        ),
+        tabItem(
+            "LEAge", 
             fluidRow(
                 column(width = 12,
                        box(width = NULL, status = "warning",
@@ -252,278 +266,50 @@ ui = dashboardPage(
                                            sliderInput("range_t",
                                                        label = "Years Selected",
                                                        min = 1921, max = 2018, value = c(1921, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Austria'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1947, max = 2017, value = c(1947, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Belarus'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2018, value = c(1959, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Belgium'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1841, max = 2018, value = c(1841, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Bulgaria'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1947, max = 2018, value = c(1947, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Canada'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1921, max = 2016, value = c(1921, 2016))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Chile'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1992, max = 2008, value = c(1992, 2008))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Czech Republic'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1950, max = 2018, value = c(1950, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Denmark'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1835, max = 2019, value = c(1835, 2019))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Estonia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2017, value = c(1959, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Finland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1878, max = 2018, value = c(1878, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'France'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1816, max = 2017, value = c(1816, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Germany'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1990, max = 2017, value = c(1990, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Greece'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1981, max = 2017, value = c(1981, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Hungary'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1950, max = 2017, value = c(1950, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Iceland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1838, max = 2018, value = c(1838, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Ireland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1950, max = 2018, value = c(1950, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Israel'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1983, max = 2016, value = c(1983, 2016))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Italy'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1872, max = 2017, value = c(1872, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Japan'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1947, max = 2018, value = c(1947, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Korea'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 2003, max = 2018, value = c(2003, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Latvia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2017, value = c(1959, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Lithuania'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2017, value = c(1959, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Luxembourg'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1960, max = 2017, value = c(1960, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Netherlands'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1850, max = 2018, value = c(1850, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'New Zealand'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1948, max = 2013, value = c(1948, 2013))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Norway'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1846, max = 2018, value = c(1846, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Poland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1958, max = 2018, value = c(1958, 2018))
-                                       ),
-                                       
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Portugal'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1940, max = 2018, value = c(1940, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Russia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2014, value = c(1959, 2014))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Slovakia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1950, max = 2017, value = c(1950, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Slovenia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1983, max = 2017, value = c(1983, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Spain'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1908, max = 2018, value = c(1908, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Sweden'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1751, max = 2018, value = c(1751, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Switzerland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1876, max = 2018, value = c(1876, 2018))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Taiwan'",
-                                           sliderInput("range_t", 
-                                                       label = "Years Selected",
-                                                       min = 1970, max = 2014, value = c(1970, 2014))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Great Britain'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1841, max = 2016, value = c(1841, 2016))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Scotland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1855, max = 2016, value = c(1855, 2016))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Northern Ireland'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1922, max = 2016, value = c(1922, 2016))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'U.S.A'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1933, max = 2017, value = c(1933, 2017))
-                                       ),
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Ukraine'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1959, max = 2013, value = c(1959, 2013))
-                               )
+                                       )
                              ) # wellPanel
                            ) # column
                          ), #fluidrow
                          
                        )
                      ), 
-                
-                column(width = 12, 
-                       box(width = NULL, solidHeader = TRUE, 
-                           fluidRow(
-                               column(width = 6,
-                                      plotlyOutput("BarplotLE", height = 350)
-                               ), 
-                               column(width = 6, 
-                                      plotlyOutput("BarplotLE_specific", height = 350)
-                                      
-                                      
-                               )
-                           )
-                       )
-                ),
                 column(width = 12,
-                       box(width = NULL, solidHeader = TRUE, #matrix heatmap plotly output
-                           plotlyOutput("HeatMap", height = 800), 
-                           textOutput("blah")
+                       
+                       tabBox(width = NULL, title = tagList(shiny::icon("gear"), "By Age"), 
+                              tabPanel(title = "LE1", 
+                                              
+                                       fluidRow(
+                                           column(width = 6,
+                                                  plotlyOutput("BarplotLE", height = 350)
+                                           ), 
+                                           column(width = 6, 
+                                                  plotlyOutput("BarplotLE_specific", height = 350)
+                                                  
+                                                  
+                                           )
+                                       )
+                                       , 
+                                       tags$br(), tags$br(),
+                                       
+                                       fluidRow(
+                                           column(width = 12, 
+                                                  plotlyOutput("HeatMap", height = 800)
+                                           )
+                                       )
+                                       
+                                       
+                              ),
+                              tabPanel("LE2", "Tab content 2")
                        )
                 )
                 
-
+                    
+             
             )
+
+                
+            
+        
         ),
                     
         
