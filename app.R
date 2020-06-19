@@ -115,7 +115,7 @@ theme_custom <- shinyDashboardThemeDIY(
     ,boxInfoColor = "rgb(21, 154, 251)" #bright blue
     ,boxSuccessColor = "rgb(67, 138, 250)"
     ,boxWarningColor = "rgb(244,156,104)"
-    ,boxDangerColor = "rgb(255,88,55)"
+    ,boxDangerColor = "rgb(111,125,150)" #grey
     
     ,tabBoxTabColor = "rgb(255,255,255)"
     ,tabBoxTabTextSize = 14
@@ -148,6 +148,14 @@ theme_custom <- shinyDashboardThemeDIY(
     ,tableBorderRowSize = 1
 )
 
+convertMenuItem <- function(mi,tabName) {
+    mi$children[[1]]$attribs['data-toggle']="tab"
+    mi$children[[1]]$attribs['data-value'] = tabName
+    if(length(mi$attribs$class)>0 && mi$attribs$class=="treeview"){
+        mi$attribs$class=NULL
+    }
+    mi
+}
 
 dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('https://google.com', '_blank'))",
                                            tags$img(src='MortalityViz.png', class = 'img-center',
@@ -187,10 +195,10 @@ ui = dashboardPage(
         sidebarMenu(
            # id = "tabs",
             #convertMenuItem(
-            menuItem("DECOMP OF LE", tabName = "tab_le", 
+            convertMenuItem(menuItem("DECOMP OF LE", tabName = "tab_le", 
                          icon = icon("desktop"), selected = T,
                 menuSubItem("LE by Age", tabName = "LEAge"),
-                menuSubItem("LP by Age", tabName = "LPAge")),
+                menuSubItem("LP by Age", tabName = "LPAge")), "tab_le"),
             menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")) #info
             
         )   
@@ -216,8 +224,50 @@ ui = dashboardPage(
         # About - tab_life exp -------------------------------------------------------
         tabItem(
             "tab_le", 
-          column(width = 9, 
-                 box(Width = NULL, status = 'info'))
+            fluidRow(
+                # About - About Me - start ------------------------------------------------
+                box(
+                    title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;DECOMPOSITION DESCRIPTION<br><br>")),
+                    status = "danger",
+                    width = 6, solidHeader = TRUE,
+                    tags$style(HTML('color: #ffffff')),
+                    tags$br(),
+                    tags$p(
+                        class = "text-left",
+                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("FUNCTION TITLE")), 
+                        HTML('<span style="padding: 0 20px">&nbsp;</span>'), "Decomposition of Mortality by Age", HTML('<hr/>')
+                    ),
+                    tags$p(
+                        class = "text-left",
+                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("METRIC")), 
+                        HTML('<span style="padding: 0 44px">&nbsp;</span>'), "Change in Life Expectancy, Life Preparancy", HTML('<hr/>')
+                    ), 
+                    tags$p(
+                        class = "text-left",
+                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("EXPERIENCE")), 
+                        HTML('<span style="padding: 0 30px">&nbsp;</span>'), "Click functionality in barchart", HTML('<hr/>')
+                    ),
+                    tags$p(
+                        HTML('<div style="display:flex; justify-content:space-around; content-align: left; ">
+                        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;DESCRIPTION</b><p>
+                        <span style = "padding: 0 65px; display:inline-block; word-wrap:break-word;"> The Decomposition of Mortality by Age is responsible of observing the life expectancy changes over a time interval for a select country.</span>
+                        </div><hr/>')
+                    ),
+                    tags$p(
+                        HTML('<div style="display:flex; justify-content:space-around; content-align: left; ">
+                        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;ERRORS</b><p>
+
+                        <span style = " padding: 0 95px; display:inline-block; word-wrap:break-word;">Australia is working country for all years. Need to figure out why conditional panels dont work for other countries. </span>
+                        
+                        </div><hr/>'
+                        )
+                    ),
+                    
+                    tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
+                                              p {color: #5e697d}'))) 
+                    
+                )
+            )
         ),
         tabItem(
             "LEAge", 
@@ -296,8 +346,6 @@ ui = dashboardPage(
                                                   plotlyOutput("HeatMap", height = 800)
                                            )
                                        )
-                                       
-                                       
                               ),
                               tabPanel("LE2", "Tab content 2")
                        )
