@@ -187,21 +187,23 @@ ui = dashboardPage(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
-        sidebarUserPanel("Pork Chop",
+        sidebarUserPanel("Mushu",
                          subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
                          # Image file should be in www/ subdir
-                         image = "https://vignette.wikia.nocookie.net/fanfictiondisney/images/9/9e/Pumba_3.jpg/revision/latest?cb=20120708163413"
+                         image = "https://ohmy.disney.com/wp-content/uploads/2015/06/Musuh-wake-up-call.jpg"
         ),
         sidebarMenu(
            # id = "tabs",
             #convertMenuItem(
-            convertMenuItem(menuItem("DECOMP OF LE", tabName = "tab_le", 
-                         icon = icon("desktop"), selected = T,
-                menuSubItem("LE by Age", tabName = "LEAge"),
-                menuSubItem("LP by Age", tabName = "LPAge")), "tab_le"),
+            menuItem("MORTALITY DECOMP", #tabName = "tab_le", 
+                         icon = icon("desktop"), startExpanded = TRUE,
+                menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
+                menuSubItem("Decomposition by Age", tabName = "LEAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
+                menuSubItem("NULL", tabName = "LPAge", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
             menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")) #info
             
-        )   
+           
+        )
     ),
     
     # Dashboard Body ----------------------------------------------------------
@@ -325,8 +327,8 @@ ui = dashboardPage(
                      ), 
                 column(width = 12,
                        
-                       tabBox(width = NULL, title = tagList(shiny::icon("gear"), "By Age"), 
-                              tabPanel(title = "LE1", 
+                       tabBox(width = NULL, title = tagList(shiny::icon("calculator"), "By Age"), 
+                              tabPanel(title = "Change in Life Expectancy", 
                                               
                                        fluidRow(
                                            column(width = 6,
