@@ -18,6 +18,9 @@ data("zip_codes")
 library(shinycssloaders)
 
 library(shinydashboard)
+library(shinydashboardPlus)
+library(shinycssloaders)
+
 library(dashboardthemes)
 library(leaflet)
 library(leaflet.extras)
@@ -71,9 +74,9 @@ theme_custom <- shinyDashboardThemeDIY(
     ,sidebarBackColor = "rgb(53,64,83)"
     ,sidebarPadding = 0 #left side selected tab
     
-    ,sidebarMenuBackColor = "transparent"
+    ,sidebarMenuBackColor = "rgb(53,64,83)" #"transparent" for sidebar collapse menu
     ,sidebarMenuPadding = 0
-    ,sidebarMenuBorderRadius = 0
+    ,sidebarMenuBorderRadius = 20
     
     ,sidebarShadowRadius = "2px 2px 2px" #sidebar shadow
     ,sidebarShadowColor = "#aaaaaa"
@@ -86,7 +89,7 @@ theme_custom <- shinyDashboardThemeDIY(
     
     #for unselected sidebars = dark blue shading and grey text
     ,sidebarTabTextColor = "rgb(125,132,145)" #grey text color
-    ,sidebarTabTextSize = 15
+    ,sidebarTabTextSize = 14
     ,sidebarTabBorderStyle = "none none none none" #border clockwise from top
     ,sidebarTabBorderColor = ""
     ,sidebarTabBorderWidth = 0
@@ -122,8 +125,8 @@ theme_custom <- shinyDashboardThemeDIY(
     ,tabBoxTabTextColor = "rgb(0,0,0)"
     ,tabBoxTabTextColorSelected = "rgb(0,0,0)"
     ,tabBoxBackColor = "rgb(255,255,255)" 
-    ,tabBoxHighlightColor = "rgb(111,125,150)" #rim of tab boxes of non seelected
-    ,tabBoxBorderRadius = 5
+    ,tabBoxHighlightColor = "rgb(21, 154, 251)" #"rgb(111,125,150)" #rim of tab boxes of non seelected
+    ,tabBoxBorderRadius = 0
     
     ### inputs
     ,buttonBackColor = "rgb(245,245,245)"
@@ -158,9 +161,8 @@ convertMenuItem <- function(mi,tabName) {
 }
 
 dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('https://google.com', '_blank'))",
-                                           tags$img(src='MortalityViz.png', class = 'img-center',
-                                                     style = "float: center",height='45x',width='160px')
-                                           ),
+                                       tags$img(src='MortalityViz.png', class = 'logo-lg',
+                                                style = "float: center",height='45x',width='160px')),
                             tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
                                       icon("github", "fa-1.5x"),
                                       title = "Visit my Github"),
@@ -187,10 +189,11 @@ ui = dashboardPage(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
+
         sidebarUserPanel("Mushu",
                          subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
                          # Image file should be in www/ subdir
-                         image = "https://ohmy.disney.com/wp-content/uploads/2015/06/Musuh-wake-up-call.jpg"
+                         image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
         ),
         sidebarMenu(
            # id = "tabs",
@@ -208,6 +211,8 @@ ui = dashboardPage(
     
     # Dashboard Body ----------------------------------------------------------
     dashboardBody(
+    
+        tags$script(HTML("$('body').addClass('sidebar-mini');")),
         
         theme_custom,
         
@@ -332,12 +337,11 @@ ui = dashboardPage(
                                               
                                        fluidRow(
                                            column(width = 6,
-                                                  plotlyOutput("BarplotLE", height = 350)
+                                                  plotlyOutput("BarplotLE", height = 300)
                                            ), 
                                            column(width = 6, 
-                                                  plotlyOutput("BarplotLE_specific", height = 350)
-                                                  
-                                                  
+                                                  plotlyOutput("BarplotLE_specific", height = 300)
+
                                            )
                                        )
                                        , 
@@ -345,7 +349,7 @@ ui = dashboardPage(
                                        
                                        fluidRow(
                                            column(width = 12, 
-                                                  plotlyOutput("HeatMap", height = 800)
+                                                  withSpinner(plotlyOutput("HeatMap", height = 600), proxy.height = "20px")
                                            )
                                        )
                               ),
@@ -515,6 +519,8 @@ create_hover_MF <- function(x){
 
 server <- shinyServer(function(input, output, session){ 
     
+        
+    
         observeEvent(input$heatQA, {
             show_alert(
                 title = NULL,
@@ -578,7 +584,7 @@ server <- shinyServer(function(input, output, session){
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                     input$range_t[1], "-", input$range_t[2], ", ",
                                                                     input$heatGender, ", ", input$heatCountry, ")"), 
-                          font = list(size = 10), custom_hovertext = hover_text2, 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -610,7 +616,7 @@ server <- shinyServer(function(input, output, session){
                             main = paste0("Changes in Life Expectancy (", 
                                           input$range_t[1], "-", input$range_t[2], ", ",
                                           paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"),
-                            font = list(size = 10), custom_hovertext = mat4,
+                            font = list(size = 8), custom_hovertext = mat4,
                             key.title = "Changes in Years", 
                             colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                             layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
@@ -632,7 +638,7 @@ server <- shinyServer(function(input, output, session){
                              plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                        input$range_t[1], "-", input$range_t[2], ", ",
                                                                        input$heatGender, ", ", input$heatCountry, ")"), 
-                              font = list(size = 10), custom_hovertext = hover_text2, 
+                              font = list(size = 8), custom_hovertext = hover_text2, 
                               key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                              layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
                                                 showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -681,7 +687,7 @@ server <- shinyServer(function(input, output, session){
                             title = paste0("Changes in Life Expectancy (", 
                                     input$range_t[1], "-", input$range_t[2], ", ",
                                     input$heatGender, ", ", input$heatCountry, ")"),
-                            font = list(size = 10),
+                            font = list(size = 8),
                             xaxis = list(title = "Age", categoryarray = names(Total_male), 
                                          categoryorder = "array", size = 8, tickangle = 0), 
                             yaxis = list(title = "Change (Years)"))
@@ -714,7 +720,7 @@ server <- shinyServer(function(input, output, session){
                           layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
                                                                  input$range_t[1], "-", input$range_t[2], ", ",
                                                                  paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"), 
-                                 font = list(size = 10),
+                                 font = list(size = 8),
                                  xaxis = list(title = "Age", categoryarray = names(Total_male), 
                                               categoryorder = "array", size = 8, tickangle = 0), 
                                  yaxis = list(title = "Change (Years)"))
@@ -739,7 +745,7 @@ server <- shinyServer(function(input, output, session){
                                 title = paste0("Changes in Life Expectancy (", 
                                                input$range_t[1], "-", input$range_t[2], ", ",
                                                "Aggregate", ", ", input$heatCountry, ")"),
-                                font = list(size = 10),
+                                font = list(size = 8),
                                 xaxis = list(title = "Age", categoryarray = names(Total_male), 
                                              categoryorder = "array", size = 8, tickangle = 0), 
                                 yaxis = list(title = "Change (Years)"))
@@ -775,7 +781,7 @@ server <- shinyServer(function(input, output, session){
                                           input$range_t[1], "-", input$range_t[2], ", ",
                                           input$heatGender, ", ", BarplotLE(), ", ", 
                                           input$heatCountry, ")"), 
-                           font = list(size = 10),
+                           font = list(size = 8),
                            xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
                                         categoryorder = "array", size = 8, tickangle = 0),
                            yaxis = list(title = "Contribution (Years)"))
@@ -806,7 +812,7 @@ server <- shinyServer(function(input, output, session){
                                                input$range_t[1], "-", input$range_t[2], ", ",
                                                paste0(input$heatGender, collapse = "/"), ", ", BarplotLE(), ", ", 
                                                input$heatCountry, ")"), 
-                                font = list(size = 10),
+                                font = list(size = 8),
                                 xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
                                              categoryorder = "array", size = 8, tickangle = 0),
                                 yaxis = list(title = "Life Expectancy Change (Years)"))
@@ -831,7 +837,7 @@ server <- shinyServer(function(input, output, session){
                                               input$range_t[1], "-", input$range_t[2], ", ",
                                               "Aggregate", ", ", BarplotLE(), ", ", 
                                               input$heatCountry, ")"), 
-                               font = list(size = 10),
+                               font = list(size = 8),
                                xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
                                             categoryorder = "array", size = 8, tickangle = 0),
                                yaxis = list(title = "Contribution (Years)"))
