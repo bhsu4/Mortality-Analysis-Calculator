@@ -160,23 +160,25 @@ convertMenuItem <- function(mi,tabName) {
     mi
 }
 
-dbHeader <- dashboardHeader(title = tags$a(href = "javascript:void(window.open('https://google.com', '_blank'))",
-                                       tags$img(src='MortalityViz.png', class = 'logo-lg',
-                                                style = "float: center",height='45x',width='160px')),
-                            tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
-                                      icon("github", "fa-1.5x"),
-                                      title = "Visit my Github"),
-                                      class = "dropdown", 
-                                      style="color: #000; background-color: #b3b3b3; 
-                                                  font-size:135% ;"),
-                            tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
-                                      img(src = 'ColumbiaLogo.png',
-                                          title = "Contact Us", height = "20px", width = "20px")),
-                                    class = 'dropdown') 
+dbHeader <- dashboardHeaderPlus(title = tagList(
+                                        a(href = "javascript:void(window.open('https://google.com', '_blank'))",
+                                                         tags$img(src='MortalityViz.png', class = 'logo-lg',
+                                                                  style = "float: center",height='45x',width='160px')),
+                                        img(class = "logo-mini", src = "https://image.flaticon.com/icons/svg/204/204074.svg")),
+                                tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
+                                          icon("github", "fa-1.5x"),
+                                          title = "Visit my Github"),
+                                          class = "dropdown", 
+                                          style="color: #000; background-color: #b3b3b3; 
+                                                      font-size:135% ;"),
+                                tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
+                                          img(src = 'ColumbiaLogo.png',
+                                              title = "Contact Us", height = "20px", width = "20px")),
+                                        class = 'dropdown') 
                             )
 
 
-ui = dashboardPage(
+ui = dashboardPagePlus(
     
     
     title = "MortalityViz",
@@ -232,7 +234,7 @@ ui = dashboardPage(
         tabItem(
             "tab_le", 
             fluidRow(
-                # About - About Me - start ------------------------------------------------
+                # overview start ------------------------------------------------
                 box(
                     title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;DECOMPOSITION DESCRIPTION<br><br>")),
                     status = "danger",
@@ -269,10 +271,30 @@ ui = dashboardPage(
                         </div><hr/>'
                         )
                     ),
-                    
                     tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
                                               p {color: #5e697d}'))) 
                     
+                ),
+                box(
+                    title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;WHAT IS LIFE PREPARANCY?<br><br>")),
+                    status = "info",
+                    width = 6, solidHeader = TRUE,
+                    tags$style(HTML('color: #ffffff')),
+                    tags$br(),
+                    tags$p(
+                        class = "text-left",
+                        "A life preparancy age might be commonly defined as the age to which 10 percent of a population 
+                        that has already reached age 65 is expected to live in the future.", 
+                        blockQuote("[There is] a growing need for the actuarial profession around the world to
+                                   promote retirement plans that include lifetime income options....
+                                   Longevity risk, however, is a much more delicate issue than simply noting the 
+                                   average ages that might be obtained across a population. First, actuaries need 
+                                   to change the public's vocabulary to switch from 'expectancy from birth' 
+                                   to 'retirement preparedness.'",     
+                                   HTML("<br><p style = text-align:right>-<b>Dale Hall, Managing Director of Research at the SOA </p></b>"))
+                    ),
+                    tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
+                                              p {color: #5e697d}'))) 
                 )
             )
         ),
