@@ -302,12 +302,12 @@ ui = dashboardPagePlus(
             "LEAge", 
             fluidRow(
                 column(width = 12,
-                           boxPlus(title = "Choose", closable = FALSE, width = NULL, 
-                               status = "warning", collapsible = TRUE, solidHeader = TRUE, 
-                               enable_dropdown = TRUE, dropdown_icon = "sticky-note", 
-                               dropdown_menu = dropdownItemList(dropdownItem(url = "https://www.demographic-research.org/volumes/vol7/14/7-14.pdf", name = "Decomposition Source"), 
-                                                                dropdownDivider()
-                                                                ), 
+                           boxPlus(title = "Choose Parameters", closable = FALSE, width = NULL, 
+                                   status = "danger", collapsible = TRUE, solidHeader = TRUE, 
+                                   enable_dropdown = TRUE, dropdown_icon = "sticky-note", 
+                                   dropdown_menu = dropdownItemList(dropdownItem(url = "https://www.demographic-research.org/volumes/vol7/14/7-14.pdf", name = "Decomposition Source"), 
+                                                                    dropdownDivider()
+                                                                    ), 
                            fluidRow(
                                column(width = 3,
                                    fluidRow(
@@ -380,15 +380,17 @@ ui = dashboardPagePlus(
                                            )
                                        )
                               ),
-                              tabPanel(title = "Change in Life Preparancy", 
+                              tabPanel(title = "Change in Life Preparancy",
                                        
-                                       fluidRow(
-                                           column(width = 8,
+                                        fluidRow(
+                                           column(width = 10,
                                                   withSpinner(plotlyOutput("LineLP", height = 400)), 
-                                           column(width = 4, 
+                                           ), 
+                                           column(width = 2, 
+                                                  numericInput("z", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
                                                   )
-                                           )
-                                       ), 
+                                        
+                                        ), 
                                        tags$br(), tags$br(),
                                        fluidRow(
                                            column(width = 12, 
@@ -410,38 +412,61 @@ ui = dashboardPagePlus(
             
             fluidRow(
                 # About - About Me - start ------------------------------------------------
-                box(
-                    title = "About me",
-                    status = "danger",
-                    width = 3,
-                    tags$p(
-                        class = "text-center",
-                        tags$img(class = "img-responsive img-rounded center-block", src = "me.png", style = "max-width: 150px;")
-                    ),
-                    tags$p(
-                        class = "text-center",
-                        tags$strong("Hi! I'm Ben!"),
-                        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), ")"))
-                    ),
-                    tags$p(
-                        "I am a Master of Science student in Actuarial Science at Columbia University.",
-                        "I graduated from the University of Rochester with a Bachelor's degree in Statistics",
-                        "with a Certificate in Actuarial Science."
-                    ),
-                    tags$p(
-                        "I like to work on projects with",
-                        "statistical and machine learning. You can find more of my work on my website",
-                        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), "."))
-                    ),
-                    tags$p(
-                        "Get in touch with me on LinkedIn at",
-                        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu", target = "a()"), "),")),
-                        "online at",
-                        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")),
-                        "or by email at",
-                        HTML(paste0(tags$a(href = "mailto:bh2722@columbia.edu", "bh2722@columbia.edu"), "."))
-                    )
-                )
+                widgetUserBox(
+                    title = "Benjamin Hsu",
+                    subtitle = "M.S. in Actuarial Science",
+                    type = NULL,
+                    width = 6,
+                    src = "me.png",
+                    background = TRUE,
+                    backgroundUrl = "https://cdn.hipwallpaper.com/i/55/63/hYxHpB.jpg",
+                    closable = FALSE,
+                    HTML("<br>"), HTML("<br>"),
+                    tags$strong("Hi! I'm Ben!"), 
+                    HTML(paste0("Get in touch with me on LinkedIn (", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), "),")),  
+                    "online at", HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")), 
+                    "or by email at bh2722@columbia.edu.",
+                    footer = "I am a Master of Science student in Actuarial Science at Columbia University. 
+                             I graduated from the University of Rochester with a Bachelor's degree in Statistics 
+                             with a Certificate in Actuarial Science. I like to work on projects with statistical 
+                             and machine learning. You can find more of my work on my website, or get in touch with 
+                             me via LinkedIn or my email above.")
+                
+                
+               
+            
+                #box(
+                #    title = "About me",
+                #    status = "danger",
+                #    width = 3,
+                #    tags$p(
+                #        class = "text-center",
+                #        tags$img(class = "img-responsive img-rounded center-block", src = "me.png", style = "max-width: 150px;")
+                #    ),
+                #    tags$p(
+                #        class = "text-center",
+                #        tags$strong("Hi! I'm Ben!"),
+                #        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), ")"))
+                #    ),
+                #    tags$p(
+                #        "I am a Master of Science student in Actuarial Science at Columbia University.",
+                #        "I graduated from the University of Rochester with a Bachelor's degree in Statistics",
+                #        "with a Certificate in Actuarial Science."
+                #    ),
+                #    tags$p(
+                #        "I like to work on projects with",
+                #        "statistical and machine learning. You can find more of my work on my website",
+                #        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), "."))
+                #    ),
+                #    tags$p(
+                #        "Get in touch with me on LinkedIn at",
+                #        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu", target = "a()"), "),")),
+                #        "online at",
+                #        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")),
+                #        "or by email at",
+                #        HTML(paste0(tags$a(href = "mailto:bh2722@columbia.edu", "bh2722@columbia.edu"), "."))
+                #    )
+                #)
             )
         )
     )
@@ -552,7 +577,7 @@ create_hover_MF <- function(x){
 
 change5x1_LP <- function(cntry, t1, t2, z){
     Males_5x1 <- readHMDweb(CNTRY = cntry, item = "mltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
-    Females_5x1 <- readHMDweb(CNTRY = cntry, item = "mltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
+    Females_5x1 <- readHMDweb(CNTRY = cntry, item = "fltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
     labels <- levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE))
     labels_m <- paste0(levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE)), "M")
     labels_f <- paste0(levels(cut(unique(Females_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Females_5x1$Age), 5)), right = FALSE)), "F")
@@ -979,24 +1004,24 @@ server <- shinyServer(function(input, output, session){
         LP_res <- reactive({
             req(input$heatCountry)
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
-            return(change5x1_LP(chosen_country, input$range_t[1], input$range_t[2], z = 0.9))
+            return(change5x1_LP(chosen_country, input$range_t[1], input$range_t[2], input$z))
         })
         
         output$LineLP <- renderPlotly(
-            plot_ly(LP_res(), x = ~initial, y = ~malet1, name = paste("Male", t1), 
+            plot_ly(LP_res(), x = ~initial, y = ~malet1, name = paste("Male", input$range_t[1]), 
                     type = 'scatter', mode = 'lines+markers',  
                     line = list(color = "#FDB863", dash = "dot"), 
                     marker = list(color = "#FDB863", symbol = "square", size = 10)) %>% 
-                add_trace(y = ~femalet1, name = paste("Female", t1), mode = 'lines+markers',
+                add_trace(y = ~femalet1, name = paste("Female", input$range_t[1]), mode = 'lines+markers',
                           line = list(color = "#FD6363", dash = "dot"), 
                           marker = list(color = "#FD6363", symbol = "square", size = 10)) %>% 
-                add_trace(y = ~malet2, name = paste("Male", t2), mode = 'lines+markers',
+                add_trace(y = ~malet2, name = paste("Male", input$range_t[2]), mode = 'lines+markers',
                           line = list(color = "#8073AC", dash = "dash"), 
                           marker = list(color = "#8073AC", symbol = "circle", size = 10)) %>% 
-                add_trace(y = ~femalet2, name = paste("Female", t2), mode = 'lines+markers',
+                add_trace(y = ~femalet2, name = paste("Female", input$range_t[2]), mode = 'lines+markers',
                           line = list(color = "#92CCDE", dash = "dash"), 
                           marker = list(color = "#92CCDE", symbol = "circle", size = 10)) %>% 
-                layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(z*100), " Percentile ", 
+                layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(input$z*100), " Percentile ", 
                                       "(", input$range_t[1], "-", input$range_t[2], ", ", input$heatCountry, ")"),
                        legend = list(orientation = "v", xanchor = "left", x = 0.10), 
                        font = list(size = 8), 
