@@ -302,7 +302,12 @@ ui = dashboardPagePlus(
             "LEAge", 
             fluidRow(
                 column(width = 12,
-                           
+                           boxPlus(title = "Choose", closable = FALSE, width = NULL, 
+                               status = "warning", collapsible = TRUE, solidHeader = TRUE, 
+                               enable_dropdown = TRUE, dropdown_icon = "sticky-note", 
+                               dropdown_menu = dropdownItemList(dropdownItem(url = "https://www.demographic-research.org/volumes/vol7/14/7-14.pdf", name = "Decomposition Source"), 
+                                                                dropdownDivider()
+                                                                ), 
                            fluidRow(
                                column(width = 3,
                                    fluidRow(
@@ -353,7 +358,7 @@ ui = dashboardPagePlus(
 
                          ) #fluidrow
                          
-                       
+                       )
                      ), 
                 column(width = 12,
                        
