@@ -566,9 +566,10 @@ change5x1 <- function(cntry, t1, t2){
 
 create_hover_MF <- function(x){
     my_rep <- vector() ; my_rep2 <- vector()
-    for(k in 24:1){
-        times <- 24 - k
-        if(k == 24){ curr_rep <- c(rep(rev(x)[k], k)) }
+    obs_length <- length(x)
+    for(k in obs_length:1){
+        times <- obs_length - k
+        if(k == obs_length){ curr_rep <- c(rep(rev(x)[k], k)) }
         else{ curr_rep <- c(rep(rev(x)[k+1], times), rep(rev(x)[k], k)) }
         my_rep = c(my_rep, curr_rep)
     }
@@ -576,6 +577,8 @@ create_hover_MF <- function(x){
 }
 
 change5x1_LP <- function(cntry, t1, t2, z){
+    #CLP calculation
+    
     Males_5x1 <- readHMDweb(CNTRY = cntry, item = "mltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
     Females_5x1 <- readHMDweb(CNTRY = cntry, item = "fltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
     labels <- levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE))
@@ -584,6 +587,8 @@ change5x1_LP <- function(cntry, t1, t2, z){
     
     #age group equivalence
     age_interest <- gsub(",.*$", "", gsub("\\[|\\)", "", labels)) #gsub the brackets out, and then take lower value before comma
+    age_contribution <- paste("Contribution Age", age_interest)
+    age_lp <- paste("LP Age", age_interest)
     age_range <- gsub(",", "-", gsub("\\[|\\)", "", labels)) #dash range labels
     age_group <- 1:length(age_interest)
     age_group_equiv <- data.frame(Age_Label = age_range, Age_Group = age_group, Initial_Age = age_interest)
@@ -662,12 +667,68 @@ change5x1_LP <- function(cntry, t1, t2, z){
     life_preparancy_male_t2[is.na(life_preparancy_male_t2)]<-initial_ages[nrow(initial_ages)]
     life_preparancy_female_t1[is.na(life_preparancy_female_t1)]<-initial_ages[nrow(initial_ages)]
     life_preparancy_female_t2[is.na(life_preparancy_female_t2)]<-initial_ages[nrow(initial_ages)]
-    #final result
+    
     result <- data.frame(initial = initial_ages, 
                          malet1 = life_preparancy_male_t1, femalet1 = life_preparancy_female_t1, 
                          malet2 = life_preparancy_male_t2, femalet2 = life_preparancy_female_t2)
     row.names(result) <- age_range
-    return(result)
+    
+    #start of change in life preparancy
+    
+    age_groups <- length(age_group)
+    ## Definition of vectors to be used
+    changes_per_age_M<-matrix(0,nrow=age_groups-1,ncol=age_groups-1)
+    changes_per_age_F<-matrix(0,nrow=age_groups-1,ncol=age_groups-1)
+    changes_per_age_MF <- matrix(0, nrow = age_groups, ncol = age_groups)
+    
+    for(k in 0:(age_groups-1)){
+        d_x_12_M<-matrix(0,nrow=age_groups,ncol=1)
+        d_x_21_M<-matrix(0,nrow=age_groups,ncol=1)
+        d_x_12_F<-matrix(0,nrow=age_groups,ncol=1)
+        d_x_21_F<-matrix(0,nrow=age_groups,ncol=1)
+        ##we redefine the vectors lx by dividing them by the respective l0
+        ##Case of males
+        lx_t1_M<-lx_matrix_M[lx_matrix_M$Year==t1,-1]/lx_matrix_M[lx_matrix_M$Year==t1,k+1]
+        lx_t2_M<-lx_matrix_M[lx_matrix_M$Year==t2,-1]/lx_matrix_M[lx_matrix_M$Year==t2,k+1]
+        ##Case of females
+        lx_t1_F<-lx_matrix_F[lx_matrix_F$Year==t1,-1]/lx_matrix_F[lx_matrix_F$Year==t1,k+1]
+        lx_t2_F<-lx_matrix_F[lx_matrix_F$Year==t2,-1]/lx_matrix_F[lx_matrix_F$Year==t2,k+1]
+        
+        for(x in k:(age_groups-1)){##
+            ##Calculation for males
+            d_x_12_M[x]<-as.double(lx_t1_M[x])*(as.double(result[x,1])-as.double(result[x,3]))-as.double(lx_t1_M[x+1])*(as.double(result[x+1,1])-as.double(result[x+1,3]))
+            d_x_21_M[x]<-as.double(lx_t2_M[x])*(as.double(result[x,3])-as.double(result[x,1]))-as.double(lx_t2_M[x+1])*(as.double(result[x+1,3])-as.double(result[x+1,1]))  
+            changes_per_age_M[x,k]<-0.5*(d_x_21_M[x]-d_x_12_M[x])
+            ##calculation for females
+            d_x_12_F[x]<-as.double(lx_t1_F[x])*(as.double(result[x,2])-as.double(result[x,4]))-as.double(lx_t1_F[x+1])*(as.double(result[x+1,2])-as.double(result[x+1,4]))
+            d_x_21_F[x]<-as.double(lx_t2_F[x])*(as.double(result[x,4])-as.double(result[x,2]))-as.double(lx_t2_F[x+1])*(as.double(result[x+1,4])-as.double(result[x+1,2]))  
+            changes_per_age_F[x,k]<-0.5*(d_x_21_F[x]-d_x_12_F[x])
+        }
+    }
+    
+    rownames(changes_per_age_F)<-age_contribution[-length(age_contribution)]
+    colnames(changes_per_age_F)<-age_lp[-length(age_lp)]
+    rownames(changes_per_age_M)<-age_contribution[-length(age_contribution)]
+    colnames(changes_per_age_M)<-age_lp[-length(age_lp)]
+    
+    both_genders<-cbind(changes_per_age_M,changes_per_age_F)
+    total_change_in_Age <- apply(both_genders,2,sum)
+    res <- rbind(both_genders,total_change_in_Age)
+    colnames(res) <- c(labels_m[-length(labels_m)], labels_f[-length(labels_f)])
+    row.names(res) <- c(labels[-length(labels)], "Total")
+    
+    #creating a matrix w/ M/F
+    changes_per_age_MF[lower.tri(changes_per_age_MF)] <- changes_per_age_M[lower.tri(changes_per_age_M, diag = TRUE)]
+    changes_per_age_MF[upper.tri(changes_per_age_MF)] <- t(changes_per_age_F)[upper.tri(t(changes_per_age_F), diag = TRUE)]
+    diag(changes_per_age_MF) <- NA
+    rownames(changes_per_age_MF) <- c("", age_contribution[-length(age_contribution)])
+    colnames(changes_per_age_MF) <- c(age_lp[-length(age_lp)], " ")
+    
+    ##Removal of the upper part of matrix since it is always zero
+    changes_per_age_M[upper.tri(changes_per_age_M)] <- NA
+    changes_per_age_F[upper.tri(changes_per_age_F)] <- NA
+    
+    return(list(result, changes_per_age_M, changes_per_age_F, changes_per_age_MF))
 }
 
 
@@ -1008,7 +1069,7 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$LineLP <- renderPlotly(
-            plot_ly(LP_res(), x = ~initial, y = ~malet1, name = paste("Male", input$range_t[1]), 
+            plot_ly(LP_res()[[1]], x = ~initial, y = ~malet1, name = paste("Male", input$range_t[1]), 
                     type = 'scatter', mode = 'lines+markers',  
                     line = list(color = "#FDB863", dash = "dot"), 
                     marker = list(color = "#FDB863", symbol = "square", size = 10)) %>% 
@@ -1031,7 +1092,72 @@ server <- shinyServer(function(input, output, session){
         )
         
         
-        
+        output$HeatMapLP <- renderPlotly({
+            
+            chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
+            scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
+            
+            if (length(input$heatGender) == 1){
+                if (input$heatGender == "Male" ){ res_gender <- LP_res()[[2]] }
+                else if (input$heatGender == "Female" ){ res_gender <- LP_res()[[3]]}
+                
+                par(mar=c(5.1,2.1,1,2.1))
+                dim1 <- dim(res_gender)[[1]]
+                hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
+                                            rep(rownames(res_gender), dim1), "<br>", 
+                                            rep(input$heatGender, dim1*2), "<br>"),
+                                     byrow = FALSE, ncol = dim1)
+                hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim1)
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
+                                                                   input$range_t[1], "-", input$range_t[2], ", ",
+                                                                   input$heatGender, ", ", input$heatCountry, ")"), 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(xaxis = list(ticktext = as.numeric(gsub("LP Age ", "", colnames(res_gender))), title = "Age", 
+                                        showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                           yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
+                                        title = "Contribution", showgrid = F, showticklabels = TRUE))
+                
+            }
+            else{ 
+                #if (input$heatAggregate == "FALSE"){ 
+                res_gender <- LP_res()[[4]]
+                par(mar=c(5.1,2.1,1,2.1))
+                dim1 <- dim(res_gender)[[1]]
+                
+                #create hover text 
+                row_contr <- create_hover_MF(c(rownames(res_gender)[-1], " ")) #byrow
+                col_le <- create_hover_MF(colnames(res_gender)) #bycol
+                
+                mat1 <- matrix(row_contr, byrow = TRUE, ncol = dim1)
+                mat2 <- matrix(col_le, byrow = FALSE, ncol = dim1)
+                mat3 <- ifelse(lower.tri(mat2), "Male", "Female")
+                
+                mat4 <- matrix(paste(paste0(mat1, "<br>", mat2, "<br>", mat3, "<br>"), 
+                                     round(res_gender, 4), sep = "Change: "), dim1, dim1)
+                diag(mat4) <- NA #remove diag hover text
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
+                          cexRow = 0.65, cexCol = 0.65, 
+                          col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
+                          main = paste0("Changes in Life Preparancy (", 
+                                        input$range_t[1], "-", input$range_t[2], ", ",
+                                        paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"),
+                          font = list(size = 8), custom_hovertext = mat4,
+                          key.title = "Changes in Years", 
+                          colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(shapes = list(type = 'line', x0 = 0, x1 = 24, y0 =24, y1 = 0, line = list(width = 1.5)),
+                           xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
+                           yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
+                }
+            
+            
+            
+            
+        })
         
         
         
