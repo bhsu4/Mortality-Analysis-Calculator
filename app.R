@@ -397,6 +397,18 @@ ui = dashboardPagePlus(
                                                   withSpinner(plotlyOutput("HeatMapLP", height = 600), proxy.height = "20px")
                                            )
                                        )
+                              ),
+                              tabPanel(title = "Contribution to Gender Gap",
+                                       
+                                       fluidRow(
+                                           column(width = 8,
+                                                  withSpinner(plotlyOutput("GapAge", height = 600)) 
+                                           ), 
+                                           column(width = 4, 
+                                                  withSpinner(DT::dataTableOutput("GapAgeTable", width = "100%", height = 400))
+                                           )
+                                           
+                                       ), 
                               )
                        )
                 )
@@ -729,6 +741,80 @@ change5x1_LP <- function(cntry, t1, t2, z){
     changes_per_age_F[upper.tri(changes_per_age_F)] <- NA
     
     return(list(result, changes_per_age_M, changes_per_age_F, changes_per_age_MF))
+}
+
+
+GenGap_Age <-function(cntry, t){
+    ##########
+    
+    Males_5x1 <- readHMDweb(CNTRY = cntry, item = "mltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
+    Females_5x1 <- readHMDweb(CNTRY = cntry, item = "fltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
+    labels <- levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE))
+    labels_m <- paste0(levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE)), "M")
+    labels_f <- paste0(levels(cut(unique(Females_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Females_5x1$Age), 5)), right = FALSE)), "F")
+    
+    #create heatmap labels
+    age_interest <- gsub(",.*$", "", gsub("\\[|\\)", "", labels)) #gsub the brackets out, and then take lower value before comma
+    age_range <- gsub(",", "-", gsub("\\[|\\)", "", labels)) #dash range labels
+    
+    ##In here, F stands for Females, M for males
+    lx_matrix_M<<-dcast(Males_5x1,Year~Age,value.var = "lx")
+    ex_matrix_M<<-dcast(Males_5x1,Year~Age,value.var = "ex")
+    lx_matrix_F<<-dcast(Females_5x1,Year~Age,value.var = "lx")
+    ex_matrix_F<<-dcast(Females_5x1,Year~Age,value.var = "ex")
+    age_groups<-dim(lx_matrix_M[,-1])[2]-1
+    ## Definition of vectors to be used
+    Total_Change_per_age<-matrix(0,nrow=age_groups,ncol=age_groups)
+    #Extraction of information associated to variables of interest for year t
+    #First column contains the year, thus it is removed
+    lx_M_general<-lx_matrix_M[lx_matrix_M$Year==t,-1]
+    ex_M_general<-ex_matrix_M[ex_matrix_M$Year==t,-1]
+    lx_F_general<-lx_matrix_F[lx_matrix_F$Year==t,-1]
+    ex_F_general<-ex_matrix_F[ex_matrix_F$Year==t,-1]
+    ######
+    for(k in 0:(age_groups-1)){
+        d_x_12<-matrix(0,nrow=age_groups,ncol=1)
+        d_x_21<-matrix(0,nrow=age_groups,ncol=1)
+        ##we redefine the vectors lx by dividing them by the respective l0
+        ##Case of males
+        lx_M<-lx_M_general/lx_matrix_M[lx_matrix_M$Year==t,k+1]
+        ex_M<-ex_M_general
+        ##Case of females
+        lx_F<-lx_F_general/lx_matrix_F[lx_matrix_F$Year==t,k+1]
+        ex_F<-ex_F_general
+        
+        for(x in k:(age_groups-1)){##
+            ##Calculation algorithm From Andreev
+            d_x_12[x]<-as.double(lx_M[x])*(as.double(ex_M[x])-as.double(ex_F[x]))-as.double(lx_M[x+1])*(as.double(ex_M[x+1])-as.double(ex_F[x+1]))
+            d_x_21[x]<-as.double(lx_F[x])*(as.double(ex_F[x])-as.double(ex_M[x]))-as.double(lx_F[x+1])*(as.double(ex_F[x+1])-as.double(ex_M[x+1]))
+            Total_Change_per_age[x,k]<-0.5*(d_x_21[x]-d_x_12[x])
+        }
+    }      
+    #######
+    
+    Total_Gap<-apply(Total_Change_per_age,2,sum)
+    result_WT<-rbind(Total_Change_per_age,Total_Gap)
+    rownames(result_WT)<-c(age_interest, "Total")
+    colnames(result_WT)<-age_interest
+    
+    Total_Change_per_age_df <- data.frame(age_interest, t(Total_Change_per_age))
+    colnames(Total_Change_per_age_df) <- c("age_interest", age_interest)
+    Total_Change_per_age_melt <- melt(Total_Change_per_age_df, id.vars = c("age_interest"))
+    
+    
+    # create table for this
+    Total_Change_per_age_df2 <- data.frame(Total_Change_per_age)
+    colnames(Total_Change_per_age_df2) <- paste("Age", age_interest)
+    rownames(Total_Change_per_age_df2) <- age_range
+    Total_Change_per_age_df2 <- Total_Change_per_age_df2 %>% rownames_to_column() %>% rename(Contribution = rowname)
+    Total_Change_per_age_melt2 <- melt(Total_Change_per_age_df2, id.vars = c("Contribution"))
+    table_change <- Total_Change_per_age_melt2[!(Total_Change_per_age_melt2$value == 0),] %>% 
+                        mutate_if(is.numeric, round, 5) %>% rename("Age Group" = variable, Value = value) %>% 
+                        select("Age Group", Contribution, Value) %>% mutate_at(vars(Contribution), factor)
+    
+    #final output
+    return(list(table_change, Total_Change_per_age_melt))
+    
 }
 
 
@@ -1154,12 +1240,31 @@ server <- shinyServer(function(input, output, session){
                            yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
                 }
             
-            
-            
-            
         })
         
+        # third tab
         
+        gap_age <- reactive({
+            req(input$heatCountry)
+            chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
+            return(GenGap_Age(chosen_country, input$range_t[1]))
+        })
+        
+        output$GapAge <- renderPlotly({
+            #my_col <- colorRampPalette(brewer.pal(8, "YlOrRd"))(length(age_interest))
+            
+            plot_ly(gap_age()[[2]], x = ~age_interest, y = ~value, color = ~variable, type= 'bar', 
+                    hoverinfo = "text", text = ~paste0("Age Group: ", age_interest, '</br></br>', 
+                                                       "Contribution: ", variable, '</br>',
+                                                       "Value: ", round(value, 4)))  %>%  
+                layout(title = paste0("Contributions to Gender Gap in Life Expectancy (", input$range_t[1], ")" ), 
+                       yaxis = list(title = 'Contribution (Male - Female)'), barmode = 'stack', 
+                       xaxis = list(title = "Age", categoryarray = names(gap_age()[[2]]), 
+                                    categoryorder = "array", size = 8, tickangle = 0), 
+                       showlegend = FALSE) %>% config(displayModeBar = FALSE)
+        })
+        
+        output$GapAgeTable <- renderDataTable(gap_age()[[1]], options = list(searching = FALSE, lengthMenu = c(15, 25, 50)))
         
 
     
