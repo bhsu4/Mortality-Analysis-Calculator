@@ -203,8 +203,8 @@ ui = dashboardPagePlus(
             menuItem("MORTALITY DECOMP", #tabName = "tab_le", 
                          icon = icon("desktop"), startExpanded = TRUE,
                 menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
-                menuSubItem("Decomposition by Age", tabName = "LEAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
-                menuSubItem("NULL", tabName = "LPAge", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
+                menuSubItem("Decomposition by Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
+                menuSubItem("Decomposition by Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
             menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")) #info
             
            
@@ -299,7 +299,7 @@ ui = dashboardPagePlus(
             )
         ),
         tabItem(
-            "LEAge", 
+            "DecAge", 
             fluidRow(
                 column(width = 12,
                            boxPlus(title = "Choose Parameters", closable = FALSE, width = NULL, 
@@ -414,6 +414,90 @@ ui = dashboardPagePlus(
                 )
             )
 
+        ),
+    ##################### -- Start of Decomp. Age + COD -- #########################
+        tabItem(
+            "DecAgeCOD", 
+            fluidRow(
+                column(width = 12,
+                       boxPlus(title = "Choose Parameters", closable = FALSE, width = NULL, 
+                               status = "danger", collapsible = TRUE, solidHeader = TRUE, 
+                               enable_dropdown = TRUE, dropdown_icon = "sticky-note", 
+                               dropdown_menu = dropdownItemList(dropdownItem(url = "https://www.demographic-research.org/volumes/vol7/14/7-14.pdf", name = "Decomposition Source"), 
+                                                                dropdownDivider()
+                               ), 
+                               fluidRow(
+                                   column(width = 3,
+                                          fluidRow(
+                                              column(width = 10,
+                                                     selectInput("heatCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
+                                              ), 
+                                              column(width = 2, 
+                                                     actionButton(
+                                                         inputId = "heatQA",
+                                                         label = "",
+                                                         icon = icon("question-circle"),
+                                                         style="color: #fff; background-color: #b3b3b3; 
+                                                  border-color: #b3b3b3; padding:2px; font-size:78% ; 
+                                                  width: 20px; height: 20px"
+                                                     ))
+                                              
+                                          ),
+                                          fluidRow(
+                                              column(width = 12,
+                                                     checkboxGroupButtons(
+                                                         inputId = "heatGender", label = "Gender", 
+                                                         choices = c("Male", "Female"), selected = "Male", 
+                                                         justified = TRUE, status = "primary"))
+                                              
+                                              #column(width = 3, 
+                                              
+                                              #          materialSwitch(
+                                              #             inputId = "heatAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
+                                              #              right = FALSE, value = FALSE, status = "primary")
+                                              #          )
+                                              
+                                          )
+                                          
+                                   ), 
+                                   column(width = 9, 
+                                          # Input: Specification of range within an interval ----
+                                          wellPanel( 
+                                              conditionalPanel(
+                                                  condition = "input.heatCountry == 'Australia'",
+                                                  sliderInput("range_t",
+                                                              label = "Years Selected",
+                                                              min = 1921, max = 2018, value = c(1921, 2018))
+                                              )
+                                          ) # wellPanel
+                                   ) # column
+                               ) #fluidrow
+                       )
+                ), 
+                column(width = 12,
+                       
+                       tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and COD"), 
+                              tabPanel(title = "Change in Life Expectancy", id = "tabset2", 
+                                       
+                                       fluidRow(
+                                           column(width = 6,
+                                                  plotlyOutput("BarplotLE_AgeCOD", height = 300)
+                                           ), 
+                                           column(width = 6, 
+                                                  plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
+                                           )
+                                       ), 
+                                       tags$br(), tags$br(),
+                                       fluidRow(
+                                           column(width = 12, 
+                                                  withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
+                                           )
+                                       )
+                              )
+                       )
+                )
+            )
+            
         ),
                     
         
