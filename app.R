@@ -1411,7 +1411,60 @@ server <- shinyServer(function(input, output, session){
                 )
         })
         
+        animate_rescontries <- reactive({
+            COD_countries <- c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN",
+                               "NOR", "SWE", "USA") 
+            num_countries <- length(COD_countries)
+            #"Czech Republic", "USA", "Sweden", "Norway", "Japan", "France", "UK")
+            rates_males_ff <- data.frame()
+            for (countries in COD_countries){
+                COD_Info <- read.csv(paste0("COD_5X1_chapters_", countries, ".csv"))
+                rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
+                rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
+            }
+            #cod chapter not 21
+            rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
+            
+            mortality_chapters<-max(as.numeric(rates_males_ff$COD.chap))-1 #20 mortality chapters, 21st is total
+            age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
+            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+            span_years <- t2 - t1 + 1
+            
+            rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
+            rates_animate2.1 <- rates_animate2[,-1]/1000
+            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years*num_countries),
+                                        country = rates_animate2$Country, 
+                                        year = rep(t1:t2, each = mortality_chapters+1, times = num_countries), 
+                                        rate = rates_animate2.1[,1]) #age input
+            #find prop percent
+            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+            rates_animate$chapter <- as.factor(rates_animate$chapter)
+            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+            
+            ##breakdown mortality chapters
+            diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                     "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                     "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                     "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+            chapters20 <- data.frame(chapter = 1:20, diagn)
+            rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+            return(rates_animate_df)
+        })
         
+        output$Animate_MCScatterCountries <- renderPlotly({
+            rates_animate_df %>%
+                plot_ly(x = ~chapter, y = ~perct, color = ~country, size = ~perct, frame = ~year, 
+                        text = ~paste0("Country: ", country, '</br></br>',
+                                       "Chapter: ", diagn, '</br>',
+                                       "Year: ", year, '</br>',
+                                       "Value: ", round(rate,4), '</br>',
+                                       "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                        hoverinfo = "text", type = 'scatter', mode = 'markers'
+                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_t[1], "-", input$range_t[2], "Age", ")" ), 
+                             yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
+                             showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
+                animation_slider(currentvalue = list(prefix = "Year "))
+        })
         
         
     
