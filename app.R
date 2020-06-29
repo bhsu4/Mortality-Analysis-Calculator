@@ -430,11 +430,11 @@ ui = dashboardPagePlus(
                                    column(width = 3,
                                           fluidRow(
                                               column(width = 10,
-                                                     selectInput("heatCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
+                                                     selectInput("CODCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
                                               ), 
                                               column(width = 2, 
                                                      actionButton(
-                                                         inputId = "heatQA",
+                                                         inputId = "CODQA",
                                                          label = "",
                                                          icon = icon("question-circle"),
                                                          style="color: #fff; background-color: #b3b3b3; 
@@ -446,7 +446,7 @@ ui = dashboardPagePlus(
                                           fluidRow(
                                               column(width = 12,
                                                      checkboxGroupButtons(
-                                                         inputId = "heatGender", label = "Gender", 
+                                                         inputId = "CODGender", label = "Gender", 
                                                          choices = c("Male", "Female"), selected = "Male", 
                                                          justified = TRUE, status = "primary"))
                                               
@@ -464,7 +464,7 @@ ui = dashboardPagePlus(
                                           # Input: Specification of range within an interval ----
                                           wellPanel( 
                                               conditionalPanel(
-                                                  condition = "input.heatCountry == 'Australia'",
+                                                  condition = "input.CODCountry == 'Australia'",
                                                   sliderInput("range_t",
                                                               label = "Years Selected",
                                                               min = 1921, max = 2018, value = c(1921, 2018))
@@ -477,6 +477,17 @@ ui = dashboardPagePlus(
                 column(width = 12,
                        
                        tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and COD"), 
+                              tabPanel(title = "Mortality Chapters by Country", id = "tabset1", 
+                                       
+                                       fluidRow(
+                                           column(width = 6,
+                                                  plotlyOutput("Animate_MCBar", height = 300)
+                                           ), 
+                                           column(width = 6, 
+                                                  plotlyOutput("Animate_MCScatterCountries", height = 300)
+                                           )
+                                       )
+                              ),
                               tabPanel(title = "Change in Life Expectancy", id = "tabset2", 
                                        
                                        fluidRow(
@@ -1351,6 +1362,12 @@ server <- shinyServer(function(input, output, session){
         output$GapAgeTable <- renderDataTable(gap_age()[[1]], options = list(searching = FALSE, lengthMenu = c(15, 25, 50)))
         
 
+        
+        
+        
+        ### - start of decomposition by age and COD - ###
+        
+        
     
 })
 
