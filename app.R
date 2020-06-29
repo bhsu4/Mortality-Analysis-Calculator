@@ -447,7 +447,7 @@ ui = dashboardPagePlus(
                                               column(width = 12,
                                                      checkboxGroupButtons(
                                                          inputId = "CODGender", label = "Gender", 
-                                                         choices = c("Male", "Female"), selected = "Male", 
+                                                         choices = c(M = "Male", F = "Female"), selected = M, 
                                                          justified = TRUE, status = "primary"))
                                               
                                               #column(width = 3, 
@@ -464,10 +464,10 @@ ui = dashboardPagePlus(
                                           # Input: Specification of range within an interval ----
                                           wellPanel( 
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Australia'",
-                                                  sliderInput("range_t",
+                                                  condition = "input.CODCountry == 'CAN'",
+                                                  sliderInput("range_tcod",
                                                               label = "Years Selected",
-                                                              min = 1921, max = 2018, value = c(1921, 2018))
+                                                              min = 1921, max = 2016, value = c(1921, 2016))
                                               )
                                           ) # wellPanel
                                    ) # column
@@ -1366,6 +1366,52 @@ server <- shinyServer(function(input, output, session){
         
         
         ### - start of decomposition by age and COD - ###
+        
+        animate_res <- reactive({
+            COD_Info <- read.csv(paste0("COD_5X1_chapters_", input$CODCountry, ".csv"))
+            rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", input$CODGender))
+            
+            mortality_chapters<-nrow(rates_per_chapter_males_t1)-1 #20 mortality chapters, 21st is total
+            age_groups <- length(unique(COD_Info$Age)) #number of age groups
+            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+            span_years <- t2 - t1 + 1
+            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
+            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
+                                        year = rep(t1:t2, each = mortality_chapters+1), 
+                                        rate = rates_per_chapter_males_animate[,1])
+            #find prop percent
+            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+            rates_animate$chapter <- as.factor(rates_animate$chapter)
+            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+            
+            ##breakdown mortality chapters
+            diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                     "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                     "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                     "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+            chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
+            rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+            return(rates_animate_df)
+        })
+        
+        output$Animate_MCBar <- renderPlotly({
+            animate_res() %>%
+                plot_ly(x = ~chapter, y = ~perct, color = ~diagn, frame = ~year, 
+                        text = ~paste0("Chapter: ", diagn, '</br></br>', 
+                                       "Year: ", year, '</br>',
+                                       "Value: ", round(rate,4), '</br>',
+                                       "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                        hoverinfo = "text", type = 'bar'
+                ) %>% layout(margin = list(b = 150), 
+                             title = paste0("Proportional Changes in Mortality Chapters (", input$range_t[1], "-", input$range_t[2], ")" ), 
+                             yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
+                             showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
+                animation_slider(
+                    currentvalue = list(prefix = "Year ")
+                )
+        })
+        
+        
         
         
     
