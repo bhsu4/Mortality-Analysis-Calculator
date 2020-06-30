@@ -447,7 +447,7 @@ ui = dashboardPagePlus(
                                               column(width = 12,
                                                      checkboxGroupButtons(
                                                          inputId = "CODGender", label = "Gender", 
-                                                         choices = c(M = "Male", F = "Female"), selected = M, 
+                                                         choices = c("Male", "Female"), selected = "Male", 
                                                          justified = TRUE, status = "primary"))
                                               
                                               #column(width = 3, 
@@ -467,7 +467,7 @@ ui = dashboardPagePlus(
                                                   condition = "input.CODCountry == 'CAN'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
-                                                              min = 1921, max = 2016, value = c(1921, 2016))
+                                                              min = 1950, max = 2009, value = c(1950, 2009))
                                               )
                                           ) # wellPanel
                                    ) # column
@@ -480,11 +480,11 @@ ui = dashboardPagePlus(
                               tabPanel(title = "Mortality Chapters by Country", id = "tabset1", 
                                        
                                        fluidRow(
-                                           column(width = 6,
-                                                  plotlyOutput("Animate_MCBar", height = 300)
+                                           column(width = 12,
+                                                  plotlyOutput("Animate_MCBar", height = 500)
                                            ), 
-                                           column(width = 6, 
-                                                  plotlyOutput("Animate_MCScatterCountries", height = 300)
+                                           column(width = 12, 
+                                                  plotlyOutput("Animate_MCScatterCountries", height = 500)
                                            )
                                        )
                               ),
@@ -1367,18 +1367,25 @@ server <- shinyServer(function(input, output, session){
         
         ### - start of decomposition by age and COD - ###
         
+        observe({
+            updateSelectInput(session, inputId = 'CODCountry', label = 'Selected Country',
+                              choices = c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN","NOR", "SWE", "USA"), 
+                              selected = input$CODCountry)
+        })
+        
         animate_res <- reactive({
+            req(input$CODCountry)
             COD_Info <- read.csv(paste0("COD_5X1_chapters_", input$CODCountry, ".csv"))
-            rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", input$CODGender))
+            rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender, 1, 1)))
             
-            mortality_chapters<-nrow(rates_per_chapter_males_t1)-1 #20 mortality chapters, 21st is total
+            mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
             age_groups <- length(unique(COD_Info$Age)) #number of age groups
             t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
             span_years <- t2 - t1 + 1
             rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
             rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
                                         year = rep(t1:t2, each = mortality_chapters+1), 
-                                        rate = rates_per_chapter_males_animate[,1])
+                                        rate = rates_animate[,1]) #age
             #find prop percent
             rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
             rates_animate$chapter <- as.factor(rates_animate$chapter)
@@ -1402,8 +1409,8 @@ server <- shinyServer(function(input, output, session){
                                        "Value: ", round(rate,4), '</br>',
                                        "Proportion: ", paste0(round(perct*100, 4), "%")), 
                         hoverinfo = "text", type = 'bar'
-                ) %>% layout(margin = list(b = 150), 
-                             title = paste0("Proportional Changes in Mortality Chapters (", input$range_t[1], "-", input$range_t[2], ")" ), 
+                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], ")" ),
+                             font = list(size = 8),
                              yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
                              showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
                 animation_slider(
@@ -1411,7 +1418,8 @@ server <- shinyServer(function(input, output, session){
                 )
         })
         
-        animate_rescontries <- reactive({
+        animate_rescontries <- reactive({ #1959-2009
+            req(input$CODCountry)
             COD_countries <- c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN",
                                "NOR", "SWE", "USA") 
             num_countries <- length(COD_countries)
@@ -1427,7 +1435,8 @@ server <- shinyServer(function(input, output, session){
             
             mortality_chapters<-max(as.numeric(rates_males_ff$COD.chap))-1 #20 mortality chapters, 21st is total
             age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
-            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+            t1 = 1959 #input$range_tcod[1] 
+            t2 = 2009 #input$range_tcod[2]
             span_years <- t2 - t1 + 1
             
             rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
@@ -1452,7 +1461,7 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$Animate_MCScatterCountries <- renderPlotly({
-            rates_animate_df %>%
+            animate_rescontries() %>%
                 plot_ly(x = ~chapter, y = ~perct, color = ~country, size = ~perct, frame = ~year, 
                         text = ~paste0("Country: ", country, '</br></br>',
                                        "Chapter: ", diagn, '</br>',
@@ -1460,9 +1469,11 @@ server <- shinyServer(function(input, output, session){
                                        "Value: ", round(rate,4), '</br>',
                                        "Proportion: ", paste0(round(perct*100, 4), "%")), 
                         hoverinfo = "text", type = 'scatter', mode = 'markers'
-                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_t[1], "-", input$range_t[2], "Age", ")" ), 
+                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2],
+                                            ", ", "Age", ")" ), 
+                             font = list(size = 8),
                              yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                             showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
+                             showlegend = TRUE) %>% config(displayModeBar = FALSE) %>% 
                 animation_slider(currentvalue = list(prefix = "Year "))
         })
         
