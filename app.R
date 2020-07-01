@@ -331,16 +331,7 @@ ui = dashboardPagePlus(
                                               inputId = "heatGender", label = "Gender", 
                                               choices = c("Male", "Female"), selected = "Male", 
                                               justified = TRUE, status = "primary"))
-                                       
-                                       #column(width = 3, 
-                                              
-                                    #          materialSwitch(
-                                    #             inputId = "heatAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
-                                    #              right = FALSE, value = FALSE, status = "primary")
-                                    #          )
-
                                    )
-                               
                                ), 
                               column(width = 9, 
                                   # Input: Specification of range within an interval ----
@@ -444,34 +435,74 @@ ui = dashboardPagePlus(
                                               
                                           ),
                                           fluidRow(
-                                              column(width = 12,
+                                              column(width = 8,
                                                      checkboxGroupButtons(
                                                          inputId = "CODGender", label = "Gender", 
                                                          choices = c("Male", "Female"), selected = "Male", 
-                                                         justified = TRUE, status = "primary"))
-                                              
-                                              #column(width = 3, 
-                                              
-                                              #          materialSwitch(
-                                              #             inputId = "heatAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", HTML("Aggregate<br><br>")), 
-                                              #              right = FALSE, value = FALSE, status = "primary")
-                                              #          )
-                                              
+                                                         justified = TRUE, status = "primary")
+                                              ),
+                                              column(width = 4, 
+                                                       materialSwitch(
+                                                          inputId = "CODAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", 
+                                                                                                 HTML("All Countries<br><br>")), 
+                                                          right = FALSE, value = FALSE, status = "primary")
+                                              )
                                           )
-                                          
                                    ), 
                                    column(width = 9, 
                                           # Input: Specification of range within an interval ----
                                           wellPanel( 
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'CAN'",
+                                                  condition = "input.CODCountry == 'Canada'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1950, max = 2009, value = c(1950, 2009))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'Czech Republic'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1950, max = 2013, value = c(1950, 2013))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'France'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1958, max = 2013, value = c(1958, 2013))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'United Kingdom'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1950, max = 2014, value = c(1950, 2014))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'Japan'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1950, max = 2013, value = c(1950, 2013))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'Norway'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1951, max = 2012, value = c(1951, 2012))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'Sweden'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1952, max = 2012, value = c(1952, 2012))
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "input.CODCountry == 'USA'",
+                                                  sliderInput("range_tcod",
+                                                              label = "Years Selected",
+                                                              min = 1959, max = 2015, value = c(1959, 2015))
                                               )
                                           ) # wellPanel
                                    ) # column
-                               ) #fluidrow
+                              ) #fluidrow
                        )
                 ), 
                 column(width = 12,
@@ -481,12 +512,10 @@ ui = dashboardPagePlus(
                                        
                                        fluidRow(
                                            column(width = 12,
-                                                  plotlyOutput("Animate_MCBar", height = 500)
-                                           ), 
-                                           column(width = 12, 
-                                                  plotlyOutput("Animate_MCScatterCountries", height = 500)
-                                           )
+                                                 withSpinner(plotlyOutput("Animate_MCBar", height = 500))
+                                           
                                        )
+                                   )
                               ),
                               tabPanel(title = "Change in Life Expectancy", id = "tabset2", 
                                        
@@ -574,9 +603,9 @@ ui = dashboardPagePlus(
                 #        HTML(paste0(tags$a(href = "mailto:bh2722@columbia.edu", "bh2722@columbia.edu"), "."))
                 #    )
                 #)
+                )
             )
         )
-    )
         
     )    
         
@@ -1369,114 +1398,130 @@ server <- shinyServer(function(input, output, session){
         
         observe({
             updateSelectInput(session, inputId = 'CODCountry', label = 'Selected Country',
-                              choices = c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN","NOR", "SWE", "USA"), 
+                              choices = c("Canada", "Czech Republic", "France", 
+                                          "United Kingdom", "Japan", "Norway", "Sweden", "USA"), 
                               selected = input$CODCountry)
         })
         
+        COD_countries <- reactive({
+            COD_countries <- data.frame(country = c("Canada", "Czech Republic", "France", "United Kingdom", "Japan", "Norway", "Sweden", "USA"),
+                                        code = c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN", "NOR", "SWE", "USA"))
+        })
+        
         animate_res <- reactive({
-            req(input$CODCountry)
-            COD_Info <- read.csv(paste0("COD_5X1_chapters_", input$CODCountry, ".csv"))
-            rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender, 1, 1)))
             
-            mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
-            age_groups <- length(unique(COD_Info$Age)) #number of age groups
-            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
-            span_years <- t2 - t1 + 1
-            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
-            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
-                                        year = rep(t1:t2, each = mortality_chapters+1), 
-                                        rate = rates_animate[,1]) #age
-            #find prop percent
-            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-            rates_animate$chapter <- as.factor(rates_animate$chapter)
-            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+           
+            if(isTRUE(input$CODAggregate)){
+                
+                num_countries <- length(COD_countries())
+                rates_males_ff <- data.frame()
+                for (countries in COD_countries()$code){
+                    COD_Info <- read.csv(paste0("COD_5X1_chapters_", countries, ".csv"))
+                    rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
+                    rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
+                }
+                rates_males_ff$Country <- plyr::mapvalues(rates_males_ff$Country, levels(rates_males_ff$Country), COD_countries()$country)
+                #cod chapter not 21
+                rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
+                #parameters
+                mortality_chapters<-max(as.numeric(rates_males_ff$COD.chap))-1 #20 mortality chapters, 21st is total
+                age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
+                t1 = 1959 ; t2 = 2009 
+                span_years <- t2 - t1 + 1
+                
+                rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
+                rates_animate2.1 <- rates_animate2[,-1]/1000
+                rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years*num_countries),
+                                            country = rates_animate2$Country, 
+                                            year = rep(t1:t2, each = mortality_chapters+1, times = num_countries), 
+                                            rate = rates_animate2.1[,1]) #age input
+                #find prop percent
+                rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+                rates_animate$chapter <- as.factor(rates_animate$chapter)
+                rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+                
+                ##breakdown mortality chapters
+                diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                         "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                         "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                         "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+                chapters20 <- data.frame(chapter = 1:20, diagn)
+                rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+                return(rates_animate_df)
+            }
+            else{ #(isFALSE(input$CODAggregate)){
+                print(input$CODAggregate)
+                req(input$CODCountry)
+                #import the file
+                COD_Info <- read.csv(paste0("COD_5X1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
+                rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender, 1, 1)))
+                #parameters
+                mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
+                age_groups <- length(unique(COD_Info$Age)) #number of age groups
+                t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+                span_years <- t2 - t1 + 1
+                #animation rates
+                rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
+                rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
+                                            year = rep(t1:t2, each = mortality_chapters+1), 
+                                            rate = rates_animate[,1]) #age
+                #find prop percent
+                rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+                rates_animate$chapter <- as.factor(rates_animate$chapter)
+                rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+                
+                ##breakdown mortality chapters
+                diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                         "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                         "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                         "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+                chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
+                rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+                return(rates_animate_df)
+            }
             
-            ##breakdown mortality chapters
-            diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
-                     "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
-                     "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
-                     "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-            chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
-            rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
-            return(rates_animate_df)
         })
         
         output$Animate_MCBar <- renderPlotly({
-            animate_res() %>%
-                plot_ly(x = ~chapter, y = ~perct, color = ~diagn, frame = ~year, 
-                        text = ~paste0("Chapter: ", diagn, '</br></br>', 
-                                       "Year: ", year, '</br>',
-                                       "Value: ", round(rate,4), '</br>',
-                                       "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                        hoverinfo = "text", type = 'bar'
-                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], ")" ),
-                             font = list(size = 8),
-                             yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                             showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
-                animation_slider(
-                    currentvalue = list(prefix = "Year ")
-                )
-        })
-        
-        animate_rescontries <- reactive({ #1959-2009
-            req(input$CODCountry)
-            COD_countries <- c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN",
-                               "NOR", "SWE", "USA") 
-            num_countries <- length(COD_countries)
-            #"Czech Republic", "USA", "Sweden", "Norway", "Japan", "France", "UK")
-            rates_males_ff <- data.frame()
-            for (countries in COD_countries){
-                COD_Info <- read.csv(paste0("COD_5X1_chapters_", countries, ".csv"))
-                rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
-                rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
+            #if(input$CODAggregate == FALSE){
+                
+            
+            if(input$CODAggregate == TRUE){
+                animate_res() %>%
+                    plot_ly(x = ~chapter, y = ~perct, color = ~country, size = ~perct, frame = ~year, 
+                            text = ~paste0("Country: ", country, '</br></br>',
+                                           "Chapter: ", diagn, '</br>',
+                                           "Year: ", year, '</br>',
+                                           "Value: ", round(rate,4), '</br>',
+                                           "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                            hoverinfo = "text", type = 'scatter', mode = 'markers'
+                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2],
+                                                ", ", "Age", ")" ), 
+                                 font = list(size = 8),
+                                 yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
+                                 showlegend = TRUE) %>% config(displayModeBar = FALSE) %>% 
+                    animation_slider(currentvalue = list(prefix = "Year "))
             }
-            #cod chapter not 21
-            rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
-            
-            mortality_chapters<-max(as.numeric(rates_males_ff$COD.chap))-1 #20 mortality chapters, 21st is total
-            age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
-            t1 = 1959 #input$range_tcod[1] 
-            t2 = 2009 #input$range_tcod[2]
-            span_years <- t2 - t1 + 1
-            
-            rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
-            rates_animate2.1 <- rates_animate2[,-1]/1000
-            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years*num_countries),
-                                        country = rates_animate2$Country, 
-                                        year = rep(t1:t2, each = mortality_chapters+1, times = num_countries), 
-                                        rate = rates_animate2.1[,1]) #age input
-            #find prop percent
-            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-            rates_animate$chapter <- as.factor(rates_animate$chapter)
-            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
-            
-            ##breakdown mortality chapters
-            diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
-                     "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
-                     "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
-                     "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-            chapters20 <- data.frame(chapter = 1:20, diagn)
-            rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
-            return(rates_animate_df)
+            else{
+                animate_res() %>%
+                    plot_ly(x = ~chapter, y = ~perct, color = ~diagn, frame = ~year, 
+                            text = ~paste0("Chapter: ", diagn, '</br></br>', 
+                                           "Year: ", year, '</br>',
+                                           "Value: ", round(rate,4), '</br>',
+                                           "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                            hoverinfo = "text", type = 'bar'
+                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], ")" ),
+                                 font = list(size = 8),
+                                 yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
+                                 showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
+                    animation_slider(
+                        currentvalue = list(prefix = "Year ")
+                    )
+            }
         })
         
-        output$Animate_MCScatterCountries <- renderPlotly({
-            animate_rescontries() %>%
-                plot_ly(x = ~chapter, y = ~perct, color = ~country, size = ~perct, frame = ~year, 
-                        text = ~paste0("Country: ", country, '</br></br>',
-                                       "Chapter: ", diagn, '</br>',
-                                       "Year: ", year, '</br>',
-                                       "Value: ", round(rate,4), '</br>',
-                                       "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                        hoverinfo = "text", type = 'scatter', mode = 'markers'
-                ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2],
-                                            ", ", "Age", ")" ), 
-                             font = list(size = 8),
-                             yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                             showlegend = TRUE) %>% config(displayModeBar = FALSE) %>% 
-                animation_slider(currentvalue = list(prefix = "Year "))
-        })
-        
+
+       
         
     
 })
