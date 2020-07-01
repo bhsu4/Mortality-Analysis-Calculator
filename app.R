@@ -944,6 +944,9 @@ GenGap_Age <-function(cntry, t){
 
 server <- shinyServer(function(input, output, session){ 
     
+    
+        #options(warn = -1) 
+    
         observeEvent(input$heatQA, {
             show_alert(
                 title = NULL,
