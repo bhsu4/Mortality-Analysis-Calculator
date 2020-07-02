@@ -420,9 +420,12 @@ ui = dashboardPagePlus(
                                fluidRow(
                                    column(width = 3,
                                           fluidRow(
-                                              column(width = 10,
+                                              column(width = 6,
                                                      selectInput("CODCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
                                               ), 
+                                              column(width = 4, 
+                                                     numericInput("CODAge", "Input Age", value = 0, min = 0, max = 105, step = 5)
+                                              ),
                                               column(width = 2, 
                                                      actionButton(
                                                          inputId = "CODQA",
@@ -1423,7 +1426,7 @@ server <- shinyServer(function(input, output, session){
                     rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
                     rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
                 }
-                rates_males_ff$Country <- plyr::mapvalues(rates_males_ff$Country, levels(rates_males_ff$Country), COD_countries()$country)
+                rates_males_ff$Country <- plyr::mapvalues(rates_males_ff$Country, levels(rates_males_ff$Country), levels(COD_countries()$country))
                 #cod chapter not 21
                 rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
                 #parameters
@@ -1431,13 +1434,16 @@ server <- shinyServer(function(input, output, session){
                 age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
                 t1 = 1959 ; t2 = 2009 
                 span_years <- t2 - t1 + 1
-                
+                #picking your age group 
+                age_initial <- colnames(rates_males_ff[, -c(1:3)])
+                selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+                #animation of rates
                 rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
                 rates_animate2.1 <- rates_animate2[,-1]/1000
                 rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years*num_countries),
                                             country = rates_animate2$Country, 
                                             year = rep(t1:t2, each = mortality_chapters+1, times = num_countries), 
-                                            rate = rates_animate2.1[,1]) #age input
+                                            rate = rates_animate2.1[,selected_agegrp]) #age input
                 #find prop percent
                 rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
                 rates_animate$chapter <- as.factor(rates_animate$chapter)
@@ -1453,6 +1459,7 @@ server <- shinyServer(function(input, output, session){
                 return(rates_animate_df)
             }
             else{ #(isFALSE(input$CODAggregate)){
+                print(input$CODAge)
                 print(input$CODAggregate)
                 req(input$CODCountry)
                 #import the file
@@ -1463,11 +1470,14 @@ server <- shinyServer(function(input, output, session){
                 age_groups <- length(unique(COD_Info$Age)) #number of age groups
                 t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
                 span_years <- t2 - t1 + 1
+                #picking your age group 
+                age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
+                selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
                 #animation rates
                 rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
                 rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
                                             year = rep(t1:t2, each = mortality_chapters+1), 
-                                            rate = rates_animate[,1]) #age
+                                            rate = rates_animate[,selected_agegrp]) #age
                 #find prop percent
                 rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
                 rates_animate$chapter <- as.factor(rates_animate$chapter)
@@ -1513,7 +1523,8 @@ server <- shinyServer(function(input, output, session){
                                            "Value: ", round(rate,4), '</br>',
                                            "Proportion: ", paste0(round(perct*100, 4), "%")), 
                             hoverinfo = "text", type = 'bar'
-                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], ")" ),
+                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], 
+                                                ", ", input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")" ),
                                  font = list(size = 8),
                                  yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
                                  showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
