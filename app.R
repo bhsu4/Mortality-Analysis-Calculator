@@ -456,49 +456,56 @@ ui = dashboardPagePlus(
                                           # Input: Specification of range within an interval ----
                                           wellPanel( 
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Canada'",
+                                                  condition = "input.CODAggregate",
+                                                  numericInput("tcod_year",
+                                                              label = "Year Selected (1950-2015)",
+                                                              min = 1950, max = 2015, 
+                                                              value = 2000, step = 1)
+                                              ),
+                                              conditionalPanel(
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'Canada'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1950, max = 2009, value = c(1950, 2009))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Czech Republic'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'Czech Republic'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1950, max = 2013, value = c(1950, 2013))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'France'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'France'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1958, max = 2013, value = c(1958, 2013))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'United Kingdom'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'United Kingdom'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1950, max = 2014, value = c(1950, 2014))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Japan'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'Japan'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1950, max = 2013, value = c(1950, 2013))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Norway'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'Norway'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1951, max = 2012, value = c(1951, 2012))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'Sweden'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'Sweden'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1952, max = 2012, value = c(1952, 2012))
                                               ),
                                               conditionalPanel(
-                                                  condition = "input.CODCountry == 'USA'",
+                                                  condition = "!input.CODAggregate && input.CODCountry == 'USA'",
                                                   sliderInput("range_tcod",
                                                               label = "Years Selected",
                                                               min = 1959, max = 2015, value = c(1959, 2015))
@@ -1416,7 +1423,6 @@ server <- shinyServer(function(input, output, session){
         
         animate_res <- reactive({
             
-           
             if(isTRUE(input$CODAggregate)){
                 
                 num_countries <- length(COD_countries())
@@ -1429,25 +1435,13 @@ server <- shinyServer(function(input, output, session){
                 rates_males_ff$Country <- plyr::mapvalues(rates_males_ff$Country, levels(rates_males_ff$Country), levels(COD_countries()$country))
                 #cod chapter not 21
                 rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
-                #parameters
-                mortality_chapters<-max(as.numeric(rates_males_ff$COD.chap))-1 #20 mortality chapters, 21st is total
-                age_groups <- ncol(rates_males_ff[,-c(1:3)]) #number of age groups
-                t1 = 1959 ; t2 = 2009 
-                span_years <- t2 - t1 + 1
                 #picking your age group 
                 age_initial <- colnames(rates_males_ff[, -c(1:3)])
                 selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
-                #animation of rates
-                rates_animate2 <- rates_males_ff[rates_males_ff$Year>=t1 & rates_males_ff$Year <= t2,-(1:2)]
-                rates_animate2.1 <- rates_animate2[,-1]/1000
-                rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years*num_countries),
-                                            country = rates_animate2$Country, 
-                                            year = rep(t1:t2, each = mortality_chapters+1, times = num_countries), 
-                                            rate = rates_animate2.1[,selected_agegrp]) #age input
-                #find prop percent
-                rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-                rates_animate$chapter <- as.factor(rates_animate$chapter)
-                rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+                
+                #find data for sunburst plot
+                chosen_rates = rates_males_ff[,c(1:3, 3+selected_agegrp)]
+                chosen_rates_year = chosen_rates[which(chosen_rates$Year == input$tcod_year),] #input$range_tcod[1]), ]
                 
                 ##breakdown mortality chapters
                 diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
@@ -1455,8 +1449,18 @@ server <- shinyServer(function(input, output, session){
                          "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
                          "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
                 chapters20 <- data.frame(chapter = 1:20, diagn)
-                rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
-                return(rates_animate_df)
+                chosen_rates_year <- merge(chosen_rates_year, chapters20, by.x = "COD.chap", by.y = "chapter")
+                chosen_rates_year$ids = paste(chosen_rates_year$Country, chosen_rates_year$diagn, sep = "-")
+                names(chosen_rates_year)[4] <- "value"
+                chosen_rates_year <- chosen_rates_year[-which(chosen_rates_year$value == 0), ]
+                #parent pies in sunburst plot
+                parent_rates <- data.frame(Country = rep("", length(as.character(unique(chosen_rates_year$Country)))), 
+                                           value = rep(0, length(as.character(unique(chosen_rates_year$Country)))), 
+                                           ids = as.character(unique(chosen_rates_year$Country)), 
+                                           diagn = as.character(unique(chosen_rates_year$Country)))
+                final_sunburst <- rbind(parent_rates, chosen_rates_year[, c("Country", "value", "ids", "diagn")])
+                final_sunburst$text <- ifelse(final_sunburst$value == 0, "", final_sunburst$value)
+                return(final_sunburst)
             }
             else{ #(isFALSE(input$CODAggregate)){
                 print(input$CODAge)
@@ -1501,19 +1505,17 @@ server <- shinyServer(function(input, output, session){
             
             if(input$CODAggregate == TRUE){
                 animate_res() %>%
-                    plot_ly(x = ~chapter, y = ~perct, color = ~country, size = ~perct, frame = ~year, 
-                            text = ~paste0("Country: ", country, '</br></br>',
-                                           "Chapter: ", diagn, '</br>',
-                                           "Year: ", year, '</br>',
-                                           "Value: ", round(rate,4), '</br>',
-                                           "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                            hoverinfo = "text", type = 'scatter', mode = 'markers'
-                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2],
-                                                ", ", "Age", ")" ), 
-                                 font = list(size = 8),
-                                 yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                                 showlegend = TRUE) %>% config(displayModeBar = FALSE) %>% 
-                    animation_slider(currentvalue = list(prefix = "Year "))
+                    plot_ly(hovertext = ~paste0(diagn, '</br></br>', text, '</br>'), hoverinfo = "text") %>%
+                    add_trace(
+                        ids = ~ids, labels = ~diagn, parents = ~Country, values = ~round(value, 4), 
+                        type = 'sunburst', maxdepth = 2, insidetextorientation='radial',
+                        domain = list(column = 1)
+                    ) %>% 
+                    layout(title = paste0("Rates by Country and Mortality Chapters (", input$range_tcod[1],  
+                                          ", ", input$CODGender, ", ", input$CODAge, ")" ),
+                           font = list(size = 8),
+                           yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
+                           showlegend = FALSE) %>% config(displayModeBar = FALSE)
             }
             else{
                 animate_res() %>%
@@ -1533,11 +1535,7 @@ server <- shinyServer(function(input, output, session){
                     )
             }
         })
-        
 
-       
-        
-    
 })
 
 
