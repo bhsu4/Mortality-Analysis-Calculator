@@ -1511,7 +1511,7 @@ server <- shinyServer(function(input, output, session){
                         type = 'sunburst', maxdepth = 2, insidetextorientation='radial',
                         domain = list(column = 1)
                     ) %>% 
-                    layout(title = paste0("Rates by Country and Mortality Chapters (", input$range_tcod[1],  
+                    layout(title = paste0("Rates by Country and Mortality Chapters (", input$tcod_year,  
                                           ", ", input$CODGender, ", ", input$CODAge, ")" ),
                            font = list(size = 8),
                            yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
