@@ -1428,7 +1428,7 @@ server <- shinyServer(function(input, output, session){
                 num_countries <- length(COD_countries())
                 rates_males_ff <- data.frame()
                 for (countries in COD_countries()$code){
-                    COD_Info <- read.csv(paste0("COD_5X1_chapters_", countries, ".csv"))
+                    COD_Info <- read.csv(paste0("COD_5x1_chapters_", countries, ".csv"))
                     rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
                     rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
                 }
@@ -1459,42 +1459,44 @@ server <- shinyServer(function(input, output, session){
                                            ids = as.character(unique(chosen_rates_year$Country)), 
                                            diagn = as.character(unique(chosen_rates_year$Country)))
                 final_sunburst <- rbind(parent_rates, chosen_rates_year[, c("Country", "value", "ids", "diagn")])
-                final_sunburst$text <- ifelse(final_sunburst$value == 0, "", final_sunburst$value)
+                final_sunburst$text <- ifelse(final_sunburst$value == 0, "", round(final_sunburst$value, 3))
                 return(final_sunburst)
             }
             else{ #(isFALSE(input$CODAggregate)){
-                print(input$CODAge)
-                print(input$CODAggregate)
-                req(input$CODCountry)
-                #import the file
-                COD_Info <- read.csv(paste0("COD_5X1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
-                rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender, 1, 1)))
-                #parameters
-                mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
-                age_groups <- length(unique(COD_Info$Age)) #number of age groups
-                t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
-                span_years <- t2 - t1 + 1
-                #picking your age group 
-                age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
-                selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
-                #animation rates
-                rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
-                rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
-                                            year = rep(t1:t2, each = mortality_chapters+1), 
-                                            rate = rates_animate[,selected_agegrp]) #age
-                #find prop percent
-                rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-                rates_animate$chapter <- as.factor(rates_animate$chapter)
-                rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
                 
-                ##breakdown mortality chapters
-                diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
-                         "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
-                         "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
-                         "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-                chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
-                rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
-                return(rates_animate_df)
+                    print(input$CODAge)
+                    print(input$CODAggregate)
+                    req(input$CODCountry)
+                    #import the file
+                    COD_Info <- read.csv(paste0("COD_5x1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
+                    rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender[1], 1, 1)))
+                    #parameters
+                    mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
+                    age_groups <- length(unique(COD_Info$Age)) #number of age groups
+                    t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+                    span_years <- t2 - t1 + 1
+                    #picking your age group 
+                    age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+                    #animation rates
+                    rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
+                    rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
+                                                year = rep(t1:t2, each = mortality_chapters+1), 
+                                                rate = rates_animate[,selected_agegrp]) #age
+                    #find prop percent
+                    rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+                    rates_animate$chapter <- as.factor(rates_animate$chapter)
+                    rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+                    
+                    ##breakdown mortality chapters
+                    diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                             "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                             "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                             "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+                    chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
+                    rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+                    return(rates_animate_df)
+                    
             }
             
         })
@@ -1507,7 +1509,7 @@ server <- shinyServer(function(input, output, session){
                 animate_res() %>%
                     plot_ly(hovertext = ~paste0(diagn, '</br></br>', text, '</br>'), hoverinfo = "text") %>%
                     add_trace(
-                        ids = ~ids, labels = ~diagn, parents = ~Country, values = ~round(value, 4), 
+                        ids = ~ids, labels = ~diagn, parents = ~Country, values = ~value, 
                         type = 'sunburst', maxdepth = 2, insidetextorientation='radial',
                         domain = list(column = 1)
                     ) %>% 
