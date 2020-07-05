@@ -1421,6 +1421,14 @@ server <- shinyServer(function(input, output, session){
                                         code = c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN", "NOR", "SWE", "USA"))
         })
         
+        chapters20 <- reactive({
+            diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
+                     "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
+                     "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
+                     "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
+            data.frame(chapter = 1:mortality_chapters, diagn)
+        })
+        
         animate_res <- reactive({
             
             if(isTRUE(input$CODAggregate)){
@@ -1444,12 +1452,8 @@ server <- shinyServer(function(input, output, session){
                 chosen_rates_year = chosen_rates[which(chosen_rates$Year == input$tcod_year),] #input$range_tcod[1]), ]
                 
                 ##breakdown mortality chapters
-                diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
-                         "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
-                         "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
-                         "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-                chapters20 <- data.frame(chapter = 1:20, diagn)
-                chosen_rates_year <- merge(chosen_rates_year, chapters20, by.x = "COD.chap", by.y = "chapter")
+                
+                chosen_rates_year <- merge(chosen_rates_year, chapters20(), by.x = "COD.chap", by.y = "chapter")
                 chosen_rates_year$ids = paste(chosen_rates_year$Country, chosen_rates_year$diagn, sep = "-")
                 names(chosen_rates_year)[4] <- "value"
                 chosen_rates_year <- chosen_rates_year[-which(chosen_rates_year$value == 0), ]
@@ -1489,12 +1493,7 @@ server <- shinyServer(function(input, output, session){
                     rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
                     
                     ##breakdown mortality chapters
-                    diagn<-c("Infectious","Cancer","Benign tumor","Blood","Endocrine/Nutrition",
-                             "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
-                             "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
-                             "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-                    chapters20 <- data.frame(chapter = 1:mortality_chapters, diagn)
-                    rates_animate_df <- merge(rates_animate, chapters20, by = "chapter")
+                    rates_animate_df <- merge(rates_animate, chapters20(), by = "chapter")
                     return(rates_animate_df)
                     
             }
