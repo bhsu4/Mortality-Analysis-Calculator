@@ -536,13 +536,13 @@ ui = dashboardPagePlus(
                                            column(width = 6, 
                                                   plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
                                            )
-                                       ), 
-                                       tags$br(), tags$br(),
-                                       fluidRow(
-                                           column(width = 12, 
-                                                  withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
-                                           )
-                                       )
+                                       )#, 
+                                       #tags$br(), tags$br(),
+                                       #fluidRow(
+                                    #       column(width = 12, 
+                                    #              withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
+                                    #       )
+                                    #   )
                               )
                        )
                 )
@@ -948,7 +948,76 @@ GenGap_Age <-function(cntry, t){
     
     #final output
     return(list(table_change, Total_Change_per_age_melt))
+}
+
+change5x1_AgeCOD <- function(cntry, t1, t2){
     
+    Males_5x1 <- readHMDweb(CNTRY = cntry, item = "mltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
+    Females_5x1 <- readHMDweb(CNTRY = cntry, item = "fltper_5x1", username = getOption("HMD_user"), password = getOption("HMD_password"))
+    labels <- levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE))
+    labels_m <- paste0(levels(cut(unique(Males_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Males_5x1$Age), 5)), right = FALSE)), "M")
+    labels_f <- paste0(levels(cut(unique(Females_5x1$Age), breaks = c(0, 1, 5, seq(10, max(Females_5x1$Age), 5)), right = FALSE)), "F")
+    
+    #create heatmap labels
+    age_interest <- gsub(",.*$", "", gsub("\\[|\\)", "", labels)) #gsub the brackets out, and then take lower value before comma
+    age_range <- gsub(",", "-", gsub("\\[|\\)", "", labels)) #dash range labels
+    age_equivalence <- data.frame(initial = age_interest, range = age_range)
+    
+    ###We reshape the lx, ex information downloaded in a more convinient way
+    lx_matrix_M<-dcast(Males_5x1,Year~Age,value.var = "lx")
+    ex_matrix_M<-dcast(Males_5x1,Year~Age,value.var = "ex")
+    lx_matrix_F<-dcast(Females_5x1,Year~Age,value.var = "lx")
+    ex_matrix_F<-dcast(Females_5x1,Year~Age,value.var = "ex")
+    
+    ####We reshape the rates per disease info in a more convenient way
+    COD_Info <- read.csv(paste0("COD_5x1_chapters_", cntry, ".csv"))
+    rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = "Rates.M")
+    rates_per_chapter_females<-dcast(COD_Info,Year+COD.chap~Age,value.var = "Rates.F")
+    
+    ##We'll obtain the amounts corresponding to exposed to risk for males and females (all ages)
+    ##in the years of interest
+    rates_per_chapter_males_t1<-as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year==t1,-(1:2)])/1000
+    rates_per_chapter_males_t2<-as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year==t2,-(1:2)])/1000
+    rates_per_chapter_females_t1<-as.matrix(rates_per_chapter_females[rates_per_chapter_females$Year==t1,-(1:2)])/1000
+    rates_per_chapter_females_t2<-as.matrix(rates_per_chapter_females[rates_per_chapter_females$Year==t2,-(1:2)])/1000
+    
+    mortality_chapters<-nrow(rates_per_chapter_males_t1)-1
+    age_groups<- length(age_interest) #dim(rates_per_chapter_males[,-(1:2)])[2]
+    
+    #20 mortality chapters, and 23 age groups -- 21 is the total 
+    
+    for(k in 1:(mortality_chapters+1)){
+        ##Detection of last column with non NA values. "lcgi" stands for last column gender year i 
+        lcm1 <- dim(rates_per_chapter_males_t1)[2]-length(rates_per_chapter_males_t1[k,which(is.na(rates_per_chapter_males_t1[k,]))])
+        lcm2<-dim(rates_per_chapter_males_t2)[2]-length(rates_per_chapter_males_t2[k,which(is.na(rates_per_chapter_males_t2[k,]))])
+        lcf1<-dim(rates_per_chapter_females_t1)[2]-length(rates_per_chapter_females_t1[k,which(is.na(rates_per_chapter_females_t1[k,]))])
+        lcf2<-dim(rates_per_chapter_females_t2)[2]-length(rates_per_chapter_females_t2[k,which(is.na(rates_per_chapter_females_t2[k,]))])
+        ###replacement of na 
+        rates_per_chapter_males_t1[k,is.na(rates_per_chapter_males_t1[k,])]<-rates_per_chapter_males_t1[k,lcm1]
+        rates_per_chapter_males_t2[k,is.na(rates_per_chapter_males_t2[k,])]<-rates_per_chapter_males_t2[k,lcm2]
+        rates_per_chapter_females_t1[k,is.na(rates_per_chapter_females_t1[k,])]<-rates_per_chapter_females_t1[k,lcf1]
+        rates_per_chapter_females_t2[k,is.na(rates_per_chapter_females_t2[k,])]<-rates_per_chapter_females_t2[k,lcf2]
+    }
+    
+    ##Every column of matrix will represent an age group and every row a chapter of cause of death
+    Proportion_Change_rate_of_mortality_t1_t2_male<-matrix(0,nrow=20,ncol=age_groups)
+    Proportion_Change_rate_of_mortality_t1_t2_female<-matrix(0,nrow=20,ncol=age_groups)
+    Contribution_chapter_male<-matrix(0,nrow=20,ncol=age_groups)
+    Contribution_chapter_female<-matrix(0,nrow=20,ncol=age_groups)
+    Change_rate_of_mortality_t1_t2_male<-as.matrix(rates_per_chapter_males_t1[21,])-as.matrix(rates_per_chapter_males_t2[21,])
+    Change_rate_of_mortality_t1_t2_female<-as.matrix(rates_per_chapter_females_t1[21,])-as.matrix(rates_per_chapter_females_t2[21,])
+    
+    ##we compute the respective PROPORTIONAL changes in mortality
+    for(i in 1:mortality_chapters){
+        Proportion_Change_rate_of_mortality_t1_t2_male[i,]<-(rates_per_chapter_males_t1[i,]-rates_per_chapter_males_t2[i,])/t(Change_rate_of_mortality_t1_t2_male)
+        Proportion_Change_rate_of_mortality_t1_t2_female[i,]<-(rates_per_chapter_females_t1[i,]-rates_per_chapter_females_t2[i,])/t(Change_rate_of_mortality_t1_t2_female)
+    }
+    ###some NA may be generated in the results when dividing by a rate that is 0. We remove them 
+    Proportion_Change_rate_of_mortality_t1_t2_male[is.na(Proportion_Change_rate_of_mortality_t1_t2_male)]<-0
+    Proportion_Change_rate_of_mortality_t1_t2_female[is.na(Proportion_Change_rate_of_mortality_t1_t2_female)]<-0
+    
+    #output
+    return(list(Proportion_Change_rate_of_mortality_t1_t2_male, Proportion_Change_rate_of_mortality_t1_t2_female))
 }
 
 
@@ -1426,7 +1495,7 @@ server <- shinyServer(function(input, output, session){
                      "Mental Disorder","Nervous System","Heart Disease","Cerebrovascular","Circulatory",
                      "Respiratory","Digestive","Skin","Musculoskeletal","Genitourinary",
                      "Pregnancy/childbirth","Perinatal Conditions","Birth Defects","Unknown","External")
-            data.frame(chapter = 1:mortality_chapters, diagn)
+            data.frame(chapter = 1:length(diagn), diagn)
         })
         
         animate_res <- reactive({
@@ -1536,6 +1605,207 @@ server <- shinyServer(function(input, output, session){
                     )
             }
         })
+        
+        ####change in life expectancy barplot 
+        observeEvent(input$reset, {
+            js$resetClick()
+        })
+        
+        # for maintaining the state of drill-down variables
+        BarplotLE_AgeCOD <- reactiveVal()
+        BarplotLE_specificAgeCOD <- reactiveVal()
+        
+        # when clicking on a category, 
+        observeEvent(event_data("plotly_click", source = "BarplotLE_AgeCOD"), {
+            BarplotLE_AgeCOD(event_data("plotly_click", source = "BarplotLE_AgeCOD")$x)
+            BarplotLE_specificAgeCOD(NULL)
+        })
+        
+        
+        # output
+        Changes_age_cause <- reactive({
+            #life expectancy
+            req(input$CODCountry)
+            chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
+            #life expectancy
+            res <- change5x1(chosen_country, input$range_tcod[1], input$range_tcod[2])
+            #mortality chapters
+            res_COD <- change5x1_AgeCOD(chosen_country, input$range_tcod[1], input$range_tcod[2])
+            #age group 
+            mortality_chapters = 20
+            age_initial <- gsub("LE Age ", "", colnames(res[[1]]))
+            age_groups <- dim(res_COD[[1]])[2]
+            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+            
+            #final output
+            Changes_age_cause_male<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            Changes_age_cause_female<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            for(x in 1:age_groups){
+                Changes_age_cause_male[,x]<-res[[1]][x,selected_agegrp]*res_COD[[1]][,x]
+                Changes_age_cause_female[,x]<-res[[2]][x,selected_agegrp]*res_COD[[2]][,x]
+            }
+            colnames(Changes_age_cause_male) <- age_initial
+            colnames(Changes_age_cause_female) <- age_initial
+            return(list(Changes_age_cause_male, Changes_age_cause_female))
+        })
+        
+        output$BarplotLE_AgeCOD <- renderPlotly({
+            #gender select
+            if (length(input$CODGender) == 1){
+                if (input$CODGender == "Male"){ res_gender <- Changes_age_cause()[[1]] }
+                else if (input$CODGender == "Female"){ res_gender <- Changes_age_cause()[[2]] }
+                #calculation of total
+                print(BarplotLE_AgeCOD())
+                if (is.null(BarplotLE_AgeCOD())){
+                    Total_age_cause <- data.frame(le = apply(res_gender, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender)) %>% 
+                                                rownames_to_column() %>% mutate(curr_col = "#FDB863")
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_age_cause$rowname)) == TRUE))
+                }
+                else{
+                    Total_age_cause <- data.frame(le = apply(res_gender, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender)) %>% 
+                                                rownames_to_column() %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FDB863"))
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_age_cause$rowname)) == TRUE))
+                }
+                
+                plot_ly(Total_age_cause[c(selected_agegrp:23),], x = ~rowname, y = ~le, type = "bar", 
+                        source = "BarplotLE_AgeCOD", marker = list(color = ~curr_col)) %>% 
+                    config(displayModeBar = FALSE) %>% 
+                    layout(p, barmode="overlay", title = paste0("Changes in Life Expectancy (",
+                                                                input$range_tcod[1], "-", input$range_tcod[2], ", ", 
+                                                                input$CODGender, ", ", input$CODCountry, ")"),      
+                           font = list(size = 8), xaxis = list(title = "Age", 
+                                                               categoryarray = names(Total_age_cause[c(selected_agegrp:23),]), 
+                                                               categoryorder = "array", size = 8, tickangle = 0), 
+                           yaxis = list(title = "Change (Years)"))
+            }
+            else{ 
+                res_gender1 = Changes_age_cause()[[1]]
+                res_gender2 = Changes_age_cause()[[2]]
+                
+                print(BarplotLE_AgeCOD())
+                if (is.null(BarplotLE_AgeCOD())){
+                    
+                    #male
+                    Total_male_age_cause <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender1)) %>% 
+                        rownames_to_column() %>% mutate(curr_col = "#FDB863")
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_male_age_cause$rowname)) == TRUE))
+        
+                    #female
+                    Total_female_age_cause <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender2)) %>% 
+                        rownames_to_column() %>% mutate(curr_col = "#FD6363")
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_female_age_cause$rowname)) == TRUE))
+                    
+                }
+                else{
+                    #male
+                    Total_male_age_cause <- data.frame(le = apply(res_gender1, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender1)) %>% 
+                        rownames_to_column() %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FDB863"))
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_male_age_cause$rowname)) == TRUE))
+                    
+                    #female
+                    Total_female_age_cause <- data.frame(le = apply(res_gender2, 2, sum, na.rm = TRUE), 
+                                                       row.names = colnames(res_gender2)) %>% 
+                        rownames_to_column() %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#92CCDE", "#FD6363"))
+                    selected_agegrp <- max(which((input$CODAge >= as.numeric(Total_male_age_cause$rowname)) == TRUE))
+                    
+                }
+                
+                p <- plot_ly(Total_male_age_cause[c(selected_agegrp:23),], x = ~rowname, y = ~le, type = "bar", name = 'Male',
+                             source = "BarplotLE_AgeCOD", marker = list(color = ~curr_col)) %>%  config(displayModeBar = FALSE) %>% 
+                    add_trace(data = Total_female_age_cause[c(selected_agegrp:23),], x = ~rowname, y = ~le, type = "bar", 
+                              name = 'Female', marker = list(color = ~curr_col)) %>% 
+                    layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
+                                                           input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                                           paste(input$CODGender, collapse = "/"), ", ", input$CODCountry, ")"), 
+                           font = list(size = 8),
+                           xaxis = list(title = "Age", categoryarray = names(Total_male_age_cause[c(selected_agegrp:23),]), 
+                                        categoryorder = "array", size = 8, tickangle = 0), 
+                           yaxis = list(title = "Change (Years)"))
+                p
+            }
+        })
+        
+        
+        
+        output$BarplotLE_specificAgeCOD <- renderPlotly({
+            if (length(input$CODGender) == 1){
+                if (input$CODGender == "Male"){ res_gender <- Changes_age_cause()[[1]] }
+                else if (input$CODGender == "Female"){ res_gender <- Changes_age_cause()[[2]]}
+
+                if (is.null(BarplotLE_AgeCOD())){  
+                    p <- plotly_empty(type = "scatter", mode = "markers") %>%
+                        config(displayModeBar = FALSE) %>%
+                        layout(title = list(text = "Click on Each Bar for Decomposition Details", yref = "paper", y = 0.5))
+                    return(p)
+                }
+                
+                print(BarplotLE_AgeCOD())
+                data.frame(contribution = res_gender[, BarplotLE_AgeCOD()]) %>% 
+                    rownames_to_column() %>% mutate(curr_color = "#8073AC") %>%
+                    mutate(rowname = as.integer(rowname)) %>% 
+                    inner_join(chapters20(), by = c("rowname" = "chapter")) %>% 
+                    plot_ly(x = ~rowname, y = ~contribution, source = "BarplotLE_specificAgeCOD", 
+                            type = "bar", marker = list(color = ~curr_color), 
+                            hoverinfo = "text", text = ~paste0("Mortality Chapter: ", diagn, '</br></br>', 
+                                                               "Contribution: ", round(contribution, 4), '</br>')) %>% 
+                    config(displayModeBar = FALSE) %>% 
+                    layout(barmode="overlay",
+                           title = paste0("Contribution of Change in Life Expectancy (", 
+                                          input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                          input$CODGender, ", ", BarplotLE_AgeCOD(), ", ", 
+                                          input$CODCountry, ")"), 
+                           font = list(size = 8),
+                           xaxis = list(title = "Contribution Mortality Chapter", categoryarray = ~rowname, 
+                                        categoryorder = "array", size = 8, tickangle = 0),
+                           yaxis = list(title = "Contribution (Years)"))
+            }
+            else{
+                
+                print(BarplotLE_AgeCOD())
+                if (is.null(BarplotLE_AgeCOD())){
+                    p <- plotly_empty(type = "scatter", mode = "markers") %>%
+                        config(displayModeBar = FALSE) %>%
+                        layout(title = list(text = "Click on Each Bar for Decomposition Details", yref = "paper", y = 0.5))
+                    return(p)
+                } 
+                
+                res_gender1 = Changes_age_cause()[[1]]
+                res_gender2 = Changes_age_cause()[[2]]
+                
+                d1 <- data.frame(contribution = res_gender1[, BarplotLE_AgeCOD()]) %>% 
+                          rownames_to_column() %>% mutate(curr_color = "#8073AC") 
+                d2 <- data.frame(contribution = res_gender2[, BarplotLE_AgeCOD()]) %>% 
+                          rownames_to_column() %>% mutate(curr_col = "#92CCDE") 
+                
+                p <- plot_ly(data = d1, x = ~rowname, y = ~contribution, source = "BarplotLE_specificAgeCOD", 
+                             type = "bar", marker = list(color = ~curr_color), name = "Male") %>%  config(displayModeBar = FALSE)  %>% 
+                    add_trace(data = d2, x = ~rowname, y = ~contribution, type = "bar", 
+                              name = "Female", marker = list(color = ~curr_col)) %>% 
+                    layout(barmode="group",
+                           title = paste0("Contribution of Change in Life Expectancy (", 
+                                          input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                          paste0(input$CODGender, collapse = "/"), ", ", BarplotLE_AgeCOD(), ", ", 
+                                          input$CODCountry, ")"), 
+                           font = list(size = 8),
+                           xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
+                                        categoryorder = "array", size = 8, tickangle = 0),
+                           yaxis = list(title = "Life Expectancy Change (Years)"))
+                p
+            }
+            
+        })
+        
+        
+        
+        
+        
+        
+        
 
 })
 
