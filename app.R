@@ -536,13 +536,13 @@ ui = dashboardPagePlus(
                                            column(width = 6, 
                                                   plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
                                            )
-                                       )#, 
-                                       #tags$br(), tags$br(),
-                                       #fluidRow(
-                                    #       column(width = 12, 
-                                    #              withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
-                                    #       )
-                                    #   )
+                                       ), 
+                                       tags$br(), tags$br(),
+                                       fluidRow(
+                                           column(width = 12, 
+                                                  withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
+                                           )
+                                       )
                               )
                        )
                 )
@@ -1606,11 +1606,6 @@ server <- shinyServer(function(input, output, session){
             }
         })
         
-        ####change in life expectancy barplot 
-        observeEvent(input$reset, {
-            js$resetClick()
-        })
-        
         # for maintaining the state of drill-down variables
         BarplotLE_AgeCOD <- reactiveVal()
         BarplotLE_specificAgeCOD <- reactiveVal()
@@ -1646,6 +1641,8 @@ server <- shinyServer(function(input, output, session){
             }
             colnames(Changes_age_cause_male) <- age_initial
             colnames(Changes_age_cause_female) <- age_initial
+            rownames(Changes_age_cause_male) <- 1:mortality_chapters
+            rownames(Changes_age_cause_female) <- 1:mortality_chapters
             return(list(Changes_age_cause_male, Changes_age_cause_female))
         })
         
@@ -1799,6 +1796,66 @@ server <- shinyServer(function(input, output, session){
             }
             
         })
+        
+       ###heatmap COD
+        output$HeatMap_AgeCOD <- renderPlotly({
+            chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
+            scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
+            
+            if (length(input$CODGender) == 1){
+                if (input$CODGender == "Male" ){ res_gender <- Changes_age_cause()[[1]] }
+                else if (input$CODGender == "Female" ){ res_gender <- Changes_age_cause()[[2]]}
+                
+                par(mar=c(5.1,2.1,1,2.1))
+                dim1 <- dim(res_gender)[[1]]
+                dim2 <- dim(res_gender)[[2]]
+                hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
+                                     rep(rownames(res_gender), dim2), "<br>", 
+                                     rep(input$CODGender, dim1*dim2), "<br>"),
+                                     byrow = FALSE, ncol = dim2)
+                hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
+                                                                   input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                                                   input$CODGender, ", ", input$CODCountry, ")"), 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
+                                        showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                           yaxis = list(ticktext = as.numeric(rev(rownames(res_gender))),
+                                        title = "Contribution", showgrid = F, showticklabels = TRUE))
+                
+            }
+            else{ 
+                #if (input$heatAggregate == "FALSE"){ 
+                res_gender <- Changes_age_cause()[[2]] - Changes_age_cause()[[1]]
+                
+                par(mar=c(5.1,2.1,1,2.1))
+                dim1 <- dim(res_gender)[[1]]
+                dim2 <- dim(res_gender)[[2]]
+                hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
+                                            rep(rownames(res_gender), dim2), "<br>", 
+                                            rep("Male-Female", dim1*dim2), "<br>"),
+                                     byrow = FALSE, ncol = dim2)
+                hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
+                          cexRow = 0.65, cexCol = 0.65, 
+                          col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
+                          main = paste0("Changes in Life Expectancy (", 
+                                        input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                        "Female - Male, ", input$CODCountry, ")"),
+                          font = list(size = 8), custom_hovertext = mat4,
+                          key.title = "Changes in Years", 
+                          colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
+                           xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
+                           yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
+            }
+        })
+        
         
         
         
