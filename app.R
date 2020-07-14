@@ -1809,8 +1809,8 @@ server <- shinyServer(function(input, output, session){
                 par(mar=c(5.1,2.1,1,2.1))
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
-                hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
-                                     rep(rownames(res_gender), dim2), "<br>", 
+                hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
+                                     "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
                                      rep(input$CODGender, dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -1835,24 +1835,23 @@ server <- shinyServer(function(input, output, session){
                 par(mar=c(5.1,2.1,1,2.1))
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
-                hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
-                                            rep(rownames(res_gender), dim2), "<br>", 
-                                            rep("Male-Female", dim1*dim2), "<br>"),
+                hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
+                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            rep("Female - Male", dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
                 
-                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
-                          cexRow = 0.65, cexCol = 0.65, 
-                          col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
-                          main = paste0("Changes in Life Expectancy (", 
-                                        input$range_tcod[1], "-", input$range_tcod[2], ", ",
-                                        "Female - Male, ", input$CODCountry, ")"),
-                          font = list(size = 8), custom_hovertext = mat4,
-                          key.title = "Changes in Years", 
-                          colorbar_xpos = 30, colorbar_ypos = 10) %>% 
-                    layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
-                           xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
-                           yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
+                                                                   input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                                                   "Female - Male", ", ", input$CODCountry, ")"), 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
+                                        showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                           yaxis = list(ticktext = as.numeric(rev(rownames(res_gender))),
+                                        title = "Contribution", showgrid = F, showticklabels = TRUE))
             }
         })
         
