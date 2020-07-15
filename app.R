@@ -438,18 +438,18 @@ ui = dashboardPagePlus(
                                               
                                           ),
                                           fluidRow(
-                                              column(width = 8,
+                                              column(width = 12,
                                                      checkboxGroupButtons(
                                                          inputId = "CODGender", label = "Gender", 
                                                          choices = c("Male", "Female"), selected = "Male", 
                                                          justified = TRUE, status = "primary")
-                                              ),
-                                              column(width = 4, 
-                                                       materialSwitch(
-                                                          inputId = "CODAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", 
-                                                                                                 HTML("All Countries<br><br>")), 
-                                                          right = FALSE, value = FALSE, status = "primary")
-                                              )
+                                              )#,
+                                              #column(width = 4, 
+                                              #         materialSwitch(
+                                              #            inputId = "CODAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", 
+                                              #                                                   HTML("All Countries<br><br>")), 
+                                              #            right = FALSE, value = FALSE, status = "primary")
+                                              #)
                                           )
                                    ), 
                                    column(width = 9, 
@@ -518,7 +518,7 @@ ui = dashboardPagePlus(
                 column(width = 12,
                        
                        tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and COD"), 
-                              tabPanel(title = "Mortality Chapters by Country", id = "tabset1", 
+                              tabPanel(title = "Mortality Chapters by Country", id = "tabset2", 
                                        
                                        fluidRow(
                                            column(width = 12,
@@ -527,7 +527,7 @@ ui = dashboardPagePlus(
                                        )
                                    )
                               ),
-                              tabPanel(title = "Change in Life Expectancy", id = "tabset2", 
+                              tabPanel(title = "Change in Life Expectancy", id = "tabset3", 
                                        
                                        fluidRow(
                                            column(width = 6,
@@ -1500,94 +1500,36 @@ server <- shinyServer(function(input, output, session){
         
         animate_res <- reactive({
             
-            if(isTRUE(input$CODAggregate)){
-                
-                num_countries <- length(COD_countries())
-                rates_males_ff <- data.frame()
-                for (countries in COD_countries()$code){
-                    COD_Info <- read.csv(paste0("COD_5x1_chapters_", countries, ".csv"))
-                    rates_per_chapter_males2<-dcast(COD_Info,Year+COD.chap+Country~Age,value.var = "Rates.M")
-                    rates_males_ff <- rbind(rates_males_ff, rates_per_chapter_males2)
-                }
-                rates_males_ff$Country <- plyr::mapvalues(rates_males_ff$Country, levels(rates_males_ff$Country), levels(COD_countries()$country))
-                #cod chapter not 21
-                rates_males_ff[rates_males_ff$COD.chap == "All",]$COD.chap <- 21
-                #picking your age group 
-                age_initial <- colnames(rates_males_ff[, -c(1:3)])
-                selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
-                
-                #find data for sunburst plot
-                chosen_rates = rates_males_ff[,c(1:3, 3+selected_agegrp)]
-                chosen_rates_year = chosen_rates[which(chosen_rates$Year == input$tcod_year),] #input$range_tcod[1]), ]
-                
-                ##breakdown mortality chapters
-                
-                chosen_rates_year <- merge(chosen_rates_year, chapters20(), by.x = "COD.chap", by.y = "chapter")
-                chosen_rates_year$ids = paste(chosen_rates_year$Country, chosen_rates_year$diagn, sep = "-")
-                names(chosen_rates_year)[4] <- "value"
-                chosen_rates_year <- chosen_rates_year[-which(chosen_rates_year$value == 0), ]
-                #parent pies in sunburst plot
-                parent_rates <- data.frame(Country = rep("", length(as.character(unique(chosen_rates_year$Country)))), 
-                                           value = rep(0, length(as.character(unique(chosen_rates_year$Country)))), 
-                                           ids = as.character(unique(chosen_rates_year$Country)), 
-                                           diagn = as.character(unique(chosen_rates_year$Country)))
-                final_sunburst <- rbind(parent_rates, chosen_rates_year[, c("Country", "value", "ids", "diagn")])
-                final_sunburst$text <- ifelse(final_sunburst$value == 0, "", round(final_sunburst$value, 3))
-                return(final_sunburst)
-            }
-            else{ #(isFALSE(input$CODAggregate)){
-                
-                    print(input$CODAge)
-                    print(input$CODAggregate)
-                    req(input$CODCountry)
-                    #import the file
-                    COD_Info <- read.csv(paste0("COD_5x1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
-                    rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender[1], 1, 1)))
-                    #parameters
-                    mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
-                    age_groups <- length(unique(COD_Info$Age)) #number of age groups
-                    t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
-                    span_years <- t2 - t1 + 1
-                    #picking your age group 
-                    age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
-                    selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
-                    #animation rates
-                    rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
-                    rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
-                                                year = rep(t1:t2, each = mortality_chapters+1), 
-                                                rate = rates_animate[,selected_agegrp]) #age
-                    #find prop percent
-                    rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-                    rates_animate$chapter <- as.factor(rates_animate$chapter)
-                    rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
-                    
-                    ##breakdown mortality chapters
-                    rates_animate_df <- merge(rates_animate, chapters20(), by = "chapter")
-                    return(rates_animate_df)
-                    
-            }
+            req(input$CODCountry)
+            #import the file
+            COD_Info <- read.csv(paste0("COD_5x1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
+            rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender[1], 1, 1)))
+            #parameters
+            mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
+            age_groups <- length(unique(COD_Info$Age)) #number of age groups
+            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+            span_years <- t2 - t1 + 1
+            #picking your age group 
+            age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
+            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+            #animation rates
+            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
+            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
+                                        year = rep(t1:t2, each = mortality_chapters+1), 
+                                        rate = rates_animate[,selected_agegrp]) #age
+            #find prop percent
+            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
+            rates_animate$chapter <- as.factor(rates_animate$chapter)
+            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+            
+            ##breakdown mortality chapters
+            rates_animate_df <- merge(rates_animate, chapters20(), by = "chapter")
+            return(rates_animate_df)
             
         })
         
         output$Animate_MCBar <- renderPlotly({
-            #if(input$CODAggregate == FALSE){
-                
-            
-            if(input$CODAggregate == TRUE){
-                animate_res() %>%
-                    plot_ly(hovertext = ~paste0(diagn, '</br></br>', text, '</br>'), hoverinfo = "text") %>%
-                    add_trace(
-                        ids = ~ids, labels = ~diagn, parents = ~Country, values = ~value, 
-                        type = 'sunburst', maxdepth = 2, insidetextorientation='radial',
-                        domain = list(column = 1)
-                    ) %>% 
-                    layout(title = paste0("Rates by Country and Mortality Chapters (", input$tcod_year,  
-                                          ", ", input$CODGender, ", ", input$CODAge, ")" ),
-                           font = list(size = 8),
-                           yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                           showlegend = FALSE) %>% config(displayModeBar = FALSE)
-            }
-            else{
+
                 animate_res() %>%
                     plot_ly(x = ~chapter, y = ~perct, color = ~diagn, frame = ~year, 
                             text = ~paste0("Chapter: ", diagn, '</br></br>', 
@@ -1603,7 +1545,6 @@ server <- shinyServer(function(input, output, session){
                     animation_slider(
                         currentvalue = list(prefix = "Year ")
                     )
-            }
         })
         
         # for maintaining the state of drill-down variables
@@ -1824,15 +1765,17 @@ server <- shinyServer(function(input, output, session){
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
-                           yaxis = list(ticktext = as.numeric(rev(rownames(res_gender))),
-                                        title = "Contribution", showgrid = F, showticklabels = TRUE))
+                           yaxis = list(ticktext = rev(chapters20()$diagn),
+                                        title = paste0(c(rep("&nbsp;", 20), "Contribution",
+                                                         rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
+                                        showgrid = F, showticklabels = TRUE))
                 
             }
             else{ 
                 #if (input$heatAggregate == "FALSE"){ 
                 res_gender <- Changes_age_cause()[[2]] - Changes_age_cause()[[1]]
                 
-                par(mar=c(5.1,2.1,1,2.1))
+                #par(mar=c(5.1,5.1,1,2.1))
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
                 hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
@@ -1850,8 +1793,10 @@ server <- shinyServer(function(input, output, session){
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
-                           yaxis = list(ticktext = as.numeric(rev(rownames(res_gender))),
-                                        title = "Contribution", showgrid = F, showticklabels = TRUE))
+                           yaxis = list(ticktext = rev(chapters20()$diagn), #as.numeric(rev(rownames(res_gender))),
+                                        title = paste0(c(rep("&nbsp;", 20), "Contribution",
+                                                         rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
+                                        showgrid = F, showticklabels = TRUE))
             }
         })
         
