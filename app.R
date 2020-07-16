@@ -409,143 +409,138 @@ ui = dashboardPagePlus(
     ##################### -- Start of Decomp. Age + COD -- #########################
         tabItem(
             "DecAgeCOD", 
-            fluidRow(
+             fluidRow(   
                 column(width = 12,
                        boxPlus(title = "Choose Parameters", closable = FALSE, width = NULL, 
                                status = "danger", collapsible = TRUE, solidHeader = TRUE, 
                                enable_dropdown = TRUE, dropdown_icon = "sticky-note", 
                                dropdown_menu = dropdownItemList(dropdownItem(url = "https://www.demographic-research.org/volumes/vol7/14/7-14.pdf", name = "Decomposition Source"), 
                                                                 dropdownDivider()
-                               ), 
-                               fluidRow(
-                                   column(width = 3,
-                                          fluidRow(
-                                              column(width = 6,
-                                                     selectInput("CODCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
-                                              ), 
-                                              column(width = 4, 
-                                                     numericInput("CODAge", "Input Age", value = 0, min = 0, max = 105, step = 5)
-                                              ),
-                                              column(width = 2, 
-                                                     actionButton(
-                                                         inputId = "CODQA",
-                                                         label = "",
-                                                         icon = icon("question-circle"),
-                                                         style="color: #fff; background-color: #b3b3b3; 
-                                                  border-color: #b3b3b3; padding:2px; font-size:78% ; 
-                                                  width: 20px; height: 20px"
-                                                     ))
-                                              
-                                          ),
-                                          fluidRow(
-                                              column(width = 12,
-                                                     checkboxGroupButtons(
-                                                         inputId = "CODGender", label = "Gender", 
-                                                         choices = c("Male", "Female"), selected = "Male", 
-                                                         justified = TRUE, status = "primary")
-                                              )#,
-                                              #column(width = 4, 
-                                              #         materialSwitch(
-                                              #            inputId = "CODAggregate", label = div(style = "margin-top:0px; font-weight: bold ; margin-bottom: -10px", 
-                                              #                                                   HTML("All Countries<br><br>")), 
-                                              #            right = FALSE, value = FALSE, status = "primary")
-                                              #)
-                                          )
-                                   ), 
-                                   column(width = 9, 
-                                          # Input: Specification of range within an interval ----
-                                          wellPanel( 
-                                              conditionalPanel(
-                                                  condition = "input.CODAggregate",
-                                                  numericInput("tcod_year",
-                                                              label = "Year Selected (1950-2015)",
-                                                              min = 1950, max = 2015, 
-                                                              value = 2000, step = 1)
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'Canada'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1950, max = 2009, value = c(1950, 2009))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'Czech Republic'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1950, max = 2013, value = c(1950, 2013))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'France'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1958, max = 2013, value = c(1958, 2013))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'United Kingdom'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1950, max = 2014, value = c(1950, 2014))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'Japan'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1950, max = 2013, value = c(1950, 2013))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'Norway'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1951, max = 2012, value = c(1951, 2012))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'Sweden'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1952, max = 2012, value = c(1952, 2012))
-                                              ),
-                                              conditionalPanel(
-                                                  condition = "!input.CODAggregate && input.CODCountry == 'USA'",
-                                                  sliderInput("range_tcod",
-                                                              label = "Years Selected",
-                                                              min = 1959, max = 2015, value = c(1959, 2015))
-                                              )
-                                          ) # wellPanel
-                                   ) # column
-                              ) #fluidrow
-                       )
-                ), 
+                        ),
+                       fluidRow(
+                           column(width = 3,
+                                  fluidRow(
+                                      column(width = 6,
+                                             selectInput("CODCountry", "Selected Country", c(Choose = ""), selectize = TRUE)
+                                      ), 
+                                      column(width = 4, 
+                                             numericInput("CODAge", "Input Age", value = 0, min = 0, max = 105, step = 5)
+                                      ),
+                                      column(width = 2, 
+                                             actionButton(
+                                                 inputId = "CODQA",
+                                                 label = "",
+                                                 icon = icon("question-circle"),
+                                                 style="color: #fff; background-color: #b3b3b3; 
+                                          border-color: #b3b3b3; padding:2px; font-size:78% ; 
+                                          width: 20px; height: 20px"
+                                             ))
+                                      
+                                  ),
+                                  fluidRow(
+                                      column(width = 12,
+                                             checkboxGroupButtons(
+                                                 inputId = "CODGender", label = "Gender", 
+                                                 choices = c("Male", "Female"), selected = "Male", 
+                                                 justified = TRUE, status = "primary")
+                                      )
+                                 )
+                           ), 
+                           column(width = 9, 
+                                  # Input: Specification of range within an interval ----
+                                  wellPanel( 
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'Canada'" ,
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1950, max = 2009, value = c(1950, 2009))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'Czech Republic'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1950, max = 2013, value = c(1950, 2013))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'France'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1958, max = 2013, value = c(1958, 2013))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'United Kingdom'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1950, max = 2014, value = c(1950, 2014))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'Japan'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1950, max = 2013, value = c(1950, 2013))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'Norway'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1951, max = 2012, value = c(1951, 2012))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'Sweden'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1952, max = 2012, value = c(1952, 2012))
+                                      ),
+                                      conditionalPanel(
+                                          condition = "!input.CODAggregate && input.CODCountry == 'USA'",
+                                          sliderInput("range_tcod",
+                                                      label = "Years Selected",
+                                                      min = 1959, max = 2015, value = c(1959, 2015))
+                                      )
+                                  ) # wellPanel
+                           ) # column
+                       ) #fluidrow
+                   )
+                )
+            ),
+            
+            fluidRow(
+                
                 column(width = 12,
                        
                        tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and COD"), 
-                              tabPanel(title = "Mortality Chapters by Country", id = "tabset2", 
-                                       
-                                       fluidRow(
-                                           column(width = 12,
-                                                 withSpinner(plotlyOutput("Animate_MCBar", height = 500))
-                                           
-                                       )
-                                   )
-                              ),
-                              tabPanel(title = "Change in Life Expectancy", id = "tabset3", 
-                                       
-                                       fluidRow(
-                                           column(width = 6,
-                                                  plotlyOutput("BarplotLE_AgeCOD", height = 300)
-                                           ), 
-                                           column(width = 6, 
-                                                  plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
-                                           )
-                                       ), 
-                                       tags$br(), tags$br(),
-                                       fluidRow(
-                                           column(width = 12, 
-                                                  withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
-                                           )
-                                       )
-                              )
+                                   tabPanel(title = "Mortality Chapters by Country", id = "tabset22", 
+                                            
+                                            fluidRow(
+                                                column(width = 12,
+                                                       withSpinner(plotlyOutput("Animate_MCBar", height = 500))
+                                                )
+                                            )
+                                   ),
+                                   tabPanel(title = "Change in Life Expectancy", id = "tabset33", 
+                                            
+                                            fluidRow(
+                                                column(width = 6,
+                                                       plotlyOutput("BarplotLE_AgeCOD", height = 300)
+                                                ), 
+                                                column(width = 6, 
+                                                       plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
+                                                )
+                                            ), 
+                                            tags$br(), tags$br(),
+                                            fluidRow(
+                                                column(width = 12, 
+                                                       withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
+                                                )
+                                            )
+                                   ), 
+                                   id = "tabs2"
                        )
                 )
+                
+                
+                
+                
             )
             
         ),
@@ -1508,14 +1503,13 @@ server <- shinyServer(function(input, output, session){
             mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
             age_groups <- length(unique(COD_Info$Age)) #number of age groups
             t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
-            span_years <- t2 - t1 + 1
             #picking your age group 
             age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
             selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
             #animation rates
-            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year>=t1 & rates_per_chapter_males$Year <= t2,-(1:2)])/1000
-            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), span_years), 
-                                        year = rep(t1:t2, each = mortality_chapters+1), 
+            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year == t1 | rates_per_chapter_males$Year == t2, -(1:2)])/1000
+            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), 2), 
+                                        year = rep(c(t1,t2), each = mortality_chapters+1), 
                                         rate = rates_animate[,selected_agegrp]) #age
             #find prop percent
             rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
@@ -1523,28 +1517,36 @@ server <- shinyServer(function(input, output, session){
             rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
             
             ##breakdown mortality chapters
-            rates_animate_df <- merge(rates_animate, chapters20(), by = "chapter")
-            return(rates_animate_df)
+            rates_animate_t1 <- rates_animate[rates_animate$year == t1,]
+            rates_animate_t2 <- rates_animate[rates_animate$year == t2,]
+            #re-order
+            rates_animate_t1 <- rates_animate_t1[order(rates_animate_t1$chapter),]
+            rates_animate_t2 <- rates_animate_t2[order(rates_animate_t2$chapter),]
+            #finding the difference 
+            rates_animate_diff <- data.frame(chapter = rep(1:(mortality_chapters)),
+                                             rates_animate_df_t2[,3:4] - rates_animate_df_t1[,3:4])
+            rates_animate_diff <- merge(rates_animate_diff, chapters20(), by = "chapter")
+            
+            return(rates_animate_diff)
             
         })
         
         output$Animate_MCBar <- renderPlotly({
 
-                animate_res() %>%
-                    plot_ly(x = ~chapter, y = ~perct, color = ~diagn, frame = ~year, 
-                            text = ~paste0("Chapter: ", diagn, '</br></br>', 
-                                           "Year: ", year, '</br>',
-                                           "Value: ", round(rate,4), '</br>',
-                                           "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                            hoverinfo = "text", type = 'bar'
-                    ) %>% layout(title = paste0("Proportional Changes in Mortality Chapters (", input$range_tcod[1], "-", input$range_tcod[2], 
-                                                ", ", input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")" ),
-                                 font = list(size = 8),
-                                 yaxis = list(title = 'Proportion'), xaxis = list(title = "Mortality Chapter", size = 8, tickangle = 0), 
-                                 showlegend = FALSE) %>% config(displayModeBar = FALSE) %>% 
-                    animation_slider(
-                        currentvalue = list(prefix = "Year ")
-                    )
+            animate_res() %>%  plot_ly(x = ~rate, y = diagn, type = "bar", 
+                    text = ~paste0("Chapter: ", chapter, '</br></br>', diagn, '</br>',
+                                   #"Year: ", year, '</br>',
+                                   "Change: ", round(rate, 4), '</br>',
+                                   "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                    hoverinfo = "text", orientation = 'h') %>% 
+                config(displayModeBar = FALSE) %>% 
+                layout(barmode="overlay", title = paste0("Changes in Rate (",
+                                                            input$range_tcod[1], "-", input$range_tcod[2], ", ", 
+                                                            input$CODGender, ", ", input$CODCountry, ")"),      
+                       font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
+                                                           categoryarray = ~diagn, 
+                                                           categoryorder = "array", size = 8, tickangle = 0), 
+                       yaxis = list(autorange="reversed"))
         })
         
         # for maintaining the state of drill-down variables
