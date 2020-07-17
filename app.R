@@ -512,8 +512,11 @@ ui = dashboardPagePlus(
                                    tabPanel(title = "Mortality Chapters by Country", id = "tabset22", 
                                             
                                             fluidRow(
-                                                column(width = 12,
+                                                column(width = 6,
                                                        withSpinner(plotlyOutput("Animate_MCBar", height = 500))
+                                                ), 
+                                                column(width = 6, 
+                                                       DT::dataTableOutput("Animate_Table")
                                                 )
                                             )
                                    ),
@@ -1531,22 +1534,34 @@ server <- shinyServer(function(input, output, session){
             
         })
         
-        output$Animate_MCBar <- renderPlotly({
+        # for maintaining the state of drill-down variables
+        Animate_MCBar <- reactiveVal()
 
-            animate_res() %>%  plot_ly(x = ~rate, y = diagn, type = "bar", 
-                    text = ~paste0("Chapter: ", chapter, '</br></br>', diagn, '</br>',
-                                   #"Year: ", year, '</br>',
-                                   "Change: ", round(rate, 4), '</br>',
-                                   "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                    hoverinfo = "text", orientation = 'h') %>% 
+        # when clicking on a category, 
+        observeEvent(event_data("plotly_click", source = "Animate_MCBar"), {
+            Animate_MCBar(event_data("plotly_click", source = "Animate_MCBar")$y)
+        })
+        
+        output$Animate_Table <- DT::renderDataTable(animate_res()[which(animate_res()$diagn == Animate_MCBar()),])
+        
+        output$Animate_MCBar <- renderPlotly({
+            
+            animate_res() %>%  plot_ly(x = ~rate, y = diagn, type = "bar", source = "Animate_MCBar",
+                                       text = ~paste0("Chapter: ", chapter, '</br></br>', diagn, '</br>',
+                                                      #"Year: ", year, '</br>',
+                                                      "Change: ", round(rate, 4), '</br>',
+                                                      "Proportion: ", paste0(round(perct*100, 4), "%")), 
+                                       hoverinfo = "text", orientation = 'h') %>% 
                 config(displayModeBar = FALSE) %>% 
-                layout(barmode="overlay", title = paste0("Changes in Rate (",
-                                                            input$range_tcod[1], "-", input$range_tcod[2], ", ", 
-                                                            input$CODGender, ", ", input$CODCountry, ")"),      
-                       font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
-                                                           categoryarray = ~diagn, 
-                                                           categoryorder = "array", size = 8, tickangle = 0), 
+                layout(barmode="overlay", title = paste0("Changes in Rate per 100,000 (",
+                                                         input$range_tcod[1], "-", input$range_tcod[2], ", ", 
+                                                         input$CODGender, ", ", input$CODCountry, ")"),      
+                       font = list(size = 8), xaxis = list(#title = "Change in Rate (per 100,000)", 
+                           categoryarray = ~diagn, 
+                           categoryorder = "array", size = 8, tickangle = 0), 
                        yaxis = list(autorange="reversed"))
+            
+            
         })
         
         # for maintaining the state of drill-down variables
