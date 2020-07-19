@@ -450,49 +450,49 @@ ui = dashboardPagePlus(
                                   # Input: Specification of range within an interval ----
                                   wellPanel( 
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'Canada'" ,
+                                          condition = "input.CODCountry == 'Canada'" ,
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1950, max = 2009, value = c(1950, 2009))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'Czech Republic'",
+                                          condition = "input.CODCountry == 'Czech Republic'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1950, max = 2013, value = c(1950, 2013))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'France'",
+                                          condition = "input.CODCountry == 'France'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1958, max = 2013, value = c(1958, 2013))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'United Kingdom'",
+                                          condition = "input.CODCountry == 'United Kingdom'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1950, max = 2014, value = c(1950, 2014))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'Japan'",
+                                          condition = "input.CODCountry == 'Japan'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1950, max = 2013, value = c(1950, 2013))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'Norway'",
+                                          condition = "input.CODCountry == 'Norway'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1951, max = 2012, value = c(1951, 2012))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'Sweden'",
+                                          condition = "input.CODCountry == 'Sweden'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1952, max = 2012, value = c(1952, 2012))
                                       ),
                                       conditionalPanel(
-                                          condition = "!input.CODAggregate && input.CODCountry == 'USA'",
+                                          condition = "input.CODCountry == 'USA'",
                                           sliderInput("range_tcod",
                                                       label = "Years Selected",
                                                       min = 1959, max = 2015, value = c(1959, 2015))
@@ -513,10 +513,10 @@ ui = dashboardPagePlus(
                                             
                                             fluidRow(
                                                 column(width = 6,
-                                                       withSpinner(plotlyOutput("Animate_MCBar", height = 1000))
+                                                       withSpinner(plotlyOutput("Animate_MCBar", height = 800))
                                                 ), 
                                                 column(width = 6, 
-                                                       DT::dataTableOutput("Animate_Table")
+                                                       withSpinner(DT::dataTableOutput("Animate_Table"))
                                                 )
                                             )
                                    ),
@@ -1597,8 +1597,8 @@ server <- shinyServer(function(input, output, session){
                                                   chapter_rates_select_t2_g2[,4:5] - chapter_rates_select_t1_g2[,4:5])
                 chapter_rates_diff2 <- merge(chapter_rates_diff2, chapters20(), by = "chapter")
                 
-                print(BarplotLE_AgeCOD())
-                if (is.null(BarplotLE_AgeCOD())){
+                print(Animate_MCBar())
+                if (is.null(Animate_MCBar())){
                     #male/female -- gender 1
                     chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = "#FDB863")
                     #male/female -- gender 2
@@ -1606,12 +1606,13 @@ server <- shinyServer(function(input, output, session){
                 }
                 else{
                     #male/female -- gender 1
-                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FDB863"))
+                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#8073AC", "#FDB863"))
                     #male/female -- gender 2
-                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FD6363"))
+                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#92CCDE", "#FD6363"))
                 }
                 #plot 
-                plot_ly(data = chapter_rates_select_diff1, x = ~rate, y = ~diagn, type = "bar", name = input$CODGender[1], marker = list(color = ~curr_col),
+                plot_ly(data = chapter_rates_select_diff1, x = ~rate, y = ~diagn, type = "bar", 
+                        name = input$CODGender[1], marker = list(color = ~curr_col),
                         source = "Animate_MCBar", text = ~paste0("Chapter: ", diagn, '</br></br>', 
                                                                  "Gender: ", input$CODGender[1], '</br>', 
                                                                  "Year: ", paste0(input$range_tcod[1], "-", input$range_tcod[2]), '</br>',  
@@ -1633,7 +1634,7 @@ server <- shinyServer(function(input, output, session){
                            font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
                                                                categoryarray = ~diagn, 
                                                                categoryorder = "array", size = 10, tickangle = 0, showgrid = FALSE), 
-                           yaxis = list(autorange="reversed", showgrid = TRUE))
+                           yaxis = list(title = "", autorange="reversed", showgrid = TRUE))
             }
         })
         
@@ -1649,14 +1650,18 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_ord
                 }
                 else{
-                    chapter_rates_select_ord <- merge(rbind(chapter_rates_select()[which(chapter_rates_select()$chapter == 
-                                                                                             which(chapters20()$diagn %in% Animate_MCBar()) &
-                                                                                             chapter_rates_select()$Gender == input$CODGender),],
-                                                            chapter_rates_select()[-which(chapter_rates_select()$chapter == 
-                                                                                              which(chapters20()$diagn %in% Animate_MCBar()) &
-                                                                                              chapter_rates_select()$Gender == input$CODGender),]), 
-                                                      chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
+                    chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
+                                                                                           which(chapters20()$diagn %in% Animate_MCBar()) &
+                                                                                     chapter_rates_select()$Gender == input$CODGender),],
+                                                             chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                    chapter_rates_select_ord2 <- merge(chapter_rates_select()[-which(chapter_rates_select()$chapter == 
+                                                                                           which(chapters20()$diagn %in% Animate_MCBar()) &
+                                                                                     chapter_rates_select()$Gender == input$CODGender),], 
+                                                             chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                    chapter_rates_select_ord1 <- chapter_rates_select_ord1[order(chapter_rates_select_ord1$diagn, chapter_rates_select_ord1$year),]
+                    chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
+                    #change column names
+                    chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
                     colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
                     chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
                     chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
@@ -1674,20 +1679,23 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_ord
                 }
                 else{
-                    chapter_rates_select_ord <- merge(rbind(chapter_rates_select()[which(chapter_rates_select()$chapter ==  
-                                                                                             which(chapters20()$diagn %in% Animate_MCBar())),],
-                                                            chapter_rates_select()[-which(chapter_rates_select()$chapter ==  
-                                                                                              which(chapters20()$diagn %in% Animate_MCBar())),]), 
-                                                      chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diag, chapter_rates_select_ord$yearn),]
+                    chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
+                                                                                        which(chapters20()$diagn %in% Animate_MCBar())),],
+                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                    chapter_rates_select_ord2 <- merge(chapter_rates_select()[-which(chapter_rates_select()$chapter == 
+                                                                                        which(chapters20()$diagn %in% Animate_MCBar())),], 
+                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                    chapter_rates_select_ord1 <- chapter_rates_select_ord1[order(chapter_rates_select_ord1$diagn, chapter_rates_select_ord1$year),]
+                    chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
+                    #change column names
+                    chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
                     colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
                     chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
                     chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
                     chapter_rates_select_ord
-                }
+               }
             }, 
             options = list(searching = FALSE, lengthMenu = c(20, 40)), rownames = FALSE
-            
         )
         
         # output
