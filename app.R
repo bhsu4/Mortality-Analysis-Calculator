@@ -1524,7 +1524,7 @@ server <- shinyServer(function(input, output, session){
             req(input$CODCountry)
             #import the file
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
-            chapter_rates <- mortality_chapter_rates(chosen_country, input_tcod[1], input_tcod[2])
+            chapter_rates <- mortality_chapter_rates(chosen_country, input$range_tcod[1], input$range_tcod[2])
             
             #picking your age group 
             age_initial <- colnames(chapter_rates[, -c(1:3)])
@@ -1549,96 +1549,60 @@ server <- shinyServer(function(input, output, session){
         
         
         output$Animate_MCBar <- renderPlotly({
-            #gender select
-            if (length(input$CODGender) == 1){
-                
-                chapter_rates_select_t1 <- chapter_rates_select()[which(chapter_rates_select()$Gender == "Male" & chapter_rates_select()$year == t1),] 
-                chapter_rates_select_t2 <- chapter_rates_select()[which(chapter_rates_select()$Gender == "Male" & chapter_rates_select()$year == t2),] 
-                chapter_rates_diff <- data.frame(chapter = rep(1:(mortality_chapters)),
-                                                 chapter_rates_select_t2[,4:5] - chapter_rates_select_t1[,4:5])
-                chapter_rates_diff <- merge(chapter_rates_diff, chapters20(), by = "chapter")
-                
-                #if no click
-                if (is.null(Animate_MCBar())){
-                    chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = "#FDB863")
-                }
-                else{
-                    chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#8073AC", "#FDB863"))
-                }
-                #plot barplot
-                plot_ly(chapter_rates_select_diff, x = ~rate, y = diagn, type = "bar", 
-                        source = "Animate_MCBar", text = ~paste0("Chapter: ", chapter, '</br></br>', diagn, '</br>',
-                                                                 #"Year: ", year, '</br>',
-                                                                 "Change: ", round(rate, 4), '</br>',
-                                                                 "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                        hoverinfo = "text", orientation = 'h') %>% 
-                    config(displayModeBar = FALSE) %>% 
-                    layout(barmode="overlay", title = paste0("Changes in Rate per 100,000 (",
-                                                             input$range_tcod[1], "-", input$range_tcod[2], ", ", 
-                                                             input$CODGender, ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(#title = "Change in Rate (per 100,000)", 
-                               categoryarray = ~diagn, 
-                               categoryorder = "array", size = 8, tickangle = 0), 
-                           yaxis = list(autorange="reversed"))
-            }
-            else{ 
-                chapter_rates_select_t1_g1 <- chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender[1] & 
-                                                                             chapter_rates_select()$year == t1),] 
-                chapter_rates_select_t2_g1 <- chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender[1] & 
-                                                                             chapter_rates_select$year == t2),] 
-                chapter_rates_select_t1_g2 <- chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender[2] & 
-                                                                             chapter_rates_select()$year == t1),] 
-                chapter_rates_select_t2_g2 <- chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender[2] & 
-                                                                               chapter_rates_select()$year == t2),] 
-                chapter_rates_diff1 <- data.frame(chapter = rep(1:(max(chapters20()$chapter))),
-                                                  chapter_rates_select_t2_g1[,4:5] - chapter_rates_select_t1_g1[,4:5])
-                chapter_rates_diff1 <- merge(chapter_rates_diff1, chapters20(), by = "chapter")
-                chapter_rates_diff2 <- data.frame(chapter = rep(1:(max(chapters20()$chapter))),
-                                                  chapter_rates_select_t2_g2[,4:5] - chapter_rates_select_t1_g2[,4:5])
-                chapter_rates_diff2 <- merge(chapter_rates_diff2, chapters20(), by = "chapter")
-                
-                print(BarplotLE_AgeCOD())
-                if (is.null(BarplotLE_AgeCOD())){
-                    #male/female -- gender 1
-                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = "#FDB863")
-                    #male/female -- gender 2
-                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = "#FD6363")
-                }
-                else{
-                    #male/female -- gender 1
-                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FDB863"))
-                    #male/female -- gender 2
-                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = if_else(rowname %in% BarplotLE_AgeCOD(), "#8073AC", "#FDB863"))
-                }
-                #plot 
-                plot_ly(data = chapter_rates_select_diff1, x = ~rate, y = ~diagn, type = "bar", name = input_CODGender[1], marker = list(color = ~curr_col),
-                        source = "Animate_MCBar", text = ~paste0("Chapter: ", diagn, '</br></br>', 
-                                                                 "Gender: ", input_CODGender, '</br>', 
-                                                                 "Year: ", paste0(input$tcod[1], "-", input$tcod[2]), '</br>',  
-                                                                 "Change: ", round(rate, 4), '</br>',
-                                                                 "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                        hoverinfo = "text", orientation = 'h') %>% 
-                    config(displayModeBar = FALSE) %>% 
-                    add_trace(data = chapter_rates_select_diff2, x = ~rate, y = ~diagn, type = "bar", 
-                              name = input_CODGender[2], marker = list(color = ~curr_col), 
-                              text = ~paste0("Chapter: ", diagn, '</br></br>', 
-                                             "Gender: ", input_CODGender, '</br>', 
-                                             "Year: ", paste0(input$tcod[1], "-", input$tcod[2]), '</br>', 
-                                             "Change: ", round(rate, 4), '</br>',
-                                             "Proportion: ", paste0(round(perct*100, 4), "%")), 
-                              hoverinfo = "text", orientation = 'h') %>% 
-                    layout(barmode="group", title = paste0("Changes in Death Rate per 100,000 (",
-                                                           input$range_tcod[1], "-", input$range_tcod[2], ", ", 
-                                                           paste(input$heatGender, collapse = "/"), ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
-                                                               categoryarray = ~diagn, 
-                                                               categoryorder = "array", size = 8, tickangle = 0, showgrid = FALSE), 
-                           yaxis = list(autorange="reversed", showgrid = TRUE, title = paste0(c(rep("&nbsp;", 20), "Mortality Chapter",
-                                                                                                rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = "")))
-            }
+            plot_ly(chapter_rates_select(), x = 1:80, y = ~rate, type = "bar") %>% layout(barmode="overlay")
         })
         
         output$Animate_Table <- DT::renderDataTable(
+                                    if (length(input$CODGender) == 1){
+                                        if (is.null(Animate_MCBar())){
+                                            chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
+                                                                              chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                                            chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
+                                            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+                                            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
+                                            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
+                                            chapter_rates_select_ord
+                                        }
+                                        else{
+                                            chapter_rates_select_ord <- merge(rbind(chapter_rates_select()[which(chapter_rates_select()$chapter == 
+                                                                                                               which(chapters20()$diagn %in% Animate_MCBar()) &
+                                                                                                           chapter_rates_select()$Gender == input$CODGender),],
+                                                                                    chapter_rates_select()[-which(chapter_rates_select()$chapter == 
+                                                                                                               which(chapters20()$diagn %in% Animate_MCBar()) &
+                                                                                                            chapter_rates_select()$Gender == input$CODGender),]), 
+                                                                              chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                                            chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
+                                            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+                                            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
+                                            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
+                                            chapter_rates_select_ord
+                                        }
+                                    }
+                                    else{
+                                        if (is.null(Animate_MCBar())){
+                                            chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
+                                                                              chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                                            chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
+                                            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+                                            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
+                                            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
+                                            chapter_rates_select_ord
+                                        }
+                                        else{
+                                            chapter_rates_select_ord <- merge(rbind(chapter_rates_select()[which(chapter_rates_select()$chapter ==  
+                                                                                                                which(chapters20()$diagn %in% Animate_MCBar())),],
+                                                                                    chapter_rates_select()[-which(chapter_rates_select()$chapter ==  
+                                                                                                                 which(chapters20()$diagn %in% Animate_MCBar())),]), 
+                                                                              chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
+                                            chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diag, chapter_rates_select_ord$yearn),]
+                                            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+                                            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
+                                            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
+                                            chapter_rates_select_ord
+                                        }
+                                    }, 
+                                    options = list(searching = FALSE, lengthMenu = c(20, 40)), rownames = FALSE
+                                        
                 )
         
         # output
