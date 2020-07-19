@@ -1519,42 +1519,24 @@ server <- shinyServer(function(input, output, session){
             data.frame(chapter = 1:length(diagn), diagn)
         })
         
-        animate_res <- reactive({
-            
+        #extract from mortality_chapter_rates for specific age group
+        chapter_rates_select <- reactive({
             req(input$CODCountry)
             #import the file
-            COD_Info <- read.csv(paste0("COD_5x1_chapters_", COD_countries()$code[which(COD_countries()$country == input$CODCountry)], ".csv"))
-            rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.", substring(input$CODGender[1], 1, 1)))
-            #parameters
-            mortality_chapters<-max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
-            age_groups <- length(unique(COD_Info$Age)) #number of age groups
-            t1 = input$range_tcod[1] ; t2 = input$range_tcod[2]
+            chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
+            chapter_rates <- mortality_chapter_rates(chosen_country, input_tcod[1], input_tcod[2])
+            
             #picking your age group 
-            age_initial <- colnames(rates_per_chapter_males[, -c(1:2)])
-            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
-            #animation rates
-            rates_animate <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year == t1 | rates_per_chapter_males$Year == t2, -(1:2)])/1000
-            rates_animate <- data.frame(chapter = rep(1:(mortality_chapters+1), 2), 
-                                        year = rep(c(t1,t2), each = mortality_chapters+1), 
-                                        rate = rates_animate[,selected_agegrp]) #age
+            age_initial <- colnames(chapter_rates[, -c(1:3)])
+            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE)) + 3
             #find prop percent
-            rates_animate$perct = rates_animate$rate/rep(rates_animate[rates_animate$chapter == 21,]$rate, each = 21)
-            rates_animate$chapter <- as.factor(rates_animate$chapter)
-            rates_animate <- droplevels(rates_animate[-which(rates_animate$chapter == 21),])
+            chapter_rates_select <- data.frame(chapter_rates[,c(1:3)], rate = chapter_rates[,selected_agegrp])
             
-            ##breakdown mortality chapters
-            rates_animate_t1 <- rates_animate[rates_animate$year == t1,]
-            rates_animate_t2 <- rates_animate[rates_animate$year == t2,]
-            #re-order
-            rates_animate_t1 <- rates_animate_t1[order(rates_animate_t1$chapter),]
-            rates_animate_t2 <- rates_animate_t2[order(rates_animate_t2$chapter),]
-            #finding the difference 
-            rates_animate_diff <- data.frame(chapter = rep(1:(mortality_chapters)),
-                                             rates_animate_df_t2[,3:4] - rates_animate_df_t1[,3:4])
-            rates_animate_diff <- merge(rates_animate_diff, chapters20(), by = "chapter")
-            
-            return(list(rates_animate_diff, rate_animate))
-            
+            #calculating proportion
+            chapter_rates_select$perct = chapter_rates_select$rate/rep(chapter_rates_select[chapter_rates_select$chapter == 21,]$rate, each = 21)
+            chapter_rates_select$chapter <- as.factor(chapter_rates_select$chapter)
+            chapter_rates_select <- droplevels(chapter_rates_select[-which(chapter_rates_select$chapter == 21),])
+            return(chapter_rates_select)
         })
         
         # for maintaining the state of drill-down variables
