@@ -1018,6 +1018,29 @@ change5x1_AgeCOD <- function(cntry, t1, t2){
     return(list(Proportion_Change_rate_of_mortality_t1_t2_male, Proportion_Change_rate_of_mortality_t1_t2_female))
 }
 
+mortality_chapter_rates <- function(cntry, t1, t2){
+    #import the file
+    COD_Info <- read.csv(paste0("COD_5x1_chapters_", cntry, ".csv"))
+    rates_per_chapter_males <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.M"))
+    rates_per_chapter_females <- dcast(COD_Info,Year+COD.chap~Age,value.var = paste0("Rates.F"))
+    
+    #parameters
+    mortality_chapters <- max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
+    age_groups <- length(unique(COD_Info$Age)) #number of age groups
+    
+    #animation rates
+    rates_animate_M <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year == t1 | rates_per_chapter_males$Year == t2, -(1:2)])/1000
+    rates_animate_F <- as.matrix(rates_per_chapter_females[rates_per_chapter_females$Year == t1 | rates_per_chapter_females$Year == t2, -(1:2)])/1000
+    rates_animate_labels <- data.frame(chapter = rep(1:(mortality_chapters+1), 2), 
+                                       year = rep(c(t1, t2), each = mortality_chapters+1)) 
+    #final rates
+    rates_animate_Mf <- cbind(rates_animate_labels, data.frame(Gender = "Male"), rates_animate_M) 
+    rates_animate_Ff <- cbind(rates_animate_labels, data.frame(Gender = "Female"), rates_animate_F)
+    rates_animate_final <- rbind(rates_animate_Mf, rates_animate_Ff)
+    
+    return(rates_animate_final)
+}
+
 
 server <- shinyServer(function(input, output, session){ 
     
@@ -1530,7 +1553,7 @@ server <- shinyServer(function(input, output, session){
                                              rates_animate_df_t2[,3:4] - rates_animate_df_t1[,3:4])
             rates_animate_diff <- merge(rates_animate_diff, chapters20(), by = "chapter")
             
-            return(rates_animate_diff)
+            return(list(rates_animate_diff, rate_animate))
             
         })
         
@@ -1564,17 +1587,6 @@ server <- shinyServer(function(input, output, session){
             
         })
         
-        # for maintaining the state of drill-down variables
-        BarplotLE_AgeCOD <- reactiveVal()
-        BarplotLE_specificAgeCOD <- reactiveVal()
-        
-        # when clicking on a category, 
-        observeEvent(event_data("plotly_click", source = "BarplotLE_AgeCOD"), {
-            BarplotLE_AgeCOD(event_data("plotly_click", source = "BarplotLE_AgeCOD")$x)
-            BarplotLE_specificAgeCOD(NULL)
-        })
-        
-        
         # output
         Changes_age_cause <- reactive({
             #life expectancy
@@ -1602,6 +1614,16 @@ server <- shinyServer(function(input, output, session){
             rownames(Changes_age_cause_male) <- 1:mortality_chapters
             rownames(Changes_age_cause_female) <- 1:mortality_chapters
             return(list(Changes_age_cause_male, Changes_age_cause_female))
+        })
+        
+        # for maintaining the state of drill-down variables
+        BarplotLE_AgeCOD <- reactiveVal()
+        BarplotLE_specificAgeCOD <- reactiveVal()
+        
+        # when clicking on a category, 
+        observeEvent(event_data("plotly_click", source = "BarplotLE_AgeCOD"), {
+            BarplotLE_AgeCOD(event_data("plotly_click", source = "BarplotLE_AgeCOD")$x)
+            BarplotLE_specificAgeCOD(NULL)
         })
         
         output$BarplotLE_AgeCOD <- renderPlotly({
