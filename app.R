@@ -14,7 +14,6 @@ library(grid)
 library(DT)
 library(devtools)
 library(noncensus)
-data("zip_codes")
 library(shinycssloaders)
 
 library(shinydashboard)
@@ -1954,6 +1953,8 @@ server <- shinyServer(function(input, output, session){
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             #life preparancy
             res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz)
+            res[[2]][is.na(res[[2]])]<-0 #LP change males set to 0 for NAs
+            res[[3]][is.na(res[[3]])]<-0 #LP change females set to 0 for NAs
             #mortality chapters
             res_COD <- change5x1_AgeCOD(chosen_country, input$range_tcod[1], input$range_tcod[2])
             #age group 
@@ -1963,9 +1964,9 @@ server <- shinyServer(function(input, output, session){
             selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
             
             #final output
-            Changes_age_cause_male<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
-            Changes_age_cause_female<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
-            for(x in 1:age_groups){
+            Changes_age_cause_male<-matrix(0,nrow=mortality_chapters,ncol=age_groups-1)
+            Changes_age_cause_female<-matrix(0,nrow=mortality_chapters,ncol=age_groups-1)
+            for(x in 1:age_groups-1){
                 Changes_age_cause_male[,x]<-res[[2]][x,selected_agegrp]*res_COD[[1]][,x] #res[[2]] for male
                 Changes_age_cause_female[,x]<-res[[3]][x,selected_agegrp]*res_COD[[2]][,x] #res[[3]] for female
             }
