@@ -259,7 +259,7 @@ ui = dashboardPagePlus(
                     tags$p(
                         HTML('<div style="display:flex; justify-content:space-around; content-align: left; ">
                         <p><b>&nbsp;&nbsp;&nbsp;&nbsp;DESCRIPTION</b><p>
-                        <span style = "padding: 0 65px; display:inline-block; word-wrap:break-word;"> The Decomposition of Mortality by Age is responsible of observing the life expectancy changes over a time interval for a select country.</span>
+                        <span style = "padding: 0 60px; display:inline-block; word-wrap:break-word;"> The Decomposition of Mortality by Age is responsible of observing the life expectancy changes over a time interval for a select country.</span>
                         </div><hr/>')
                     ),
                     tags$p(
@@ -537,7 +537,24 @@ ui = dashboardPagePlus(
                                                 )
                                             )
                                    ), 
-                                   id = "tabs2"
+                                   tabPanel(title = "Change in Life Preparancy",
+                                           
+                                            fluidRow(
+                                                column(width = 10,
+                                                       withSpinner(plotlyOutput("LineLP_COD", height = 400)), 
+                                                ), 
+                                                column(width = 2, 
+                                                       numericInput("CODz", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
+                                                )
+                                               
+                                            ), 
+                                            tags$br(), tags$br(),
+                                            fluidRow(
+                                                column(width = 12, 
+                                                       withSpinner(plotlyOutput("HeatMapLP_COD", height = 600), proxy.height = "20px")
+                                                )
+                                            )
+                                  ), id = "tabs2"
                        )
                 )
                 
@@ -1463,7 +1480,6 @@ server <- shinyServer(function(input, output, session){
                            xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
                            yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
                 }
-            
         })
         
         # third tab
@@ -1475,8 +1491,6 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$GapAge <- renderPlotly({
-            #my_col <- colorRampPalette(brewer.pal(8, "YlOrRd"))(length(age_interest))
-            
             plot_ly(gap_age()[[2]], x = ~age_interest, y = ~value, color = ~variable, type= 'bar', 
                     hoverinfo = "text", text = ~paste0("Age Group: ", age_interest, '</br></br>', 
                                                        "Contribution: ", variable, '</br>',
@@ -1490,11 +1504,7 @@ server <- shinyServer(function(input, output, session){
         
         output$GapAgeTable <- renderDataTable(gap_age()[[1]], options = list(searching = FALSE, lengthMenu = c(15, 25, 50)))
         
-
-        
-        
-        
-        ### - start of decomposition by age and COD - ###
+    ### - start of decomposition by age and COD - ###
         
         observe({
             updateSelectInput(session, inputId = 'CODCountry', label = 'Selected Country',
@@ -1565,9 +1575,8 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#8073AC", "#FDB863"))
                 }
                 #plot barplot
-                plot_ly(chapter_rates_select_diff, x = ~rate, y = diagn, type = "bar", marker = list(color = ~curr_col),
+                plot_ly(chapter_rates_select_diff, x = ~rate, y = ~diagn, type = "bar", marker = list(color = ~curr_col),
                         source = "Animate_MCBar", text = ~paste0("Chapter: ", diagn, '</br></br>', 
-                                                                 #"Year: ", year, '</br>',
                                                                  "Change: ", round(rate, 4), '</br>',
                                                                  "Proportion: ", paste0(round(perct*100, 4), "%")), 
                         hoverinfo = "text", orientation = 'h') %>% 
@@ -1579,7 +1588,7 @@ server <- shinyServer(function(input, output, session){
                                categoryarray = ~diagn, 
                                categoryorder = "array", size = 8, tickangle = 0,
                                showgrid = FALSE), 
-                           yaxis = list(autorange="reversed", showgrid = TRUE))
+                           yaxis = list(title = "", autorange="reversed", showgrid = TRUE))
             }
             else{ 
                 chapter_rates_select_t1_g1 <- chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender[1] & 
@@ -1638,16 +1647,12 @@ server <- shinyServer(function(input, output, session){
             }
         })
         
-        output$Animate_Table <- DT::renderDataTable(
+        output$Animate_Table <- DT::renderDataTable({
             if (length(input$CODGender) == 1){
                 if (is.null(Animate_MCBar())){
                     chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
                     chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
-                    colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
-                    chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
-                    chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
-                    chapter_rates_select_ord
                 }
                 else{
                     chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
@@ -1662,10 +1667,6 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
                     #change column names
                     chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
-                    colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
-                    chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
-                    chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
-                    chapter_rates_select_ord
                 }
             }
             else{
@@ -1673,10 +1674,6 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
                     chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
-                    colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
-                    chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
-                    chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
-                    chapter_rates_select_ord
                 }
                 else{
                     chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
@@ -1687,14 +1684,14 @@ server <- shinyServer(function(input, output, session){
                                                        chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
                     chapter_rates_select_ord1 <- chapter_rates_select_ord1[order(chapter_rates_select_ord1$diagn, chapter_rates_select_ord1$year),]
                     chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
-                    #change column names
+                    #rbind two columns
                     chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
-                    colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
-                    chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
-                    chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
-                    chapter_rates_select_ord
                }
-            }, 
+            }
+            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
+            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
+            chapter_rates_select_ord}, 
             options = list(searching = FALSE, lengthMenu = c(20, 40)), rownames = FALSE
         )
         
@@ -1913,9 +1910,9 @@ server <- shinyServer(function(input, output, session){
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
-                           yaxis = list(ticktext = rev(chapters20()$diagn),
-                                        title = paste0(c(rep("&nbsp;", 20), "Contribution",
-                                                         rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
+                           yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
+                                       # title = paste0(c(rep("&nbsp;", 20), "Contribution",
+                                       #                  rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
                                         showgrid = F, showticklabels = TRUE))
                 
             }
@@ -1941,14 +1938,43 @@ server <- shinyServer(function(input, output, session){
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
-                           yaxis = list(ticktext = rev(chapters20()$diagn), #as.numeric(rev(rownames(res_gender))),
-                                        title = paste0(c(rep("&nbsp;", 20), "Contribution",
-                                                         rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
+                           yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
+                                       # title = paste0(c(rep("&nbsp;", 20), "Contribution",
+                                       #                  rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
                                         showgrid = F, showticklabels = TRUE))
             }
         })
         
+       ### life preparancy for COD 
         
+        # output
+        Changes_age_cause_LP <- reactive({
+            #life preparancy chosen country
+            req(input$CODCountry)
+            chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
+            #life preparancy
+            res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz)
+            #mortality chapters
+            res_COD <- change5x1_AgeCOD(chosen_country, input$range_tcod[1], input$range_tcod[2])
+            #age group 
+            mortality_chapters = 20
+            age_initial <- gsub("LP Age ", "", colnames(res[[2]]))
+            age_groups <- dim(res_COD[[1]])[2]
+            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+            
+            #final output
+            Changes_age_cause_male<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            Changes_age_cause_female<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            for(x in 1:age_groups){
+                Changes_age_cause_male[,x]<-res[[2]][x,selected_agegrp]*res_COD[[1]][,x] #res[[2]] for male
+                Changes_age_cause_female[,x]<-res[[3]][x,selected_agegrp]*res_COD[[2]][,x] #res[[3]] for female
+            }
+            colnames(Changes_age_cause_male) <- age_initial
+            colnames(Changes_age_cause_female) <- age_initial
+            rownames(Changes_age_cause_male) <- 1:mortality_chapters
+            rownames(Changes_age_cause_female) <- 1:mortality_chapters
+            return(list(Changes_age_cause_male, Changes_age_cause_female))
+        })
         
         
         
