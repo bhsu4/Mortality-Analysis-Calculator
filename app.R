@@ -1977,6 +1977,62 @@ server <- shinyServer(function(input, output, session){
             return(list(Changes_age_cause_male, Changes_age_cause_female))
         })
         
+        output$HeatMapLP_COD <- renderPlotly({
+            
+            chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
+            scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
+            
+            if (length(input$heatGender) == 1){
+                if (input$heatGender == "Male" ){ res_gender <- Changes_age_cause_LP()[[1]] }
+                else if (input$heatGender == "Female" ){ res_gender <- Changes_age_cause_LP()[[2]]}
+                
+                dim1 <- dim(res_gender)[[1]]
+                dim2 <- dim(res_gender)[[2]]
+                hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
+                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            rep(input$CODGender, dim1*dim2), "<br>"),
+                                     byrow = FALSE, ncol = dim2)
+                hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
+                                                                   input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                                                   input$CODGender, ", ", input$CODCountry, ")"), 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
+                                        showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                           yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
+                                        showgrid = F, showticklabels = TRUE))
+                
+            }
+            else{ 
+                res_gender <- Changes_age_cause_LP()[[2]] - Changes_age_cause_LP()[[1]]
+                #dimensions
+                dim1 <- dim(res_gender)[[1]]
+                dim2 <- dim(res_gender)[[2]]
+                hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
+                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            rep("Female - Male", dim1*dim2), "<br>"),
+                                     byrow = FALSE, ncol = dim2)
+                hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
+                
+                heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
+                                                                   input$range_tcod[1], "-", input$range_tcod[2], ", ",
+                                                                   "Female - Male", ", ", input$CODCountry, ")"), 
+                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                    layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
+                                        showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                           yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
+                                        # title = paste0(c(rep("&nbsp;", 20), "Contribution",
+                                        #                  rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
+                                        showgrid = F, showticklabels = TRUE))
+            }
+        })
         
         
         
