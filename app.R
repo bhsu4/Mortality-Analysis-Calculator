@@ -1982,9 +1982,9 @@ server <- shinyServer(function(input, output, session){
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
-            if (length(input$heatGender) == 1){
-                if (input$heatGender == "Male" ){ res_gender <- Changes_age_cause_LP()[[1]] }
-                else if (input$heatGender == "Female" ){ res_gender <- Changes_age_cause_LP()[[2]]}
+            if (length(input$CODGender) == 1){
+                if (input$CODGender == "Male" ){ res_gender <- Changes_age_cause_LP()[[1]] }
+                else if (input$CODGender == "Female" ){ res_gender <- Changes_age_cause_LP()[[2]]}
                 
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
@@ -2028,8 +2028,6 @@ server <- shinyServer(function(input, output, session){
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
                            yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
-                                        # title = paste0(c(rep("&nbsp;", 20), "Contribution",
-                                        #                  rep("&nbsp;", 20), rep("\n&nbsp;", 1)), collapse = ""),
                                         showgrid = F, showticklabels = TRUE))
             }
         })
