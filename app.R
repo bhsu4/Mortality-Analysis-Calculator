@@ -540,20 +540,14 @@ ui = dashboardPagePlus(
                                            
                                             fluidRow(
                                                 column(width = 10,
-                                                       withSpinner(plotlyOutput("LineLP_COD", height = 400)), 
+                                                       withSpinner(plotlyOutput("HeatMapLP_COD", height = 600)), 
                                                 ), 
                                                 column(width = 2, 
                                                        numericInput("CODz", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
                                                 )
                                                
-                                            ), 
-                                            tags$br(), tags$br(),
-                                            fluidRow(
-                                                column(width = 12, 
-                                                       withSpinner(plotlyOutput("HeatMapLP_COD", height = 600), proxy.height = "20px")
-                                                )
                                             )
-                                  ), id = "tabs2"
+                                  )
                        )
                 )
                 
@@ -961,7 +955,7 @@ GenGap_Age <-function(cntry, t){
                         select("Age Group", Contribution, Value) %>% mutate_at(vars(Contribution), factor)
     
     #final output
-    return(list(table_change, Total_Change_per_age_melt))
+    return(list(table_change, Total_Change_per_age_melt, result_WT))
 }
 
 change5x1_AgeCOD <- function(cntry, t1, t2){
@@ -1055,6 +1049,54 @@ mortality_chapter_rates <- function(cntry, t1, t2){
     rates_animate_final <- rbind(rates_animate_Mf, rates_animate_Ff)
     
     return(rates_animate_final)
+}
+
+GenGap_AgeCOD <- function(cntry, t){
+    #import the file
+    COD_Info <- read.csv(paste0("COD_5x1_chapters_", cntry, ".csv"))
+    
+    #fractional mortality rates
+    Cause_Mortality_Fractions_M<-dcast(COD_Info,Year+COD.chap~Age,value.var = "COD.frac.M")
+    Cause_Mortality_Fractions_F<-dcast(COD_Info,Year+COD.chap~Age,value.var = "COD.frac.F")
+    rates_per_chapter_males<-dcast(COD_Info,Year+COD.chap~Age,value.var = "Rates.M")
+    rates_per_chapter_females<-dcast(COD_Info,Year+COD.chap~Age,value.var = "Rates.F")
+    
+    ##Extraction of information for year t
+    Cause_Mortality_Fractions_F_t<-as.matrix(Cause_Mortality_Fractions_F[Cause_Mortality_Fractions_F$Year==t,-(1:2)])#Just the specific year required and no need for descriptive columns
+    Cause_Mortality_Fractions_M_t<-as.matrix(Cause_Mortality_Fractions_M[Cause_Mortality_Fractions_M$Year==t,-(1:2)])
+    
+    #parameters
+    mortality_chapters <- max(rates_per_chapter_males$COD.chap)-1 #20 mortality chapters, 21st is total
+    age_groups <- length(unique(COD_Info$Age)) #number of age groups
+    
+    ###This section completes the matrix for cases of countries with years missing information about certain advanced
+    ###ages. For example, the case of CZE for ages 85-90,90-95,95-100,100-105 before year 1986. In such a case,
+    #These ages are filled with the value in age 85 (which corresponds to 85+)
+    for(k in 1:(mortality_chapters+1)){
+        ##Detection of last column with non NA values. "lcgt" stands for last column with info gender year i 
+        lcft<-dim(Cause_Mortality_Fractions_F_t)[2]-length(Cause_Mortality_Fractions_F_t[k,which(is.na(Cause_Mortality_Fractions_F_t[k,]))])
+        lcmt<-dim(Cause_Mortality_Fractions_M_t)[2]-length(Cause_Mortality_Fractions_M_t[k,which(is.na(Cause_Mortality_Fractions_M_t[k,]))])
+        ###replacement of na 
+        Cause_Mortality_Fractions_F_t[k,is.na(Cause_Mortality_Fractions_F_t[k,])]<-Cause_Mortality_Fractions_F_t[k,lcft]
+        Cause_Mortality_Fractions_M_t[k,is.na(Cause_Mortality_Fractions_M_t[k,])]<-Cause_Mortality_Fractions_M_t[k,lcmt]
+    }
+    #extract only rates per chapter for year t
+    rates_per_chapter_males_t<-as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year==t,-(1:2)])
+    rates_per_chapter_females_t<-as.matrix(rates_per_chapter_females[rates_per_chapter_females$Year==t,-(1:2)])
+    
+    ###This section completes the matrix for cases of countries with years missing information about certain advanced
+    ###ages. For example, the case of CZE for ages 85-90,90-95,95-100,100-105 before year 1986. In such a case,
+    #These ages are filled with the value in age 85 (which corresponds to 85+)
+    for(k in 1:(mortality_chapters+1)){
+        ##Detection of last column with non NA values. "lcgi" stands for last column gender year i 
+        lcmt<-dim(rates_per_chapter_males_t)[2]-length(rates_per_chapter_males_t[k,which(is.na(rates_per_chapter_males_t[k,]))])
+        lcft<-dim(rates_per_chapter_females_t)[2]-length(rates_per_chapter_females_t[k,which(is.na(rates_per_chapter_females_t[k,]))])
+        ###replacement of na 
+        rates_per_chapter_males_t[k,is.na(rates_per_chapter_males_t[k,])]<-rates_per_chapter_males_t[k,lcmt]
+        rates_per_chapter_females_t[k,is.na(rates_per_chapter_females_t[k,])]<-rates_per_chapter_females_t[k,lcft]
+    }
+    
+    return(list(Cause_Mortality_Fractions_M_t, Cause_Mortality_Fractions_F_t, rates_per_chapter_males_t, rates_per_chapter_females_t))
 }
 
 
