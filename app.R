@@ -2074,7 +2074,43 @@ server <- shinyServer(function(input, output, session){
             }
         })
         
+        ### start of gender gap tab
         
+        Changes_age_cause_gap <- reactive({
+            
+            #life expectancy
+            req(input$CODCountry)
+            chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
+            
+            #GenGap function for per age outputs: change per age (unmelt, melt), change per age lower triangle
+            Gender_Gap_Age <- GenGap_Age(chosen_country, input$range_tcod[1])
+            #GenGap function outputs: mortality fractions M,F and mortality rates per chapter M,F
+            res <- GenGap_AgeCOD(chosen_country, input$range_tcod[1])
+            
+            #parameters
+            mortality_chapters = max(chapters20()$chapter) #number of chapters
+            age_initial <- colnames(res[[1]])
+            age_groups <- dim(res[[1]])[2] #number of agegroups
+            #total rates
+            Total_rate_M <- res[[3]][mortality_chapters+1,]
+            Total_rate_F <- res[[4]][mortality_chapters+1,] 
+            
+            #gender gap distribution
+            Gender_Gap_Distribution <- Gender_Gap_Age[[3]][-nrow(Gender_Gap_Age[[3]]), Desired_age_group]
+            Contribution_per_cause<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            ##difference in ratios to calc gender gap by mortality chapter
+            Ratio_of_Differences<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
+            for(i in 1:mortality_chapters){
+                Ratio_of_Differences[i,] <- (res[[2]][i,]*Total_rate_F-res[[1]][i,]*Total_rate_M)/(Total_rate_F-Total_rate_M)    
+                Contribution_per_cause[i,] <- Ratio_of_Differences[i,]*Gender_Gap_Distribution                           
+            }
+            Contribution_per_cause[is.na(Contribution_per_cause)] <- 0 ##NAs may be generated if rate in denominator is zero for an age(happens for 105+)
+            Total_Cause<-apply(Contribution_per_cause,1,sum)
+            result<-cbind(Contribution_per_cause,Total_Cause)
+            colnames(result) = c(age_initial, "Total")
+            return(result)
+            
+        })
         
         
         
