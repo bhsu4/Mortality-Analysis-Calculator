@@ -547,6 +547,15 @@ ui = dashboardPagePlus(
                                                 )
                                                
                                             )
+                                  ),
+                                  tabPanel(title = "Contribution to Gender Gap",
+                                           
+                                           fluidRow(
+                                               column(width = 10,
+                                                      withSpinner(plotlyOutput("GapAgeCOD", height = 600)), 
+                                               )
+                                               
+                                           )
                                   )
                        )
                 )
@@ -2091,12 +2100,14 @@ server <- shinyServer(function(input, output, session){
             mortality_chapters = max(chapters20()$chapter) #number of chapters
             age_initial <- colnames(res[[1]])
             age_groups <- dim(res[[1]])[2] #number of agegroups
+            selected_agegrp <- max(which((input$CODAge >= as.numeric(age_initial)) == TRUE))
+            
             #total rates
             Total_rate_M <- res[[3]][mortality_chapters+1,]
             Total_rate_F <- res[[4]][mortality_chapters+1,] 
             
             #gender gap distribution
-            Gender_Gap_Distribution <- Gender_Gap_Age[[3]][-nrow(Gender_Gap_Age[[3]]), Desired_age_group]
+            Gender_Gap_Distribution <- Gender_Gap_Age[[3]][-nrow(Gender_Gap_Age[[3]]), selected_agegrp]
             Contribution_per_cause<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
             ##difference in ratios to calc gender gap by mortality chapter
             Ratio_of_Differences<-matrix(0,nrow=mortality_chapters,ncol=age_groups)
@@ -2112,7 +2123,31 @@ server <- shinyServer(function(input, output, session){
             
         })
         
-        
+        output$GapAgeCOD <- renderPlotly({
+            
+            scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
+            
+            res_gender <- Changes_age_cause_gap()[,-ncol(Changes_age_cause_gap())]
+            dim1 <- dim(res_gender)[[1]]
+            dim2 <- dim(res_gender)[[2]]
+            hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
+                                        "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                        rep("Female - Male", dim1*dim2), "<br>"),
+                                 byrow = FALSE, ncol = dim2)
+            hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
+            
+            heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                      cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                      plot_method = c("plotly"), main = paste0("Gender Gap in Life Expectancy (", 
+                                                               input$range_tcod[1], ", ",
+                                                               "Female - Male", ", ", input$CODCountry, ")"), 
+                      font = list(size = 8), custom_hovertext = hover_text2, 
+                      key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+                layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
+                                    showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                       yaxis = list(ticktext = rev(chapters20()$diagn), title = "",
+                                    showgrid = F, showticklabels = TRUE))
+        })
         
 
 })
