@@ -176,12 +176,40 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                         class = 'dropdown'), titleWidth = 300
                             )
 
+META <- list(
+    # Name of the app, used in the browser/tab title
+    name        = "rstudio::conf(\'tweets\')",
+    # A description of the app, used in social media cards
+    description = "A Shiny Dashboard, rstudio::conf #FOMO reducer, tweet explorer by @grrrck",
+    # Link to the app, used in social media cards
+    app_url     = "https://apps.garrickadenbuie.com/rstudioconf-2019/",
+    # Link to app icon image, used in social media cards
+    app_icon    = "https://garrickadenbuie.com/images/2019/rstudioconf-2019-icon.png",
+    # The name of the conference or organization
+    conf_org    = "rstudio::conf",
+    # App title, long, shown when sidebar is open, HTML is valid
+    logo_lg     = "<em>rstudio</em>::<strong>conf</strong>(2019)",
+    # App title, short, shown when sidebar is collapsed, HTML is valid
+    logo_mini   = "<em>rs</em><strong>c</strong>",
+    # Icon for box with count of conference-related tweets
+    topic_icon  = "comments",
+    # Icon for box with count of "community"-related tweets
+    topic_icon_full = "r-project",
+    # AdminLTE skin color for the dashboard
+    skin_color  = "blue-light",
+    # AdminLTE theme CSS files
+    theme_css   = c("ocean-next/AdminLTE.css", "ocean-next/_all-skins.css")
+)
+
 
 ui = dashboardPagePlus(
     
    # skin = "blue-light",
-    
-    title = "MortalityViz",
+    title = 'MortalityViz',
+    #skin  = META$skin_color,
+    #theme = c(META$theme_css, "custom.css"),
+    #sidebar_mini = TRUE,
+
     
     # Dashboard Page Setup ----------------------------------------------------
     dbHeader,
@@ -198,13 +226,13 @@ ui = dashboardPagePlus(
                          image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
         ),
         sidebarMenu(
-            menuItem("INTRODUCTION", tabName = "tab_intro"),
-            menuItem("LATEST NEWS", tabName = "tab_news"),
-            menuItem("MORTALITY DECOMP", #tabName = "tab_le", 
+            menuItem("INTRODUCTION", tabName = "tab_intro", icon = icon("lightbulb")),
+            menuItem("LATEST NEWS", tabName = "tab_news", icon = icon("file-alt")),
+            menuItem("DECOMPOSITION", #tabName = "tab_le", 
                          icon = icon("desktop"), startExpanded = TRUE,
                 menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
-                menuSubItem("Decomposition by Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
-                menuSubItem("Decomposition by Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
+                menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
+                menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
             menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")), #info
             menuItem("Q & A", tabName = "tab_qa", icon = icon("question-circle"))#, 
             #HTML(paste0(
@@ -232,13 +260,21 @@ ui = dashboardPagePlus(
     dashboardBody(
     
         tags$script(HTML("$('body').addClass('sidebar-mini');")),
-        
         theme_custom,
         
+        
         #tabItems(
-        tags$head(tags$style(HTML('.main-sidebar { font-size: 20px; font-weight: bold;}
-                        .skin-blue .main-header .logo:hover {  background-color: #47b2ff; }
-                        .skin-blue .main-header .navbar {  background-color: "rgb(255,255,255)"; }   ')),
+        tags$head(tags$style(HTML("@import url('https://fonts.googleapis.com/css?family=News+Cycle');
+                                    h1 {font-family:'News Cycle',sans-serif;
+                                        font-size: 48px;
+                                        font-weight: 1000;
+                                        line-height: 1.1;
+                                        color: 'slategrey';
+                                    }")),
+        
+                      #  '.main-sidebar { font-size: 20px; font-weight: bold;}
+                      #  .skin-blue .main-header .logo:hover {  background-color: #47b2ff; }
+                      #  .skin-blue .main-header .navbar {  background-color: "rgb(255,255,255)"; }')),
                   #'.main-sidebar {font-weight: bold; font-family: Source Sans Pro
                      # font-size: 30px; ')),
                   
@@ -285,6 +321,18 @@ ui = dashboardPagePlus(
                         "lalalallala",
                         userPostMedia(src = "https://adminlte.io/themes/AdminLTE/dist/img/photo2.png"),
                         
+                    )
+                ), 
+                box(
+                    title = ,
+                    status = "warning",
+                    width = 6,
+                    userPost(
+                        id = 1,
+                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        author = "Latest Updates on the Web Application",
+                        description = "Benjamin Hsu",
+                        "bippity boppity boo fixed this n that", 
                     )
                 )
             )
