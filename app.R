@@ -75,7 +75,7 @@ theme_custom <- shinyDashboardThemeDIY(
     
     ,sidebarMenuBackColor = "rgb(53,64,83)" #"transparent" for sidebar collapse menu
     ,sidebarMenuPadding = 0
-    ,sidebarMenuBorderRadius = 20
+    ,sidebarMenuBorderRadius = 5
     
     ,sidebarShadowRadius = "2px 2px 2px" #sidebar shadow
     ,sidebarShadowColor = "#aaaaaa"
@@ -91,7 +91,7 @@ theme_custom <- shinyDashboardThemeDIY(
     ,sidebarTabTextSize = 14
     ,sidebarTabBorderStyle = "none none none none" #border clockwise from top
     ,sidebarTabBorderColor = ""
-    ,sidebarTabBorderWidth = 0
+    ,sidebarTabBorderWidth = 20
     
     #selected sidebar = darker blue shading, w/ white text
     ,sidebarTabBackColorSelected = "rgb(46,58,72)" #selected even darker blue
@@ -173,12 +173,13 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                 tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
                                           img(src = 'ColumbiaLogo.png',
                                               title = "Contact Us", height = "20px", width = "20px")),
-                                        class = 'dropdown') 
+                                        class = 'dropdown'), titleWidth = 300
                             )
 
 
 ui = dashboardPagePlus(
     
+   # skin = "blue-light",
     
     title = "MortalityViz",
     
@@ -190,22 +191,39 @@ ui = dashboardPagePlus(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
-
+        width = 300,
         sidebarUserPanel("Mushu",
                          subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
                          # Image file should be in www/ subdir
                          image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
         ),
         sidebarMenu(
-           # id = "tabs",
-            #convertMenuItem(
+            menuItem("INTRODUCTION", tabName = "tab_intro"),
+            menuItem("LATEST NEWS", tabName = "tab_news"),
             menuItem("MORTALITY DECOMP", #tabName = "tab_le", 
                          icon = icon("desktop"), startExpanded = TRUE,
                 menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
                 menuSubItem("Decomposition by Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
                 menuSubItem("Decomposition by Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
-            menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")) #info
-            
+            menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")), #info
+            menuItem("Q & A", tabName = "tab_qa", icon = icon("question-circle"))#, 
+            #HTML(paste0(
+            #    "<br><br><br><br><br><br><br><br><br>",
+            #    "<table style='margin-left:auto; margin-right:auto;'>",
+            ##    "<tr>",
+            #    "<td style='padding: 5px;'><a href='https://www.facebook.com/SocietyofActuaries' target='_blank'><i class='fab fa-facebook-square fa-lg'></i></a></td>",
+            #    "<td style='padding: 5px;'><a href='https://www.twitter.com/soactuaries' target='_blank'><i class='fab fa-twitter fa-lg'></i></a></td>",
+            #    "<td style='padding: 5px;'><a href='https://www.instagram.com/soactuaries' target='_blank'><i class='fab fa-instagram fa-lg'></i></a></td>",
+            #    "</tr>",
+            #   "</table>"
+            #    ),
+            #    HTML(paste0(
+            #        "<script>",
+            #        "var today = new Date();",
+            #        "var yyyy = today.getFullYear();",
+            #        "</script>",
+            #        "<p style = 'text-align: center;'><small>&copy; - <a href='https://benjaminhsu.netlify.com' target='_blank'>Benjamin Hsu</a> - </small></p>")
+            #    ))
            
         )
     ),
@@ -229,11 +247,53 @@ ui = dashboardPagePlus(
                   ),
         
     tabItems(
+        # About - tab_introduction of the web application -------------------------------------------------------
+        tabItem(
+            "tab_le", 
+            fluidRow(
+                
+            )
+        ),
+        # About - tab_introduction of the web application -------------------------------------------------------
+        tabItem(
+            "tab_news", 
+            fluidRow(
+                box(
+                    title = ,
+                    status = "primary",
+                    width = 6,
+                    userPost(
+                        id = 1,
+                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        author = "The SOA Explores the Role of Actuaries in the Face of the COVID-19 Situation",
+                        description = "R. Dale Hall",
+                        "R. Dale Hall, FSA, CERA, MAAA, CFA managing director of Research for the Society of Actuaries (SOA) explains 
+                        the many roles actuaries can have as COVID-19 spreads around the world.", HTML("</br></br>"),
+                        "Schaumburg, Ill., March 10, 2020 - The past few weeks have seen the emergence and spread of a novel coronavirus named 
+                        'SARS-CoV2' that causes the respiratory disease named 'coronavirus disease 2019' (COVID-19).  While original detection 
+                        occurred in China, the U.S. Centers for Disease Control and Prevention (CDC) note that the disease is now detected in 60 
+                        locations internationally, including the United States.", HTML("</br>"),
+                        div(style="display:inline-block; width:180%; text-align: center;", actionButton(inputId='ab1', label="Learn More", 
+                                            icon = icon("plus"), 
+                                            onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                    ),
+                    userPost(
+                        id = 2,
+                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        author = "Test Post 2",
+                        description = "User Name",
+                        "lalalallala",
+                        userPostMedia(src = "https://adminlte.io/themes/AdminLTE/dist/img/photo2.png"),
+                        
+                    )
+                )
+            )
+        ),
         # About - tab_life exp -------------------------------------------------------
         tabItem(
             "tab_le", 
             fluidRow(
-                # overview start ------------------------------------------------
+                # overview start ------------------------------------------------######################################product list here, user post in tab before
                 box(
                     title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;DECOMPOSITION DESCRIPTION<br><br>")),
                     status = "danger",
@@ -294,7 +354,8 @@ ui = dashboardPagePlus(
                     ),
                     tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
                                               p {color: #5e697d}'))) 
-                )
+                ),
+                
             )
         ),
         tabItem(
@@ -568,10 +629,9 @@ ui = dashboardPagePlus(
         ),
                     
         
-        # About - tab_about -------------------------------------------------------
-        tabItem(
+        # About - tab_about -------------------------------------------------------##########################timeline?
+        tabItem( 
             "tab_about",
-            
             
             fluidRow(
                 # About - About Me - start ------------------------------------------------
@@ -594,43 +654,40 @@ ui = dashboardPagePlus(
                              with a Certificate in Actuarial Science. I like to work on projects with statistical 
                              and machine learning. You can find more of my work on my website, or get in touch with 
                              me via LinkedIn or my email above.")
-                
-                
-               
-            
-                #box(
-                #    title = "About me",
-                #    status = "danger",
-                #    width = 3,
-                #    tags$p(
-                #        class = "text-center",
-                #        tags$img(class = "img-responsive img-rounded center-block", src = "me.png", style = "max-width: 150px;")
-                #    ),
-                #    tags$p(
-                #        class = "text-center",
-                #        tags$strong("Hi! I'm Ben!"),
-                #        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), ")"))
-                #    ),
-                #    tags$p(
-                #        "I am a Master of Science student in Actuarial Science at Columbia University.",
-                #        "I graduated from the University of Rochester with a Bachelor's degree in Statistics",
-                #        "with a Certificate in Actuarial Science."
-                #    ),
-                #    tags$p(
-                #        "I like to work on projects with",
-                #        "statistical and machine learning. You can find more of my work on my website",
-                #        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), "."))
-                #    ),
-                #    tags$p(
-                #        "Get in touch with me on LinkedIn at",
-                #        HTML(paste0("(", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu", target = "a()"), "),")),
-                #        "online at",
-                #        HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")),
-                #        "or by email at",
-                #        HTML(paste0(tags$a(href = "mailto:bh2722@columbia.edu", "bh2722@columbia.edu"), "."))
-                #    )
-                #)
                 )
+            ), 
+    
+        tabItem( 
+            "tab_qa",
+            fluidRow(
+                box(
+                    title = "Frequently Asked Questions",
+                    width = 12,
+                    accordion(
+                        accordionItem(
+                            id = 1,
+                            title = "Decomposition by Age",
+                            color = "danger",
+                            collapsed = FALSE,
+                            "This is some text! I'm basicallly wondering how long this text can go and whether or not it will just be nice and automatically wrap to the next line or is it just goinng to be ike the other stuff and not wrap at all and be a bummer function. I guess if we continue to keep typing like this into a big paragraph we can be hopeful that it will actullay become some sort of stuff and wrap like a nce one"
+                        ),
+                        accordionItem(
+                            id = 2,
+                            title = "Accordion Item 2",
+                            color = "warning",
+                            collapsed = FALSE,
+                            "This is some text!"
+                        ),
+                        accordionItem(
+                            id = 3,
+                            title = "Accordion Item 3",
+                            color = "info",
+                            collapsed = FALSE,
+                            "This is some text!"
+                        )
+                    )
+                )
+            )
             )
         )
         
