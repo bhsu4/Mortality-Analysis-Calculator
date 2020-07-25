@@ -28,7 +28,7 @@ library(plotly)
 library(heatmaply)
 library(shinyHeatmaply)
 library(shinyWidgets)
-
+library(slickR)
 
 #changes life exp
 library("gplots")
@@ -209,7 +209,10 @@ ui = dashboardPagePlus(
     #skin  = META$skin_color,
     #theme = c(META$theme_css, "custom.css"),
     #sidebar_mini = TRUE,
-
+    footer = dashboardFooter(
+        left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
+                                "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by: Benjamin Hsu</a> - </medium></p>"))
+    ),
     
     # Dashboard Page Setup ----------------------------------------------------
     dbHeader,
@@ -293,7 +296,7 @@ ui = dashboardPagePlus(
             fluidRow(
                     box(
                         title = "", 
-                        status = "primary",
+                        status = "success",
                         width = 4, height = 425,
                         column(width = 12, align = "center",
                                         img(src = "compass-icon.png", width=100),
@@ -301,14 +304,13 @@ ui = dashboardPagePlus(
                         "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                         Guided learning with explanation on the depths of mortality decomposition analysis. 
                         Follow step by step process to explore the technical details of mortality decomposition. </p>")), 
-                        #column(12, align = "center", actionButton("explore_more", "Learn more")), 
                         div(style="display:inline-block; width:100%; text-align: center;", 
                             actionButton(inputId='explore_more', label="Let's Explore", icon = icon("plus")))
                         )
                     ), 
                     box(
                         title = "",
-                        status = "warning",
+                        status = "primary",
                         width = 4, height = 425, 
                         column(width = 12, align = "center",
                                img(src = "book-icon.png", width=100),
@@ -322,7 +324,7 @@ ui = dashboardPagePlus(
                     ), 
                     box(
                         title = "",
-                        status = "success",
+                        status = "warning",
                         width = 4, height = 425, 
                         column(width = 12, align = "center",
                                img(src = "users-icon.png", width=100),
@@ -334,13 +336,57 @@ ui = dashboardPagePlus(
                                    actionButton(inputId='community_more', label="Meet Us", icon = icon("plus")))
                         )
                     ), 
+                    mainPanel(
+                        title = "", 
+                        width = 12, 
+                        slickROutput("slickr", width = "90%", height = "150px")
+                    ), 
                     box(
                         title = "",
-                        status = "success",
-                        width = 12, height = 425, 
-                        slickROutput("slickr", width = '500px')
+                        status = "danger",
+                        width = 8, height = 425, 
+                        column(width = 12, align = "center",
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 20px 35px;>Learn About Actuarial Science</p></h2></b>"))),
+                        column(width = 4, align = "left", 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Career & Learning</p></h3></b><br>")),
+                               HTML(paste0(h4(tags$a(href = "https://soa.org", "Society of Actuaries", target = "a()")), "<br>")), 
+                               HTML(paste0(h4(tags$a(href = "https://sps.columbia.edu/academics/masters/actuarial-science", "Columbia University Masters in Actuarial Science", target = "a()"))))
+                        ),
+                        column(width = 4, align = "left", 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Professional Development</p></h3></b><br>")),
+                               HTML(paste0(h4(tags$a(href = "https://www.soa.org/prof-dev/pdopportunities/?epsremainingpath=/&filters=Opportunity_Type[ECOURSE]&pagesize=All&view=", "SOA E-Course", target = "a()")), "<br>"))
+                        ),
+                        column(width = 4, align = "left", 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Additional Resources</p></h3></b><br>")),
+                               HTML(paste0(h4(tags$a(href = "https://pathways.soa.org/", "Educational Pathways", target = "a()")), "<br>")), 
+                               HTML(paste0(h4(tags$a(href = "https://beanactuary.org", "Be An Actuary", target = "a()")), "<br>")), 
+                               HTML(paste0(h4(tags$a(href = "https://www.soa.org/resources/soa-explorer/", "SOA Explorer", target = "a()"))))
+                        )
+                        
+                    ), 
+                    box(
+                        title = "",
+                        status = "danger",
+                        width = 4, height = 425, 
+                        column(width = 12, align = "center",
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 20px 35px;>Support Us</p></h2></b>"))),
+                        column(width = 12, align = "left", 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Society of Actuaries</p></h3></b><br>")),
+                               column(width = 12, align = "center", 
+                                   socialButton(url = "https://www.facebook.com/SocietyofActuaries", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
+                                   socialButton(url = "https://www.twitter.com/soactuaries", type = "twitter"), HTML("&nbsp&nbsp&nbsp&nbsp"),
+                                   socialButton(url = "https://www.instagram.com/soactuaries", type = "instagram"), hr(),
+                               )
+                        ), 
+                        column(width = 12, align = "left", 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Columbia University's Actuarial Science Program</p></h3></b><br>")),
+                               column(width = 12, align = "center", 
+                                      socialButton(url = "https://www.facebook.com/columbia", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
+                                      socialButton(url = "https://www.linkedin.com/in/columbia-university-ms-in-actuarial-science-program-29512515b/", type = "linkedin"), HTML("&nbsp&nbsp&nbsp&nbsp"),
+                                      socialButton(url = "https://www.instagram.com/columbiaascu/", type = "instagram")
+                               )
+                        )
                     )
-                    
             )
         ),
         
@@ -1293,6 +1339,12 @@ server <- shinyServer(function(input, output, session){
         observeEvent(input$community_more, {
             newtab <- switch(input$tabs_all, "tab_home" = "tab_community")
             updateTabItems(session, "tabs_all", newtab)
+        })
+        
+        #slickR
+        output$slickr <- renderSlickR({
+            imgs <- c("soa_banner.png", "sps_banner.png")
+            slickR(imgs)
         })
         
         #options(warn = -1) 
