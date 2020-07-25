@@ -226,6 +226,10 @@ ui = dashboardPagePlus(
                          image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
         ),
         sidebarMenu(
+            menuItem("HOME", tabName = "tab_home", icon = icon("home"), startExpanded = FALSE, 
+                     menuSubItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
+                     menuSubItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
+                     menuSubItem("Community", tabName = "tab_community", icon = icon("users"))),
             menuItem("INTRODUCTION", tabName = "tab_intro", icon = icon("lightbulb")),
             menuItem("LATEST NEWS", tabName = "tab_news", icon = icon("file-alt")),
             menuItem("DECOMPOSITION", #tabName = "tab_le", 
@@ -285,9 +289,69 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_le", 
+            "tab_explore", HTML("<b><h3>Mortality Analysis Calculator</h3></b>"), hr(),
             fluidRow(
-                
+                    box(
+                        title = "", 
+                        status = "primary",
+                        width = 4, height = 425,
+                        column(width = 12, align = "center",
+                                        img(src = "compass-icon.png", width=100),
+                        HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Explore</p></h2></b>",
+                        "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                        Guided learning with explanation on the depths of mortality decomposition analysis. 
+                        Follow step by step process to explore the technical details of mortality decomposition. </p>")), 
+                        #column(12, align = "center", actionButton("explore_more", "Learn more")), 
+                        div(style="display:inline-block; width:100%; text-align: center;", 
+                            actionButton(inputId='explore_more', label="Let's Explore", icon = icon("plus"), 
+                                         onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                        )
+                    ), 
+                    box(
+                        title = "",
+                        status = "warning",
+                        width = 4, height = 425, 
+                        column(width = 12, align = "center",
+                               img(src = "book-icon.png", width=100),
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Documentation</p></h2></b>",
+                               "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                               Find documentation and walkthrough of code for different decomposition functions. 
+                               Work your way towards understanding decomposition analysis inside and out. </p>")), 
+                               div(style="display:inline-block; width:100%; text-align: center;", 
+                                   actionButton(inputId='docu_more', label="See Documentation", icon = icon("plus"),  
+                                                onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                        )
+                    ), 
+                    box(
+                        title = "",
+                        status = "success",
+                        width = 4, height = 425, 
+                        column(width = 12, align = "center",
+                               img(src = "users-icon.png", width=100),
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Community</p></h2></b>",
+                               "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                               Get your questions answered by our community of actuaries and developers. 
+                               Connect with us to build your network, and see the latest projects being worked on. </p>")), 
+                               div(style="display:inline-block; width:100%; text-align: center;", 
+                                   actionButton(inputId='community_more', label="Meet Us", icon = icon("plus"),  
+                                                onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                        )
+                    
+                )
+            )
+        ),
+        
+        
+        
+        
+        
+        
+        
+        # About - tab_introduction of the web application -------------------------------------------------------
+        tabItem(
+            "tab_intro", 
+            fluidRow(
+                uiOutput("ui_intro")
             )
         ),
         # About - tab_introduction of the web application -------------------------------------------------------
@@ -1216,7 +1280,7 @@ GenGap_AgeCOD <- function(cntry, t){
 
 server <- shinyServer(function(input, output, session){ 
     
-    
+
         #options(warn = -1) 
     
         observeEvent(input$heatQA, {
