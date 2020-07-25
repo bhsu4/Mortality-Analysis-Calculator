@@ -225,12 +225,12 @@ ui = dashboardPagePlus(
                          # Image file should be in www/ subdir
                          image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
         ),
-        sidebarMenu(
-            menuItem("HOME", tabName = "tab_home", icon = icon("home"), startExpanded = FALSE, 
+        sidebarMenu(id = "tabs_all",
+            menuItem("HOME", tabName = "tab_home", icon = icon("home")), 
+            menuItem("LEARN MORE", tabName = "tab_learnmore", icon = icon("lightbulb"), startExpanded = FALSE, 
                      menuSubItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
                      menuSubItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
                      menuSubItem("Community", tabName = "tab_community", icon = icon("users"))),
-            menuItem("INTRODUCTION", tabName = "tab_intro", icon = icon("lightbulb")),
             menuItem("LATEST NEWS", tabName = "tab_news", icon = icon("file-alt")),
             menuItem("DECOMPOSITION", #tabName = "tab_le", 
                          icon = icon("desktop"), startExpanded = TRUE,
@@ -289,7 +289,7 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_explore", HTML("<b><h3>Mortality Analysis Calculator</h3></b>"), hr(),
+            "tab_home", HTML("<b><h3>Mortality Analysis Calculator</h3></b>"), hr(),
             fluidRow(
                     box(
                         title = "", 
@@ -303,8 +303,7 @@ ui = dashboardPagePlus(
                         Follow step by step process to explore the technical details of mortality decomposition. </p>")), 
                         #column(12, align = "center", actionButton("explore_more", "Learn more")), 
                         div(style="display:inline-block; width:100%; text-align: center;", 
-                            actionButton(inputId='explore_more', label="Let's Explore", icon = icon("plus"), 
-                                         onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                            actionButton(inputId='explore_more', label="Let's Explore", icon = icon("plus")))
                         )
                     ), 
                     box(
@@ -318,8 +317,7 @@ ui = dashboardPagePlus(
                                Find documentation and walkthrough of code for different decomposition functions. 
                                Work your way towards understanding decomposition analysis inside and out. </p>")), 
                                div(style="display:inline-block; width:100%; text-align: center;", 
-                                   actionButton(inputId='docu_more', label="See Documentation", icon = icon("plus"),  
-                                                onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                                   actionButton(inputId='docu_more', label="See Documentation", icon = icon("plus")))
                         )
                     ), 
                     box(
@@ -333,27 +331,30 @@ ui = dashboardPagePlus(
                                Get your questions answered by our community of actuaries and developers. 
                                Connect with us to build your network, and see the latest projects being worked on. </p>")), 
                                div(style="display:inline-block; width:100%; text-align: center;", 
-                                   actionButton(inputId='community_more', label="Meet Us", icon = icon("plus"),  
-                                                onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
+                                   actionButton(inputId='community_more', label="Meet Us", icon = icon("plus")))
                         )
+                    ), 
+                    box(
+                        title = "",
+                        status = "success",
+                        width = 12, height = 425, 
+                        slickROutput("slickr", width = '500px')
+                    )
                     
-                )
             )
         ),
-        
-        
-        
-        
-        
-        
         
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_intro", 
-            fluidRow(
-                uiOutput("ui_intro")
-            )
+            "tab_explore", "Explore!",
         ),
+        tabItem(
+            "tab_docu", "Documentation!",
+        ),
+        tabItem(
+            "tab_community", "people!",
+        ),
+        
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
             "tab_news", 
@@ -1279,8 +1280,21 @@ GenGap_AgeCOD <- function(cntry, t){
 
 
 server <- shinyServer(function(input, output, session){ 
-    
 
+        #homepage reactie action buttons
+        observeEvent(input$explore_more, {
+            newtab <- switch(input$tabs_all, "tab_home" = "tab_explore")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        observeEvent(input$docu_more, {
+            newtab <- switch(input$tabs_all, "tab_home" = "tab_docu")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        observeEvent(input$community_more, {
+            newtab <- switch(input$tabs_all, "tab_home" = "tab_community")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        
         #options(warn = -1) 
     
         observeEvent(input$heatQA, {
