@@ -205,7 +205,9 @@ META <- list(
 ui = dashboardPagePlus(
     
    # skin = "blue-light",
-    title = 'MortalityViz',
+    #title = 'MortalityViz',
+    title = "rstudio::conf(\'Mortality-Analysis-Calculator\')",
+    #"<em>rs</em><strong>c</strong>",
     #skin  = META$skin_color,
     #theme = c(META$theme_css, "custom.css"),
     #sidebar_mini = TRUE,
@@ -213,16 +215,21 @@ ui = dashboardPagePlus(
         left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
                                 "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by: Benjamin Hsu</a> - </medium></p>"))
     ),
-    
+    dashboardHeader(
+        title = HTML(glue::glue(
+            '<span class="logo-mini">{"<strong>mac</strong>"}</span>
+             <span class="logo-lg">{"<strong>Mortality Analysis Calculator</strong>"}</span>'
+        )), titleWidth = 315
+    ),
     # Dashboard Page Setup ----------------------------------------------------
-    dbHeader,
+    #dbHeader,
     #dashboardHeader(
     ### changing logo
     # title = logo_blue_gradient),
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
-        width = 300,
+        width = 315,
         sidebarUserPanel("Mushu",
                          subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
                          # Image file should be in www/ subdir
@@ -230,7 +237,7 @@ ui = dashboardPagePlus(
         ),
         sidebarMenu(id = "tabs_all",
             menuItem("HOME", tabName = "tab_home", icon = icon("home")), 
-            menuItem("LEARN MORE", tabName = "tab_learnmore", icon = icon("lightbulb"), startExpanded = FALSE, 
+            menuItem("LEARN MORE", tabName = "tab_learnmore", icon = icon("lightbulb"), startExpanded = TRUE, 
                      menuSubItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
                      menuSubItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
                      menuSubItem("Community", tabName = "tab_community", icon = icon("users"))),
@@ -240,7 +247,6 @@ ui = dashboardPagePlus(
                 menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
                 menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
                 menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
-            menuItem("ABOUT", tabName = "tab_about", icon = icon("gear")), #info
             menuItem("Q & A", tabName = "tab_qa", icon = icon("question-circle"))#, 
             #HTML(paste0(
             #    "<br><br><br><br><br><br><br><br><br>",
@@ -292,7 +298,7 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_home", HTML("<b><h3>Mortality Analysis Calculator</h3></b>"), hr(),
+            "tab_home", HTML(paste0("<nobr><b><h3>Mortality Analysis Calculator v.1.0</h3></b></nobr>")), hr(),
             fluidRow(
                     box(
                         title = "", 
@@ -392,14 +398,141 @@ ui = dashboardPagePlus(
         
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_explore", "Explore!",
+            "tab_explore", 
+            fluidRow(
+                column(width = 12,
+                    column(width = 8, 
+                    mainPanel(title = "", width = NULL,
+                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Mortality Analysis Calculator</p></h2></b>", 
+                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    The Mortality Analysis Calculator (MAC) is a tool to analyze mortality information from the
+                                    Human Mortality Database (HMD) and Cause of Death Datababse. Users will directly interact with 
+                                    our flexible interface and receive results quickly. The visualizations provide key information 
+                                    presented in a simplifed and easy to understand way of looking at decomposition analysis. <h3></p>"), 
+                             paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    As we navigate into the future, emerging technology and innovations contine to play a major 
+                                    role in the extroadinary decline in human mortality. Improvements in economic and social conditions
+                                    have contributed to the increased health status of the population. To quantify such dynamics, 
+                                    techniques such as mortality decomposition analysis allow us to determine mortality contributions. 
+                                    This will provide more information about our population of interest.<h3></p>"))
+                    ), 
+                    mainPanel(title = "", width = NULL,
+                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Decomposition of Mortality</p></h2></b>", 
+                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    Mortality decomposition is a tool to explain the underlying changes in its components. 
+                                    The central aim is to attribute the difference in an aggregate index to better examine specific
+                                    contributions. <h3></p><br>"))
+                    )
+                ), 
+                column(width = 3, 
+                       align = "center", img(src = "four-icon.png", width=300)),
+            ),
+            column(width = 12, 
+                column(width = 3, 
+                    flipBox(id = 1, main_img = "number1-icon.svg", height = 1000,
+                          front_title = "Life Expectancy", back_title = "Functionality in MAC",
+                               HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                          We've seen an increase in life expectancy since the second half of the twentieth
+                                          century driven by underlying mortality improvement. Learn how life expectancy
+                                          is changing amongst the population of interest. </p>")) 
+                          , 
+                          back_content = tagList(
+                               HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                               <b>Decomposition by Age:</b> The user can compute the effects attributable to each relevant age group(s). <br></br>
+                               <b>Decomposition by Age/COD:</b> The user can compute the effects attributable to selected age group.</p>")
+                          ))
+                    )
+                ),
+                column(width = 3, 
+                    flipBox(id = 2, main_img = "number2-icon.svg", 
+                         front_title = "Life Preparancy", back_title = "Functionality in MAC",
+                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                            There is a growing need to promote retirement preparedness that goes beyond looking 
+                                            at the average ages that might be obtained across the population. Learn more about life
+                                            preparancy and its historical evolution. </p>")) 
+                         , 
+                         back_content = tagList(
+                                   HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                   <b>Decomposition by Age:</b> The user can observe the change in life preparancy, and compute the 
+                                   effects attributable to each relevant age group(s). <br></br>
+                                   <b>Decomposition by Age/COD:</b> The user can compute the effects attributable to selected age group.</p>")
+                        ))
+                    )
+                ),
+                column(width = 3, 
+                    flipBox(id = 3, main_img = "number3-icon.svg",
+                        front_title = "Gender Gap", back_title = "Functionality in MAC",
+                               HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                   Gender is the focal point of all analysis of mortality. Demographers study gender to assess 
+                                   and gain information on a population. Take a deeper dive into the gender gap, and better 
+                                   understand complex gender relations. </p>")) 
+                        , 
+                        back_content = tagList(
+                                   HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                   <b>Decomposition by Age:</b> The user can observe the gender gap in life expectancy, and compute the 
+                                   effects attributable to each relevant age group(s). <br></br>
+                                   <b>Decomposition by Age/COD:</b> The user can compute the gender gap effects attributable to selected age group.</p>")
+                        ))
+                     )
+                ),
+                column(width = 3, 
+                    flipBox(id = 4, main_img = "number4-icon.svg",
+                        front_title = "Mortality Chapters", back_title = "Functionality in MAC",
+                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                     Cause-specific mortality provide relevant information about the health status of the population.
+                                     Track the leading causes of death, and identify challenges and interventions needed 
+                                     to improve the health of the population.</p>"))
+                        , 
+                        back_content = tagList(
+                                   HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                   <b>Decomposition by Age/COD:</b> The user can compute death rate for each cause-specific mortality 
+                                   to relevant age group(s).</p>")
+                        ))
+                    )
+                )
+            ), 
+            column(width = 12,
+                   column(width = 12, 
+                          mainPanel(title = "", width = NULL,
+                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Get Started Now!</p></h2></b>", 
+                                                "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    Explore the Mortality Analysis Calculator, and start your mortality decomposition journey!
+                                    Take a dive into decomposition analysis by age or by age and cause-of-death. Spend your
+                                    time learning more about how the population's health status have changed. <h3></p>")),
+                                    div(style="display:inline-block; width:100%; text-align: center; font-size: 40px", 
+                                        actionButton(inputId='start_more', label="Get Started"))
+                          ), 
+                   )
+            ),
+            column(width = 12,
+                   column(width = 6, 
+                          mainPanel(title = "", width = NULL,
+                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Keep Up To Date With Latest News</p></h2></b>", 
+                                                "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    Read about the latest news within the industry, and how it will influence future actuarial 
+                                    work. Keep up to date on fixes and new updates to the Mortality 
+                                    Analysis Calculator. Browse new ideas that will be implemented, and developed. <h3></p>")),
+                                    div(style="display:inline-block; width: 180%; text-align: center;", 
+                                        actionButton(inputId='news_more', label="Latest News"))
+                          )
+                   ),
+                   column(width = 6, 
+                          mainPanel(title = "", width = NULL,
+                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Shape Future Releases</p></h2></b>", 
+                                                "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                    Browse frequently asked questions and look at the responses answered by our team.
+                                    Share your ideas about mortality decomposition and web development with the community. <h3></p>")), 
+                                    div(style="display:inline-block; width:180%; text-align: center;", 
+                                        actionButton(inputId='faq_more', label="Read FAQ"))
+                          )
+                   )
+            )
+        )
         ),
         tabItem(
             "tab_docu", "Documentation!",
         ),
-        tabItem(
-            "tab_community", "people!",
-        ),
+        
         
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
@@ -448,7 +581,7 @@ ui = dashboardPagePlus(
                 )
             )
         ),
-        # About - tab_life exp -------------------------------------------------------
+        # decomp by age - tab_life exp -------------------------------------------------------
         tabItem(
             "tab_le", 
             fluidRow(
@@ -788,9 +921,9 @@ ui = dashboardPagePlus(
         ),
                     
         
-        # About - tab_about -------------------------------------------------------##########################timeline?
+        # About - tab_about ------------ introducing community, and contacts
         tabItem( 
-            "tab_about",
+            "tab_community",
             
             fluidRow(
                 # About - About Me - start ------------------------------------------------
@@ -798,12 +931,12 @@ ui = dashboardPagePlus(
                     title = "Benjamin Hsu",
                     subtitle = "M.S. in Actuarial Science",
                     type = NULL,
-                    width = 6,
+                    width = 4,
                     src = "me.png",
                     background = TRUE,
                     backgroundUrl = "https://cdn.hipwallpaper.com/i/55/63/hYxHpB.jpg",
-                    closable = FALSE,
-                    HTML("<br>"), HTML("<br>"),
+                    closable = FALSE, collapsible = FALSE,
+                    HTML(paste0("<br>", "<h4><p style = 'text-align: center ; color: black'>Lead Developer</p></h4></b>")), hr(),
                     tags$strong("Hi! I'm Ben!"), 
                     HTML(paste0("Get in touch with me on LinkedIn (", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), "),")),  
                     "online at", HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")), 
@@ -1338,6 +1471,20 @@ server <- shinyServer(function(input, output, session){
         })
         observeEvent(input$community_more, {
             newtab <- switch(input$tabs_all, "tab_home" = "tab_community")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        
+        #explore reactie action buttons
+        observeEvent(input$start_more, {
+            newtab <- switch(input$tabs_all, "tab_explore" = "tab_le")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        observeEvent(input$news_more, {
+            newtab <- switch(input$tabs_all, "tab_explore" = "tab_news")
+            updateTabItems(session, "tabs_all", newtab)
+        })
+        observeEvent(input$faq_more, {
+            newtab <- switch(input$tabs_all, "tab_explore" = "tab_qa")
             updateTabItems(session, "tabs_all", newtab)
         })
         
