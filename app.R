@@ -313,7 +313,7 @@ ui = dashboardPagePlus(
                     box(
                         title = "", 
                         status = "success",
-                        width = 4, height = 425,
+                        width = 4, height = 500,
                         column(width = 12, align = "center",
                                         img(src = "compass-icon.png", width=100),
                         HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Explore</p></h2></b>",
@@ -327,7 +327,7 @@ ui = dashboardPagePlus(
                     box(
                         title = "",
                         status = "primary",
-                        width = 4, height = 425, 
+                        width = 4, height = 500, 
                         column(width = 12, align = "center",
                                img(src = "book-icon.png", width=100),
                                HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Documentation</p></h2></b>",
@@ -341,7 +341,7 @@ ui = dashboardPagePlus(
                     box(
                         title = "",
                         status = "warning",
-                        width = 4, height = 425, 
+                        width = 4, height = 500, 
                         column(width = 12, align = "center",
                                img(src = "users-icon.png", width=100),
                                HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Community</p></h2></b>",
@@ -538,9 +538,66 @@ ui = dashboardPagePlus(
             )
         )),
         tabItem(
-            "tab_docu", "Documentation!"
+            "tab_docu", 
+            fluidRow(
+                column(width = 12,
+                   column(width = 8, 
+                      mainPanel(title = "", width = NULL,
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Documentation for MAC</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                            Mortality decomposition is a tool to explain the underlying changes in its components. 
+                                            The central aim is to attribute the difference in an aggregate index to better examine specific contributions. 
+                                            For the MAC documentation, life expectancy will be used for simplicity. In addition, decomposing mortality
+                                            has different formulations published by Andreev 1982, Pressat 1985, Arriaga 1984. A quick introduction 
+                                            will be provided in the subsequent section to clarify on this concept. <h3></p>"))
+                      ), 
+                      mainPanel(title = "", width = NULL,
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Introduction to Decomposition</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                            Given our aggregate index of life expectancy, we can decompose contributions by age
+                                            groups into what Arriage refers to as 'direct' and 'indirect' effects of mortality change.
+                                            Direct Effects are defined as the change in life expectancy within a particular 
+                                            age group, due to underlying changes in the mortality within that age group. The specific
+                                            calculations take the proportion of survivors at each age group and multiply it by the
+                                            temporary life expectancy from that age group to the subsequent age interval. Indirect Effects 
+                                            are defined as the change in life expectancy to an age group due to changes in another age
+                                            interval. This will take into account the impact of the number of survivors from one age interval 
+                                            on subsequent age intervals. Lastly, interactive effect consists of any outside effects that result
+                                            in changes in life expectancy, not explained by the age group. The total of the direct, indirect, 
+                                            and interactive effects will be equivalent to the total effect, or in this case, the total change
+                                            in the life expectancy. <h3></p><br>"))
+                      )
+                   )
+                ),
+                column(width = 10, align = "center", img(src = "decomp.png")),
+                column(width = 12,
+                   column(width = 8, 
+                      mainPanel(title = "", width = NULL,
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Stepwise Decomposition</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                            <em><b>The following illustration above was taken from the 
+                                            International Handbook of Health Expectancies (Jagger, Crimmins, Saito, de Carvallho Yokota, 
+                                            Van Oyen, Robine)</b></em>."), HTML("<br></br>"),
+                                     paste0("Andreev, in 2002, proposed a step-wise decomposition that built on Arriaga's methodology.
+                                            Given that decomposition can be generalized into direct, indirect, and interactive effects, 
+                                            in which the sum is equivalent to the aggregate index. We are able to estimate contributions 
+                                            through the step-wise decomposition. <h3></p>"),
+                                     paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                            In the illustration, there are two populations, A, and B with ages 0, 1, 2, 3. 
+                                            The age-specific death rates are provided by the m-vector, and life expectancy 
+                                            at birth is defined as e0. In step 2, the change in the life expectancy between 
+                                            population A and B is calculated by taking the difference in the life expectancy 
+                                            at birth. The age-specific death rate at age 0 for population B is replaced by that 
+                                            of population A's in step 3. This will allow us to find the contribution of age 0 
+                                            to the change in life expectancy. In steps 4, 5, 6, the very same replacements 
+                                            are performed on ages 1, 2, and 3. Thus, the contribution for each age to life expectancy
+                                            can be calculated. Meanwhile, the sum of the contributions are equivalent to the 
+                                            total change in life expectancy.<h3></p><br>"))
+                     )
+                  )
+               )
+            )
         ),
-        
         
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
@@ -970,9 +1027,9 @@ ui = dashboardPagePlus(
             ), 
     
         tabItem( 
-            "tab_qa",
+            "tab_qa", HTML(paste0("<nobr><b><h3>Frequently Asked Questions</h3></b></nobr>")), hr(),
             fluidRow(
-                box(
+                mainPanel( 
                     title = "Frequently Asked Questions",
                     width = 12,
                     accordion(
