@@ -219,7 +219,17 @@ ui = dashboardPagePlus(
         title = HTML(glue::glue(
             '<span class="logo-mini">{"<strong>mac</strong>"}</span>
              <span class="logo-lg">{"<strong>Mortality Analysis Calculator</strong>"}</span>'
-        )), titleWidth = 315
+        )), titleWidth = 315, 
+        tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
+                  icon("github", "fa-1.5x"),
+                  title = "Visit my Github"),
+                class = "dropdown", 
+                style="color: #000; background-color: #b3b3b3; 
+                                                      font-size:135% ;"),
+        tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
+                  img(src = 'ColumbiaLogo.png',
+                      title = "Contact Us", height = "20px", width = "20px")),
+                class = 'dropdown')
     ),
     # Dashboard Page Setup ----------------------------------------------------
     #dbHeader,
@@ -352,7 +362,7 @@ ui = dashboardPagePlus(
                         status = "danger",
                         width = 8, height = 425, 
                         column(width = 12, align = "center",
-                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 20px 35px;>Learn About Actuarial Science</p></h2></b>"))),
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 0px 35px;>Learn About Actuarial Science</p></h2></b>"))),
                         column(width = 4, align = "left", 
                                HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Career & Learning</p></h3></b><br>")),
                                HTML(paste0(h4(tags$a(href = "https://soa.org", "Society of Actuaries", target = "a()")), "<br>")), 
@@ -465,7 +475,7 @@ ui = dashboardPagePlus(
                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                    Gender is the focal point of all analysis of mortality. Demographers study gender to assess 
                                    and gain information on a population. Take a deeper dive into the gender gap, and better 
-                                   understand complex gender relations. </p>")) 
+                                   understand gender relations. </p>")) 
                         , 
                         back_content = tagList(
                                    HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
@@ -491,46 +501,44 @@ ui = dashboardPagePlus(
                     )
                 )
             ), 
-            column(width = 12,
-                   column(width = 12, 
-                          mainPanel(title = "", width = NULL,
-                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Get Started Now!</p></h2></b>", 
+            column(width = 12, style = "padding-top:20px;",
+                   box(title = "",
+                       status = "success",
+                       width = 12,  
+                       column(width = 12, align = "center",
+                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; padding-bottom:10px'>Get Started Now!</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Explore the Mortality Analysis Calculator, and start your mortality decomposition journey!
                                     Take a dive into decomposition analysis by age or by age and cause-of-death. Spend your
                                     time learning more about how the population's health status have changed. <h3></p>")),
                                     div(style="display:inline-block; width:100%; text-align: center; font-size: 40px", 
                                         actionButton(inputId='start_more', label="Get Started"))
-                          ), 
+                              
+                          )
                    )
             ),
             column(width = 12,
-                   column(width = 6, 
-                          mainPanel(title = "", width = NULL,
+                   box(title = "", width = 6,
                                     HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Keep Up To Date With Latest News</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Read about the latest news within the industry, and how it will influence future actuarial 
                                     work. Keep up to date on fixes and new updates to the Mortality 
                                     Analysis Calculator. Browse new ideas that will be implemented, and developed. <h3></p>")),
-                                    div(style="display:inline-block; width: 180%; text-align: center;", 
+                                    div(style="display:inline-block; width:100%; text-align: center;", 
                                         actionButton(inputId='news_more', label="Latest News"))
-                          )
                    ),
-                   column(width = 6, 
-                          mainPanel(title = "", width = NULL,
+                   box(title = "", width = 6, 
                                     HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Shape Future Releases</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Browse frequently asked questions and look at the responses answered by our team.
                                     Share your ideas about mortality decomposition and web development with the community. <h3></p>")), 
-                                    div(style="display:inline-block; width:180%; text-align: center;", 
+                                    div(style="display:inline-block; width:100%; text-align: center;", 
                                         actionButton(inputId='faq_more', label="Read FAQ"))
-                          )
                    )
             )
-        )
-        ),
+        )),
         tabItem(
-            "tab_docu", "Documentation!",
+            "tab_docu", "Documentation!"
         ),
         
         
@@ -560,6 +568,22 @@ ui = dashboardPagePlus(
                     userPost(
                         id = 2,
                         src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        author = "Expanding the Human Mortality Database to Include Cause-of-Death Information",
+                        description = "Society of Actuaries",
+                        "The Human Mortality Database is a unique open-access collection of detailed mortality and population data for 38 
+                        countries with complete and reliable vital registration and census data. The HMD currently covers the United States, 
+                        almost all of Europe, including countries of the former U.S.S.R., Japan, Australia and other mostly high-income 
+                        countries with rapidly aging populations. The Human Mortality Database (HMD) contains calculations of death rates 
+                        and life tables for national populations (countries or areas), as well as the original input data used to construct 
+                        these tables and an extensive documentation. This report overviews the development and completion of the HMD data 
+                        series down to a cause of death level for an initial set of eight populations: Canada, Czech Republic, England and 
+                        Wales, France, Japan, Norway, Sweden, and the United States.", HTML("</br></br>"), 
+                        "The HMD web pages with the cause-of-death information are under development. Click here to go to the prototype 
+                        for the cause-of-death web pages, and use the username, 'hmdcod', and password, 'magali', to log in."
+                    ),
+                    userPost(
+                        id = 3,
+                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
                         author = "Test Post 2",
                         description = "User Name",
                         "lalalallala",
@@ -584,70 +608,66 @@ ui = dashboardPagePlus(
         # decomp by age - tab_life exp -------------------------------------------------------
         tabItem(
             "tab_le", 
+                # overview start -----------------------------------------------
+                HTML(paste0("<nobr><b><h3>Overview of Decomposition Analysis</h3></b></nobr>")), hr(),
             fluidRow(
-                # overview start ------------------------------------------------######################################product list here, user post in tab before
                 box(
-                    title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;DECOMPOSITION DESCRIPTION<br><br>")),
+                    title = "", 
+                    status = "warning",
+                    width = 4, height = 750,
+                    column(width = 12, align = "center",
+                           img(src = "heart-icon.png", width=100),
+                           HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Life Expectancy</p></h2></b>",
+                                       "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                        Life expectancy is the average experience of the population subset. (e.g. Half of the population 
+                                        subset are expected to lie longer than life expectancy, and half are not expected to survive to
+                                        life expectancy) </p>"), 
+                                paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                        Life expectancy is an integral part of how insurance compmanies are able to determine 
+                                        longevity predictions. It provides a general estimation of the number of years a person 
+                                        will survive, and influences much of retirement and estate planning. Though, not a definitive 
+                                        number that captures individual lifestyle choices, family history, and other factors, 
+                                        life expectancy is still heavily relied upon in the actuarial industry. </p>"))
+                    )
+                ),
+                box(
+                    title = "", 
                     status = "danger",
-                    width = 6, solidHeader = TRUE,
-                    tags$style(HTML('color: #ffffff')),
-                    tags$br(),
-                    tags$p(
-                        class = "text-left",
-                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("FUNCTION TITLE")), 
-                        HTML('<span style="padding: 0 20px">&nbsp;</span>'), "Decomposition of Mortality by Age", HTML('<hr/>')
-                    ),
-                    tags$p(
-                        class = "text-left",
-                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("METRIC")), 
-                        HTML('<span style="padding: 0 44px">&nbsp;</span>'), "Change in Life Expectancy, Life Preparancy", HTML('<hr/>')
-                    ), 
-                    tags$p(
-                        class = "text-left",
-                        HTML('&nbsp;'), HTML('&nbsp;'), tags$strong(HTML("EXPERIENCE")), 
-                        HTML('<span style="padding: 0 30px">&nbsp;</span>'), "Click functionality in barchart", HTML('<hr/>')
-                    ),
-                    tags$p(
-                        HTML('<div style="display:flex; justify-content:space-around; content-align: left; ">
-                        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;DESCRIPTION</b><p>
-                        <span style = "padding: 0 60px; display:inline-block; word-wrap:break-word;"> The Decomposition of Mortality by Age is responsible of observing the life expectancy changes over a time interval for a select country.</span>
-                        </div><hr/>')
-                    ),
-                    tags$p(
-                        HTML('<div style="display:flex; justify-content:space-around; content-align: left; ">
-                        <p><b>&nbsp;&nbsp;&nbsp;&nbsp;ERRORS</b><p>
-
-                        <span style = " padding: 0 95px; display:inline-block; word-wrap:break-word;">Australia is working country for all years. Need to figure out why conditional panels dont work for other countries. </span>
-                        
-                        </div><hr/>'
-                        )
-                    ),
-                    tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
-                                              p {color: #5e697d}'))) 
-                    
+                    width = 4, height = 750,
+                    column(width = 12, align = "center",
+                           img(src = "money-icon.png", width=100),
+                           HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Life Preparancy</p></h2></b>",
+                                       "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                        A life preparancy age might be commonly defined as the age at which nth percentile of a population 
+                                        at which an age x will survive to. (e.g. The age to which 10 percent of a population that has 
+                                        already reached age 65 is expected to livve in the future) </p>")), 
+                           blockQuote("[There is] a growing need for the actuarial profession around the world to
+                               promote retirement plans that include lifetime income options....
+                               Longevity risk, however, is a much more delicate issue than simply noting the 
+                               average ages that might be obtained across a population. First, actuaries need 
+                               to change the public's vocabulary to switch from 'expectancy from birth' 
+                               to 'retirement preparedness.'",     
+                           HTML("<br></br><p style = text-align:right>-<b>Dale Hall, Managing Director of Research at the SOA </p></b>"))
+                    )         
                 ),
                 box(
-                    title = tags$strong(HTML("<br>&nbsp;&nbsp;&nbsp;WHAT IS LIFE PREPARANCY?<br><br>")),
-                    status = "info",
-                    width = 6, solidHeader = TRUE,
-                    tags$style(HTML('color: #ffffff')),
-                    tags$br(),
-                    tags$p(
-                        class = "text-left",
-                        "A life preparancy age might be commonly defined as the age to which 10 percent of a population 
-                        that has already reached age 65 is expected to live in the future.", 
-                        blockQuote("[There is] a growing need for the actuarial profession around the world to
-                                   promote retirement plans that include lifetime income options....
-                                   Longevity risk, however, is a much more delicate issue than simply noting the 
-                                   average ages that might be obtained across a population. First, actuaries need 
-                                   to change the public's vocabulary to switch from 'expectancy from birth' 
-                                   to 'retirement preparedness.'",     
-                                   HTML("<br><p style = text-align:right>-<b>Dale Hall, Managing Director of Research at the SOA </p></b>"))
-                    ),
-                    tags$head(tags$style(HTML('.box-header h3.box-title { font-weight: bold; font-size: 18px; color: rgb(0,144,197);} 
-                                              p {color: #5e697d}'))) 
-                ),
-                
+                    title = "", 
+                    status = "success",
+                    width = 4, height = 750,
+                    column(width = 12, align = "center",
+                           img(src = "chapter-icon.png", width=100),
+                           HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Mortality Chapter</p></h2></b>",
+                                       "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                        Mortality chapters provide an additional dimension to our analysis by looking deeper
+                                        at the cause-specific mortality rates. (e.g. Chapters may include: cancer, 
+                                        respiratory, preganancy/childbirth, etc.) </p>"), 
+                               paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                                      Cause-specific mortality provide essential information about mortality trends.
+                                      Analysis by cause of death categories allow actuaries to design products that may accomodate 
+                                      for these different needs. Past historical information can provide insight on latest mortality
+                                      trends to ensure the health status of the population. </p>"))
+                    ) 
+                )
             )
         ),
         tabItem(
