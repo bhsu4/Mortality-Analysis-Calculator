@@ -176,41 +176,9 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                         class = 'dropdown'), titleWidth = 300
                             )
 
-META <- list(
-    # Name of the app, used in the browser/tab title
-    name        = "rstudio::conf(\'tweets\')",
-    # A description of the app, used in social media cards
-    description = "A Shiny Dashboard, rstudio::conf #FOMO reducer, tweet explorer by @grrrck",
-    # Link to the app, used in social media cards
-    app_url     = "https://apps.garrickadenbuie.com/rstudioconf-2019/",
-    # Link to app icon image, used in social media cards
-    app_icon    = "https://garrickadenbuie.com/images/2019/rstudioconf-2019-icon.png",
-    # The name of the conference or organization
-    conf_org    = "rstudio::conf",
-    # App title, long, shown when sidebar is open, HTML is valid
-    logo_lg     = "<em>rstudio</em>::<strong>conf</strong>(2019)",
-    # App title, short, shown when sidebar is collapsed, HTML is valid
-    logo_mini   = "<em>rs</em><strong>c</strong>",
-    # Icon for box with count of conference-related tweets
-    topic_icon  = "comments",
-    # Icon for box with count of "community"-related tweets
-    topic_icon_full = "r-project",
-    # AdminLTE skin color for the dashboard
-    skin_color  = "blue-light",
-    # AdminLTE theme CSS files
-    theme_css   = c("ocean-next/AdminLTE.css", "ocean-next/_all-skins.css")
-)
-
-
 ui = dashboardPagePlus(
     
-   # skin = "blue-light",
-    #title = 'MortalityViz',
-    title = "rstudio::conf(\'Mortality-Analysis-Calculator\')",
-    #"<em>rs</em><strong>c</strong>",
-    #skin  = META$skin_color,
-    #theme = c(META$theme_css, "custom.css"),
-    #sidebar_mini = TRUE,
+    title = "Mortality Analysis Calculator",
     footer = dashboardFooter(
         left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
                                 "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by: Benjamin Hsu</a> - </medium></p>"))
@@ -218,7 +186,7 @@ ui = dashboardPagePlus(
     dashboardHeader(
         title = HTML(glue::glue(
             '<span class="logo-mini">{"<strong>mac</strong>"}</span>
-             <span class="logo-lg">{"<strong>Mortality Analysis Calculator</strong>"}</span>'
+             <span class="logo-lg">{"<em>Mortality Analysis Calculator</em>"}</span>'
         )), titleWidth = 315, 
         tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
                   icon("github", "fa-1.5x"),
@@ -548,8 +516,11 @@ ui = dashboardPagePlus(
                                             Mortality decomposition is a tool to explain the underlying changes in its components. 
                                             The central aim is to attribute the difference in an aggregate index to better examine specific contributions. 
                                             For the MAC documentation, life expectancy will be used for simplicity. In addition, decomposing mortality
-                                            has different formulations published by Andreev 1982, Pressat 1985, Arriaga 1984. A quick introduction 
-                                            will be provided in the subsequent section to clarify on this concept. <h3></p>"))
+                                            has different formulations published by 
+                                            <a href='https://scholar.google.com/scholar?q=Andreev%2C%20Evgeny%20M.%20%281982%29%2C%20Method%20komponent%20v%20analize%20prichin%20smerti.%20%28Component%20method%20applied%20to%20life%20expectancy%20analysis%29.%20Vestnik%20Statistiki%20%28Herald%20of%20Statistics%29%2Cn%C2%B0%209%2C%20pp.%2042%E2%80%9347.%20%28In%20Russian%29.' target='_blank'> Andreev 1982</a>, 
+                                            <a href='https://www.jstor.org/stable/1532986?seq=1' target='_blank'> Pressat 1985</a>, 
+                                            <a href='https://link.springer.com/article/10.2307/2061029' target='_blank'> Arriaga 1984</a>.
+                                            A quick introduction will be provided in the subsequent section to clarify on this concept. <h3></p>"))
                       ), 
                       mainPanel(title = "", width = NULL,
                                 HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Introduction to Decomposition</p></h2></b>", 
@@ -575,10 +546,12 @@ ui = dashboardPagePlus(
                       mainPanel(title = "", width = NULL,
                                 HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Stepwise Decomposition</p></h2></b>", 
                                             "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
-                                            <em><b>The following illustration above was taken from the 
+                                            The following illustration above was taken from the 
+                                            <a href='https://www.springer.com/gp/book/9783030376666' target='_blank'><em><b> 
                                             International Handbook of Health Expectancies (Jagger, Crimmins, Saito, de Carvallho Yokota, 
-                                            Van Oyen, Robine)</b></em>."), HTML("<br></br>"),
-                                     paste0("Andreev, in 2002, proposed a step-wise decomposition that built on Arriaga's methodology.
+                                            Van Oyen, Robine) </b></em></a>."), HTML("<br></br>"),
+                                     paste0("<a href='https://www.demographic-research.org/volumes/vol7/14/default.htm' target='_blank'> Andreev 2002</a> 
+                                            proposed a step-wise decomposition that built on Arriaga's methodology.
                                             Given that decomposition can be generalized into direct, indirect, and interactive effects, 
                                             in which the sum is equivalent to the aggregate index. We are able to estimate contributions 
                                             through the step-wise decomposition. <h3></p>"),
