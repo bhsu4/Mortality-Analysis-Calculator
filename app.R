@@ -211,7 +211,7 @@ ui = dashboardPagePlus(
         sidebarUserPanel("Mushu",
                          subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
                          # Image file should be in www/ subdir
-                         image = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg"
+                         image = "mushu.jpg"
         ),
         sidebarMenu(id = "tabs_all",
             menuItem("HOME", tabName = "tab_home", icon = icon("home")), 
@@ -582,7 +582,7 @@ ui = dashboardPagePlus(
                     width = 6,
                     userPost(
                         id = 1,
-                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        src = "mushu.jpg",
                         author = "The SOA Explores the Role of Actuaries in the Face of the COVID-19 Situation",
                         description = "R. Dale Hall",
                         "R. Dale Hall, FSA, CERA, MAAA, CFA managing director of Research for the Society of Actuaries (SOA) explains 
@@ -597,7 +597,7 @@ ui = dashboardPagePlus(
                     ),
                     userPost(
                         id = 2,
-                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        src = "mushu.jpg",
                         author = "Expanding the Human Mortality Database to Include Cause-of-Death Information",
                         description = "Society of Actuaries",
                         "The Human Mortality Database is a unique open-access collection of detailed mortality and population data for 38 
@@ -613,24 +613,29 @@ ui = dashboardPagePlus(
                     ),
                     userPost(
                         id = 3,
-                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
-                        author = "Test Post 2",
-                        description = "User Name",
-                        "lalalallala",
-                        userPostMedia(src = "https://adminlte.io/themes/AdminLTE/dist/img/photo2.png"),
-                        
+                        src = "mushu.jpg",
+                        author = "Join the 2020 Health Meeting Webcast Series!",
+                        description = "Society of Actuaries",
+                        "The 2020 Health Meeting Webcast Series features ten days of ten Health tracks, allowing attendees 
+                        to create their own Health Meeting experience by mixing and matching which days and webcasts fit their 
+                        professional development needs.",
+                        div(style="display:inline-block; width:180%; text-align: center;", 
+                            actionButton(inputId='ab2', label="Learn More", icon = icon("plus"), 
+                                         onclick ="window.open('https://www.soa.org/prof-dev/pdopportunities/?filters=Topic[T_HLTHWC]&view=grid', '_blank')")),
+                        userPostMedia(src = "health-webcast.png")
                     )
-                ), 
+                ),
                 box(
                     title = ,
                     status = "warning",
                     width = 6,
                     userPost(
                         id = 1,
-                        src = "https://fiverr-res.cloudinary.com/t_profile_original,q_auto,f_auto/attachments/profile/photo/a8ece8a3bb5951b6a9ffe9a19063327a-1537916496823/Mushu%20Glasses.jpg",
+                        src = "mushu.jpg",
                         author = "Latest Updates on the Web Application",
-                        description = "Benjamin Hsu",
-                        "bippity boppity boo fixed this n that", 
+                        description = "Benjamin Hsu, July 27th, 2020",
+                        HTML(paste0("<b>Mortality Analysis Calculator v1.0</b><br></br> The first launched version of the MAC
+                        will consist of mortality decomposition analysis for both age as well as age and cause-of-death."))
                     )
                 )
             )
@@ -1008,24 +1013,75 @@ ui = dashboardPagePlus(
                     accordion(
                         accordionItem(
                             id = 1,
-                            title = "Decomposition by Age",
-                            color = "danger",
+                            title = "Where can I learn more about mortality decomposition analysis?",
+                            color = "info",
                             collapsed = FALSE,
-                            "This is some text! I'm basicallly wondering how long this text can go and whether or not it will just be nice and automatically wrap to the next line or is it just goinng to be ike the other stuff and not wrap at all and be a bummer function. I guess if we continue to keep typing like this into a big paragraph we can be hopeful that it will actullay become some sort of stuff and wrap like a nce one"
+                            HTML(paste0("There are plenty of academic research papers that have been published, and continue to be
+                            pushed out to help better understand mortality. Simply browsing academic journals would be a
+                            great place to start, and get exposed to interesting and applicational ways decomposition analysis
+                            is being used in mortality studies. In addition, another source would be the
+                            <a href='https://www.soa.org/programs/mortality-longevity/' target='_blank'> Society of Actuaries 
+                            Mortality & Longevity Strategic Research</a> provides the latest updates on mortality related topics 
+                            in research, surveys, and papers."))
                         ),
                         accordionItem(
                             id = 2,
-                            title = "Accordion Item 2",
-                            color = "warning",
+                            title = "What formulas were used in the computation, and how do I recreate the analysis?",
+                            color = "info",
                             collapsed = FALSE,
-                            "This is some text!"
+                            HTML(paste0("An overview of the decomposition methodologies were introduced in the <em>Documentation</em>
+                            section of the MAC. The sources have also been provided and will give a more in-depth and
+                            technical look at the computation and derivation of formulas. You can reach out to 
+                            <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Benjamin Hsu </a>
+                            for the code. Contact information can be found in the <em>Community</em> section."))
                         ),
                         accordionItem(
                             id = 3,
-                            title = "Accordion Item 3",
+                            title = "Where can I get mortality data to analyze?",
                             color = "info",
                             collapsed = FALSE,
-                            "This is some text!"
+                            HTML(paste0("All of the data used in the Mortality Analysis Calculator comes from the 
+                            <a href='https://www.mortality.org' target='_blank'> Human Mortality Database (HMD) </a>. 
+                            You will need to create a username and password in order to access the data."))
+                        ),
+                        accordionItem(
+                            id = 4,
+                            title = "What are some advantages of using the MAC?",
+                            color = "info",
+                            collapsed = FALSE,
+                            HTML(paste0("The main advantage of using the MAC is that it provides users a way to directly interact 
+                            with a flexible interface and receive results with a click of a button. The visualizations
+                            are meant to simplify mortality decomposition analysis while retaining key information. By 
+                            allowing users to choose their own parameters of interest, we hope to help provide insight
+                            through an easy-to-interpret and intuitive platform."))
+                        ),
+                        accordionItem(
+                            id = 5,
+                            title = "What countries are available in the analysis?",
+                            color = "info",
+                            collapsed = FALSE,
+                            HTML(paste0("The Human Mortality Database (HMD) consists of data for 41 countries. Depending on the 
+                            chosen decomposition, a selected portion of the 41 countries may be available."))
+                        ),
+                        accordionItem(
+                            id = 6,
+                            title = "Are there courses to learn more about mortality decomposition?",
+                            color = "warning",
+                            collapsed = FALSE,
+                            HTML(paste0("<a ref = 'https://sps.columbia.edu/academics/masters/actuarial-science', 
+                            target = '_blank'> Columbia University's Master of Science in Actuarial Science </a> program provide classes 
+                            catered specifically to the actuarial science field. You will get exposed to a wide variety
+                            of actuarial topics including mortality decomposition."))
+                        ), 
+                        accordionItem(
+                            id = 7,
+                            title = "Who can I contact if I have questions and feedback for the MAC?",
+                            color = "danger",
+                            collapsed = FALSE,
+                            HTML(paste0("We would love to hear feedback from our users to improve the web application, and 
+                            continue to develop more functionality. You can directly email 
+                            <a href = 'mailto:bh2722@columbia.edu', target='_blank'> Benjamin Hsu </a> for
+                            specific questions and suggestions."))
                         )
                     )
                 )
