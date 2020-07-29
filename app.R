@@ -276,7 +276,7 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_home", HTML(paste0("<nobr><b><h3>Mortality Analysis Calculator v.1.0</h3></b></nobr>")), hr(),
+            "tab_home", HTML(paste0("<nobr><b><h3>Mortality Analysis Calculator v.1.0.0</h3></b></nobr>")), hr(),
             fluidRow(
                     box(
                         title = "", 
@@ -629,14 +629,30 @@ ui = dashboardPagePlus(
                     title = ,
                     status = "warning",
                     width = 6,
+                    #userPost(
+                    #    id = 99,
+                    #    src = "mushu.jpg",
+                    #    author = "Latest Updates on the Web Application",
+                    #    description = "Benjamin Hsu, August xxth, 2020",
+                    #    HTML(paste0("<b>Mortality Analysis Calculator v1.0.1</b><br></br> The first update to the MAC
+                    #    are addressed below."), 
+                    #         paste0("<ul><li>Other country inclusions, and reactive conditional time intervals</li>
+                    #                     <li>Validation of decomposition results</li>
+                    #                     <li>Help file in decomposition needing update</li>
+                    #                     <li>Formatting of boxes in decomposition</li>
+                    #                     <li>Font consistency in MAC </li>"))
+                    #),
                     userPost(
-                        id = 1,
+                        id = 100,
                         src = "mushu.jpg",
                         author = "Latest Updates on the Web Application",
                         description = "Benjamin Hsu, July 27th, 2020",
-                        HTML(paste0("<b>Mortality Analysis Calculator v1.0</b><br></br> The first launched version of the MAC
-                        will consist of mortality decomposition analysis for both age as well as age and cause-of-death."))
+                        HTML(paste0("<b>Mortality Analysis Calculator v1.0.0</b><br></br> The first launched version of the MAC
+                                     will consist of mortality decomposition analysis for both age as well as age and cause-of-death. 
+                                     We are excited to share this with our users, and hope that you all enjoy it as much as we have
+                                     enjoyed developing the web application."))
                     )
+                    
                 )
             )
         ),
@@ -1066,7 +1082,7 @@ ui = dashboardPagePlus(
                         accordionItem(
                             id = 6,
                             title = "Are there courses to learn more about mortality decomposition?",
-                            color = "warning",
+                            color = "primary",
                             collapsed = FALSE,
                             HTML(paste0("<a ref = 'https://sps.columbia.edu/academics/masters/actuarial-science', 
                             target = '_blank'> Columbia University's Master of Science in Actuarial Science </a> program provide classes 
@@ -1076,12 +1092,23 @@ ui = dashboardPagePlus(
                         accordionItem(
                             id = 7,
                             title = "Who can I contact if I have questions and feedback for the MAC?",
-                            color = "danger",
+                            color = "warning",
                             collapsed = FALSE,
                             HTML(paste0("We would love to hear feedback from our users to improve the web application, and 
                             continue to develop more functionality. You can directly email 
                             <a href = 'mailto:bh2722@columbia.edu', target='_blank'> Benjamin Hsu </a> for
                             specific questions and suggestions."))
+                        ), 
+                        accordionItem(
+                            id = 8,
+                            title = "What do the version numbers mean?",
+                            color = "warning",
+                            collapsed = FALSE,
+                            HTML(paste0("The version numbers for the MAC allow users to know which version the MAC
+                                        is on. The semantic versioning will allow a quick understanding of the type
+                                        of updates and changes made to the latest version. Version number will follow 
+                                        the following format of: MAJOR.MINOR.PATCH, which corresponds to major changes
+                                        in the API, minor functionality and feature additions, and bug fixes."))
                         )
                     )
                 )
