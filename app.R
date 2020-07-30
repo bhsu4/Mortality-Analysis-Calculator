@@ -872,55 +872,9 @@ ui = dashboardPagePlus(
                            column(width = 9, 
                                   # Input: Specification of range within an interval ----
                                   wellPanel( 
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'Canada'" ,
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1950, max = 2009, value = c(1950, 2009))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'Czech Republic'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1950, max = 2013, value = c(1950, 2013))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'France'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1958, max = 2013, value = c(1958, 2013))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'United Kingdom'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1950, max = 2014, value = c(1950, 2014))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'Japan'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1950, max = 2013, value = c(1950, 2013))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'Norway'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1951, max = 2012, value = c(1951, 2012))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'Sweden'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1952, max = 2012, value = c(1952, 2012))
-                                      ),
-                                      conditionalPanel(
-                                          condition = "input.CODCountry == 'USA'",
-                                          sliderInput("range_tcod",
-                                                      label = "Years Selected",
-                                                      min = 1959, max = 2015, value = c(1959, 2015))
-                                      )
-                                  ) # wellPanel
+                                      uiOutput("moreControls")
+                                  ), # wellPanel
+                                  verbatimTextOutput("dynamic_value") 
                            ) # column
                        ) #fluidrow
                    )
@@ -1628,7 +1582,42 @@ server <- shinyServer(function(input, output, session){
         })
         
         #options(warn = -1) 
-    
+        
+        output$moreControls <- renderUI({
+            if(is.null(input$CODCountry)) return()
+            switch(input$CODCountry, 
+                   "Canada" = sliderInput("range_tcod",
+                                          label = "Years Selected",
+                                          min = 1950, max = 2009, value = c(1950, 2009)),
+                   "Czech Republic" = sliderInput("range_tcod",
+                                                  label = "Years Selected",
+                                                  min = 1950, max = 2013, value = c(1950, 2013)),
+                   "France" = sliderInput("range_tcod",
+                                          label = "Years Selected",
+                                          min = 1958, max = 2013, value = c(1958, 2013)),
+                   "United Kingdom" = sliderInput("range_tcod",
+                                                  label = "Years Selected",
+                                                  min = 1950, max = 2014, value = c(1950, 2014)),
+                   "Japan" = sliderInput("range_tcod",
+                                         label = "Years Selected",
+                                         min = 1950, max = 2013, value = c(1950, 2013)),
+                   "Norway" = sliderInput("range_tcod",
+                                          label = "Years Selected",
+                                          min = 1951, max = 2012, value = c(1951, 2012)),
+                   "Sweden" = sliderInput("range_tcod",
+                                          label = "Years Selected",
+                                          min = 1952, max = 2012, value = c(1952, 2012)),
+                   "USA" = sliderInput("range_tcod",
+                                        label = "Years Selected",
+                                        min = 1959, max = 2015, value = c(1959, 2015))
+            )
+        })
+        
+        #####temporary print check
+        output$dynamic_value <- renderPrint({
+            input$range_tcod[1]
+        })
+        
         observeEvent(input$heatQA, {
             show_alert(
                 title = NULL,
