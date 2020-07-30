@@ -759,12 +759,7 @@ ui = dashboardPagePlus(
                               column(width = 9, 
                                   # Input: Specification of range within an interval ----
                                    wellPanel( 
-                                       conditionalPanel(
-                                           condition = "input.heatCountry == 'Australia'",
-                                           sliderInput("range_t",
-                                                       label = "Years Selected",
-                                                       min = 1921, max = 2018, value = c(1921, 2018))
-                                       )
+                                       uiOutput("addControls")
                                    ) # wellPanel
                               ) # column
                            
@@ -1484,6 +1479,7 @@ mortality_chapter_rates <- function(cntry, t1, t2){
     age_groups <- length(unique(COD_Info$Age)) #number of age groups
     
     #animation rates
+    t1 = as.numeric(t1) ; t2 = as.numeric(t2)
     rates_animate_M <- as.matrix(rates_per_chapter_males[rates_per_chapter_males$Year == t1 | rates_per_chapter_males$Year == t2, -(1:2)])/1000
     rates_animate_F <- as.matrix(rates_per_chapter_females[rates_per_chapter_females$Year == t1 | rates_per_chapter_females$Year == t2, -(1:2)])/1000
     rates_animate_labels <- data.frame(chapter = rep(1:(mortality_chapters+1), 2), 
@@ -1583,6 +1579,96 @@ server <- shinyServer(function(input, output, session){
         
         #options(warn = -1) 
         
+        #Age conditional panel for country time range
+        output$addControls <- renderUI({
+            if(is.null(input$heatCountry)) return()
+            switch(input$heatCountry, 
+                   "Australia" = sliderInput("range_t", label = "Years Selected",
+                                             min = 1921, max = 2018, value = c(1921, 2018)),
+                   "Austria" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1947, max = 2017, value = c(1947, 2017)),
+                   "Belarus" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1959, max = 2018, value = c(1959, 2018)),
+                   "Belgium" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1841, max = 2018, value = c(1841, 2018)),
+                   "Bulgaria" = sliderInput("range_t", label = "Years Selected",
+                                            min = 1947, max = 2018, value = c(1947, 2017)),
+                   "Canada" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1921, max = 2016, value = c(1921, 2016)),
+                   "Chile" = sliderInput("range_t", label = "Years Selected",
+                                         min = 1992, max = 2008, value = c(1992, 2008)),
+                   "Czech Republic" = sliderInput("range_t", label = "Years Selected",
+                                                  min = 1950, max = 2018, value = c(1950, 2018)),
+                   "Denmark" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1835, max = 2019, value = c(1835, 2019)),
+                   "Estonia" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1959, max = 2017, value = c(1959, 2017)),
+                   "Finland" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1878, max = 2018, value = c(1878, 2018)),
+                   "France" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1816, max = 2017, value = c(1816, 2018)),
+                   "Germany" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1990, max = 2017, value = c(1990, 2017)),
+                   "Greece" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1981, max = 2017, value = c(1981, 2017)),
+                   "Hungary" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1950, max = 2017, value = c(1950, 2017)),
+                   "Iceland" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1838, max = 2018, value = c(1838, 2018)),
+                   "Ireland" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1950, max = 2018, value = c(1950, 2017)),
+                   "Israel" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1983, max = 2016, value = c(1983, 2016)),
+                   "Italy" = sliderInput("range_t", label = "Years Selected",
+                                         min = 1872, max = 2017, value = c(1872, 2017)),
+                   "Japan" = sliderInput("range_t", label = "Years Selected",
+                                         min = 1947, max = 2018, value = c(1947, 2018)),
+                   "Korea" = sliderInput("range_t", label = "Years Selected",
+                                         min = 2003, max = 2018, value = c(2003, 2018)),
+                   "Latvia" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1959, max = 2017, value = c(1959, 2017)),
+                   "Lithuania" = sliderInput("range_t", label = "Years Selected",
+                                             min = 1959, max = 2017, value = c(1959, 2017)),
+                   "Luxembourg" = sliderInput("range_t", label = "Years Selected",
+                                              min = 1960, max = 2017, value = c(1960, 2017)),
+                   "Netherlands" = sliderInput("range_t", label = "Years Selected",
+                                               min = 1850, max = 2018, value = c(1850, 2018)),
+                   "New Zealand" = sliderInput("range_t", label = "Years Selected",
+                                               min = 1948, max = 2013, value = c(1948, 2013)),
+                   "Norway" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1846, max = 2018, value = c(1846, 2018)),
+                   "Poland" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1958, max = 2018, value = c(1958, 2018)),
+                   "Portugal" = sliderInput("range_t", label = "Years Selected",
+                                            min = 1940, max = 2018, value = c(1940, 2018)),
+                   "Russia" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1959, max = 2014, value = c(1959, 2014)),
+                   "Slovakia" = sliderInput("range_t", label = "Years Selected",
+                                            min = 1950, max = 2017, value = c(1950, 2017)),
+                   "Slovenia" = sliderInput("range_t", label = "Years Selected",
+                                            min = 1983, max = 2017, value = c(1983, 2017)),
+                   "Spain" = sliderInput("range_t", label = "Years Selected",
+                                         min = 1908, max = 2018, value = c(1908, 2018)),
+                   "Sweden" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1751, max = 2018, value = c(1751, 2018)),
+                   "Switzerland" = sliderInput("range_t", label = "Years Selected",
+                                               min = 1876, max = 2018, value = c(1876, 2018)),
+                   "Taiwan" = sliderInput("range_t", label = "Years Selected",
+                                          min = 1970, max = 2014, value = c(1970, 2014)),
+                   "Great Britain" = sliderInput("range_t", label = "Years Selected",
+                                                 min = 1841, max = 2016, value = c(1841, 2016)),
+                   "Scotland" = sliderInput("range_t", label = "Years Selected",
+                                            min = 1855, max = 2016, value = c(1855, 2016)),
+                   "Northern Ireland" = sliderInput("range_t", label = "Years Selected",
+                                                    min = 1922, max = 2016, value = c(1922, 2016)),
+                   "U.S.A" = sliderInput("range_t", label = "Years Selected",
+                                         min = 1933, max = 2017, value = c(1933, 2017)),
+                   "Ukraine" = sliderInput("range_t", label = "Years Selected",
+                                           min = 1959, max = 2013, value = c(1959, 2013))
+            )
+        })
+        
+        #COD conditional panel for country time range
         output$moreControls <- renderUI({
             if(is.null(input$CODCountry)) return()
             switch(input$CODCountry, 
@@ -1641,7 +1727,7 @@ server <- shinyServer(function(input, output, session){
         })
     
         res <- reactive({
-            req(input$heatCountry)
+            req(input$heatCountry) ; req(input$range_t)
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
             res <- change5x1(chosen_country, input$range_t[1], input$range_t[2])
             return(res)
@@ -1944,7 +2030,7 @@ server <- shinyServer(function(input, output, session){
        # second tab
         
         LP_res <- reactive({
-            req(input$heatCountry)
+            req(input$heatCountry) ; req(input$range_t)
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
             return(change5x1_LP(chosen_country, input$range_t[1], input$range_t[2], input$z))
         })
@@ -2039,7 +2125,7 @@ server <- shinyServer(function(input, output, session){
         # third tab
         
         gap_age <- reactive({
-            req(input$heatCountry)
+            req(input$heatCountry) ; req(input$range_t)
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
             return(GenGap_Age(chosen_country, input$range_t[1]))
         })
@@ -2069,7 +2155,7 @@ server <- shinyServer(function(input, output, session){
         
         COD_countries <- reactive({
             COD_countries <- data.frame(country = c("Canada", "Czech Republic", "France", "United Kingdom", "Japan", "Norway", "Sweden", "USA"),
-                                        code = c("CAN", "CZEC", "FRATNP", "GBRTENW", "JPN", "NOR", "SWE", "USA"))
+                                        code = c("CAN", "CZE", "FRATNP", "GBRTENW", "JPN", "NOR", "SWE", "USA"))
         })
         
         chapters20 <- reactive({
@@ -2082,7 +2168,7 @@ server <- shinyServer(function(input, output, session){
         
         #extract from mortality_chapter_rates for specific age group
         chapter_rates_select <- reactive({
-            req(input$CODCountry)
+            req(input$CODCountry) ; req(input$range_tcod)
             #import the file
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             chapter_rates <- mortality_chapter_rates(chosen_country, input$range_tcod[1], input$range_tcod[2])
@@ -2252,7 +2338,7 @@ server <- shinyServer(function(input, output, session){
         # output
         Changes_age_cause <- reactive({
             #life expectancy
-            req(input$CODCountry)
+            req(input$CODCountry) ; req(input$range_tcod)
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             #life expectancy
             res <- change5x1(chosen_country, input$range_tcod[1], input$range_tcod[2])
@@ -2592,7 +2678,7 @@ server <- shinyServer(function(input, output, session){
         Changes_age_cause_gap <- reactive({
             
             #life expectancy
-            req(input$CODCountry)
+            req(input$CODCountry) ; req(input$range_tcod)
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             
             #GenGap function for per age outputs: change per age (unmelt, melt), change per age lower triangle
