@@ -773,42 +773,43 @@ ui = dashboardPagePlus(
                        
                        tabBox(width = NULL, title = tagList(shiny::icon("calculator"), "By Age"), 
                               tabPanel(title = "Change in Life Expectancy", id = "tabset1", 
-                                              
-                                       fluidRow(
-                                           column(width = 6,
-                                                  plotlyOutput("BarplotLE", height = 300)
-                                           ), 
-                                           column(width = 6, 
-                                                  plotlyOutput("BarplotLE_specific", height = 300)
-                                           )
-                                       ), 
-                                       tags$br(), tags$br(),
-                                       fluidRow(
-                                           column(width = 12, 
-                                                  withSpinner(plotlyOutput("HeatMap", height = 600), proxy.height = "20px")
-                                           )
+                                 tags$br(),             
+                                   fluidRow(
+
+                                        column(width = 6,
+                                              plotlyOutput("BarplotLE", height = 300)
+                                        )
+                                        , 
+                                       column(width = 6, 
+                                                plotlyOutput("BarplotLE_specific", height = 300)
                                        )
+                                           
+                                   ), HTML('<hr style = "color: #ecf2f7;">'), tags$br(), 
+                                  fluidRow(
+                                       column(width = 12, 
+                                            withSpinner(plotlyOutput("HeatMap", height = 600), proxy.height = "20px")
+                                       )
+                                   )
                               ),
                               tabPanel(title = "Change in Life Preparancy",
-                                       
-                                        fluidRow(
-                                           column(width = 10,
-                                                  withSpinner(plotlyOutput("LineLP", height = 400)), 
-                                           ), 
-                                           column(width = 2, 
-                                                  numericInput("z", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
-                                                  )
-                                        
-                                        ), 
-                                       tags$br(), tags$br(),
-                                       fluidRow(
-                                           column(width = 12, 
-                                                  withSpinner(plotlyOutput("HeatMapLP", height = 600), proxy.height = "20px")
-                                           )
+                                   tags$br(),
+                                   fluidRow(
+                                       column(width = 10,
+                                              withSpinner(plotlyOutput("LineLP", height = 400)), 
+                                       ), 
+                                       column(width = 2, 
+                                              numericInput("z", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
+                                              )
+                                    
+                                    ), HTML('<hr style = "color: #ecf2f7;">'), tags$br(), 
+                                   fluidRow(
+                                       column(width = 12, 
+                                              withSpinner(plotlyOutput("HeatMapLP", height = 600), proxy.height = "20px")
                                        )
+                                   )
                               ),
                               tabPanel(title = "Contribution to Gender Gap",
-                                       
+                                       tags$br(),
                                        fluidRow(
                                            column(width = 8,
                                                   withSpinner(plotlyOutput("GapAge", height = 600)) 
@@ -868,8 +869,7 @@ ui = dashboardPagePlus(
                                   # Input: Specification of range within an interval ----
                                   wellPanel( 
                                       uiOutput("moreControls")
-                                  ), # wellPanel
-                                  verbatimTextOutput("dynamic_value") 
+                                  ) # wellPanel
                            ) # column
                        ) #fluidrow
                    )
@@ -880,9 +880,9 @@ ui = dashboardPagePlus(
                 
                 column(width = 12,
                        
-                       tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and COD"), 
+                       tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age and Cause of Death"), 
                                    tabPanel(title = "Mortality Chapters by Country", id = "tabset22", 
-                                            
+                                            tags$br(),
                                             fluidRow(
                                                 column(width = 6,
                                                        withSpinner(plotlyOutput("Animate_MCBar", height = 800))
@@ -893,7 +893,7 @@ ui = dashboardPagePlus(
                                             )
                                    ),
                                    tabPanel(title = "Change in Life Expectancy", id = "tabset33", 
-                                            
+                                            tags$br(),
                                             fluidRow(
                                                 column(width = 6,
                                                        plotlyOutput("BarplotLE_AgeCOD", height = 300)
@@ -901,8 +901,7 @@ ui = dashboardPagePlus(
                                                 column(width = 6, 
                                                        plotlyOutput("BarplotLE_specificAgeCOD", height = 300)
                                                 )
-                                            ), 
-                                            tags$br(), tags$br(),
+                                            ), HTML('<hr style = "color: #ecf2f7;">'), tags$br(), 
                                             fluidRow(
                                                 column(width = 12, 
                                                        withSpinner(plotlyOutput("HeatMap_AgeCOD", height = 600), proxy.height = "20px")
@@ -910,7 +909,7 @@ ui = dashboardPagePlus(
                                             )
                                    ), 
                                    tabPanel(title = "Change in Life Preparancy",
-                                           
+                                            tags$br(),
                                             fluidRow(
                                                 column(width = 10,
                                                        withSpinner(plotlyOutput("HeatMapLP_COD", height = 600)), 
@@ -922,7 +921,7 @@ ui = dashboardPagePlus(
                                             )
                                   ),
                                   tabPanel(title = "Contribution to Gender Gap",
-                                           
+                                           tags$br(),
                                            fluidRow(
                                                column(width = 10,
                                                       withSpinner(plotlyOutput("GapAgeCOD", height = 600)), 
@@ -1699,28 +1698,53 @@ server <- shinyServer(function(input, output, session){
             )
         })
         
-        #####temporary print check
-        output$dynamic_value <- renderPrint({
-            input$range_tcod[1]
-        })
+        #####help files in decomposition analysis tabs
         
         observeEvent(input$heatQA, {
             show_alert(
                 title = NULL,
                 text = tags$span(
-                    tags$h3("Decomposition of Mortality by Age",
+                    tags$h3("Mortality Decomposition By Age",
                             style = "color: steelblue;"), tags$br(),
-                    "Select country and time period along with gender", 
+                    HTML("<em><b>Select Country, Time Interval, and Gender</b></em>"), 
+                    tags$br(), tags$br(), tags$br(),
+                    HTML("<b>Life Expectancy:</b> The user can compute the effects attributable to each relevant age group(s)."),
                     tags$br(), tags$br(),
-                    "If Aggregate", tags$b("OFF"), "then male and female decomposition will be performed separately",
+                    HTML("<b>Life Preparancy:</b> The user can observe the change in life preparancy, and compute the 
+                         effects attributable to each relevant age group(s)."),
                     tags$br(), tags$br(),
-                    "If Aggregate", tags$b("ON"), "both genders then population (male + female) decomposition will be performed",
+                    HTML("<b>Gender Gap:</b> The user can observe the gender gap in life expectancy, and compute the 
+                         effects attributable to each relevant age group(s)."), 
                     tags$br(), tags$br(),
-                    icon("far fa-smile")
+                    icon("heart")
                 ),
                 html = TRUE
             )
         })
+        
+        observeEvent(input$CODQA, {
+            show_alert(
+                title = "",
+                text = tags$span(
+                    tags$h3("Mortality Decomposition By Age + Cause of Death",
+                            style = "color: steelblue;"), tags$br(), 
+                    HTML("<em><b>Select Country, Time Interval, Gender, and Input Age of Interest</b></em>"), 
+                    tags$br(), tags$br(), tags$br(),
+                    HTML("<b>Mortality Chapters:</b> The user can compute death rate for each cause-specific mortality to relevant age group(s)."),
+                    tags$br(), tags$br(),
+                    HTML("<b>Life Expectancy:</b> The user can compute the effects attributable to selected age group."),
+                    tags$br(), tags$br(),
+                    HTML("<b>Life Preparancy:</b> The user can compute the effects attributable to selected age group."),
+                    tags$br(), tags$br(),
+                    HTML("<b>Gender Gap:</b> The user can compute the gender gap effects attributable to selected age group."), 
+                    tags$br(), tags$br(),
+                    icon("hand-holding-heart")
+                ),
+                html = TRUE
+            )
+        })
+        
+        # generate country list for by age sections
     
         country_info <- reactive({
             read.csv("List_Countries.csv")
