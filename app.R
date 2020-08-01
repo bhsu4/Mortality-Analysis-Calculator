@@ -43,12 +43,15 @@ options(HMD_password = "password999")
 logotitle <- shinyDashboardLogoDIY(boldText = "", mainText = "MortalityViz", textSize = 14, badgeText = "BETA",  
                                     badgeTextColor = "black", badgeTextSize = 2, badgeBackColor = "#DCDCDC", badgeBorderRadius = 2)
 
-sysfonts::font_add_google("Roboto Condensed", regular.wt = 400, bold.wt = 700)
+#sysfonts::font_add_google("Roboto Condensed", regular.wt = 400, bold.wt = 700)
+#dir.create('~/.fonts')
+#file.copy("www/RobotoCondensed.ttf", "~/.fonts")
+#system('fc-cache -f ~/.fonts')
 
 theme_custom <- shinyDashboardThemeDIY(
     
     ### general
-    appFontFamily = "Roboto Condensed"
+    appFontFamily = ""
     ,appFontColor = "rgb(0,0,0)"
     ,primaryFontColor = "rgb(0,0,0)"
     ,infoFontColor = "rgb(0,0,0)"
@@ -160,11 +163,7 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                           title = "Visit my Github"),
                                           class = "dropdown", 
                                           style="color: #000; background-color: #b3b3b3; 
-                                                      font-size:135% ;"),
-                                tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
-                                          img(src = 'ColumbiaLogo.png',
-                                              title = "Contact Us", height = "20px", width = "20px")),
-                                        class = 'dropdown'), titleWidth = 300
+                                                      font-size:135% ;"), titleWidth = 175
                             )
 
 flipBox2 <- function(..., back_content, id, front_title = NULL, back_title = NULL, 
@@ -344,23 +343,20 @@ ui = dashboardPagePlus(
     title = "Mortality Analysis Calculator",
     footer = dashboardFooter(
         left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
-                                "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by: Benjamin Hsu</a> - </medium></p>"))
+                                "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by Benjamin Hsu</a> - </medium></p>"))
     ),
+    
     dashboardHeader(
         title = HTML(glue::glue(
             '<span class="logo-mini">{"<strong>mac</strong>"}</span>
-             <span class="logo-lg">{"<em>Mortality Analysis Calculator</em>"}</span>'
-        )), titleWidth = 315, 
+             <span class="logo-lg">{""}</span>'
+        )), titleWidth = 175, 
         tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
                   icon("github", "fa-1.5x"),
                   title = "Visit my Github"),
                 class = "dropdown", 
                 style="color: #000; background-color: #b3b3b3; 
-                                                      font-size:135% ;"),
-        tags$li(a(href = "javascript:void(window.open('https://sps.columbia.edu/academics/masters/actuarial-science', '_blank'))",
-                  img(src = 'ColumbiaLogo.png',
-                      title = "Contact Us", height = "20px", width = "20px")),
-                class = 'dropdown')
+                                                      font-size:135% ;")
     ),
     # Dashboard Page Setup ----------------------------------------------------
     #dbHeader,
@@ -370,25 +366,25 @@ ui = dashboardPagePlus(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
-        width = 315,
-        sidebarUserPanel("Mushu",
-                         subtitle = a(href = "#", icon("circle", class = "text-success"), "Online"),
+        width = 175,
+        sidebarUserPanel("",
+                         subtitle = a(href = "#", HTML("Welcome to MAC!")),
                          # Image file should be in www/ subdir
                          image = "mushu.jpg"
-        ),
+        ), tags$br(),
         sidebarMenu(id = "tabs_all",
             menuItem("HOME", tabName = "tab_home", icon = icon("home")), 
+            menuItem("DECOMPOSITION", #tabName = "tab_le", 
+                     icon = icon("desktop"), startExpanded = TRUE,
+                     menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
+                     menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
+                     menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
             menuItem("LEARN MORE", tabName = "tab_learnmore", icon = icon("lightbulb"), startExpanded = TRUE, 
                      menuSubItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
                      menuSubItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
                      menuSubItem("Community", tabName = "tab_community", icon = icon("users"))),
             menuItem("LATEST NEWS", tabName = "tab_news", icon = icon("file-alt")),
-            menuItem("DECOMPOSITION", #tabName = "tab_le", 
-                         icon = icon("desktop"), startExpanded = TRUE,
-                menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
-                menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
-                menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
-            menuItem("Q & A", tabName = "tab_qa", icon = icon("question-circle"))#, 
+            menuItem("FAQ", tabName = "tab_qa", icon = icon("question-circle"))#, 
             #HTML(paste0(
             #    "<br><br><br><br><br><br><br><br><br>",
             #    "<table style='margin-left:auto; margin-right:auto;'>",
@@ -414,32 +410,19 @@ ui = dashboardPagePlus(
     dashboardBody(
     
         tags$script(HTML("$('body').addClass('sidebar-mini');")),
+        tags$style(HTML('body {font-family:"Roboto Condensed", sans-serif}')),
         theme_custom,
         
-        
-        #tabItems(
-        tags$head(tags$style(HTML("@import url('https://fonts.googleapis.com/css?family=News+Cycle');
-                                    h1 {font-family:'News Cycle',sans-serif;
-                                        font-size: 48px;
-                                        font-weight: 1000;
-                                        line-height: 1.1;
-                                        color: 'slategrey';
-                                    }")),
-        
-                      #  '.main-sidebar { font-size: 20px; font-weight: bold;}
-                      #  .skin-blue .main-header .logo:hover {  background-color: #47b2ff; }
-                      #  .skin-blue .main-header .navbar {  background-color: "rgb(255,255,255)"; }')),
-                  #'.main-sidebar {font-weight: bold; font-family: Source Sans Pro
-                     # font-size: 30px; ')),
-                  
-                  tags$link(rel = "shortcut icon", 
+        #favicon
+        tags$head(tags$link(rel = "shortcut icon", 
                             href = "https://www.columbia.edu/content/themes/custom/columbia/favicon-crown.png"), 
-                  ),
+        ), 
+      
         
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_home", HTML(paste0("<nobr><b><h3>Mortality Analysis Calculator v.1.0.0</h3></b></nobr>")), hr(),
+            "tab_home", HTML(paste0('<nobr><b><h3 style = "font-family: Roboto Condensed">Mortality Analysis Calculator v.1.0.0</h3></b></nobr>')), hr(),
             fluidRow(
                     box(
                         title = "", 
@@ -447,7 +430,7 @@ ui = dashboardPagePlus(
                         width = 4, height = 500,
                         column(width = 12, align = "center",
                                         img(src = "compass-icon.png", width=100),
-                        HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Explore</p></h2></b>",
+                        HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; font-family: Roboto Condensed'>Explore</p></h2></b>",
                         "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                         Guided learning with explanation on the depths of mortality decomposition analysis. 
                         Follow step by step process to explore the technical details of mortality decomposition. </p>")), 
@@ -461,7 +444,7 @@ ui = dashboardPagePlus(
                         width = 4, height = 500, 
                         column(width = 12, align = "center",
                                img(src = "book-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Documentation</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black ; font-family: Roboto Condensed'>Documentation</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                Find documentation and walkthrough of code for different decomposition functions. 
                                Work your way towards understanding decomposition analysis inside and out. </p>")), 
@@ -475,7 +458,7 @@ ui = dashboardPagePlus(
                         width = 4, height = 500, 
                         column(width = 12, align = "center",
                                img(src = "users-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Community</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; font-family: Roboto Condensed'>Community</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                Get your questions answered by our community of actuaries and developers. 
                                Connect with us to build your network, and see the latest projects being worked on. </p>")), 
@@ -493,21 +476,21 @@ ui = dashboardPagePlus(
                         status = "danger",
                         width = 8, height = 425, 
                         column(width = 12, align = "center",
-                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 0px 35px;>Learn About Actuarial Science</p></h2></b>"))),
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ; font-family: Roboto Condensed'>Learn About Actuarial Science</p></h2></b>"))),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Career & Learning</p></h3></b><br>")),
-                               HTML(paste0(h4(tags$a(href = "https://soa.org", "Society of Actuaries", target = "a()")), "<br>")), 
-                               HTML(paste0(h4(tags$a(href = "https://sps.columbia.edu/academics/masters/actuarial-science", "Columbia University Masters in Actuarial Science", target = "a()"))))
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed'>Career & Learning</p></h3></b><br>")),
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://soa.org', target='_blank'> Society of Actuaries </a><h4>", "<br>")),
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://sps.columbia.edu/academics/masters/actuarial-science', target='_blank'> Columbia University Masters in Actuarial Science </a><h4>"))
                         ),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Professional Development</p></h3></b><br>")),
-                               HTML(paste0(h4(tags$a(href = "https://www.soa.org/prof-dev/pdopportunities/?epsremainingpath=/&filters=Opportunity_Type[ECOURSE]&pagesize=All&view=", "SOA E-Course", target = "a()")), "<br>"))
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey ; font-family: Roboto Condensed'>Professional Development</p></h3></b><br>")),
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://www.soa.org/prof-dev/pdopportunities/?epsremainingpath=/&filters=Opportunity_Type[ECOURSE]&pagesize=All&view=', target='_blank'> SOA E-Course</a><h4>")) 
                         ),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Additional Resources</p></h3></b><br>")),
-                               HTML(paste0(h4(tags$a(href = "https://pathways.soa.org/", "Educational Pathways", target = "a()")), "<br>")), 
-                               HTML(paste0(h4(tags$a(href = "https://beanactuary.org", "Be An Actuary", target = "a()")), "<br>")), 
-                               HTML(paste0(h4(tags$a(href = "https://www.soa.org/resources/soa-explorer/", "SOA Explorer", target = "a()"))))
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed'>Additional Resources</p></h3></b><br>")),
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://pathways.soa.org/' target='_blank'> Educational Pathways</a><h4>", "<br>")), 
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://beanactuary.org', target='_blank'> Be An Actuary</a><h4>", "<br>")), 
+                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://www.soa.org/resources/soa-explorer/', target='_blank'> SOA Explorer</a><h4>"))
                         )
                         
                     ), 
@@ -516,9 +499,9 @@ ui = dashboardPagePlus(
                         status = "danger",
                         width = 4, height = 425, 
                         column(width = 12, align = "center",
-                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black'; padding: 0px 35px 20px 35px;>Support Us</p></h2></b>"))),
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ; font-family: Roboto Condensed'; >Support Us</p></h2></b>"))),
                         column(width = 12, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Society of Actuaries</p></h3></b><br>")),
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed';>Society of Actuaries</p></h3></b><br>")),
                                column(width = 12, align = "center", 
                                    socialButton(url = "https://www.facebook.com/SocietyofActuaries", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
                                    socialButton(url = "https://www.twitter.com/soactuaries", type = "twitter"), HTML("&nbsp&nbsp&nbsp&nbsp"),
@@ -526,7 +509,7 @@ ui = dashboardPagePlus(
                                )
                         ), 
                         column(width = 12, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey';>Columbia University's Actuarial Science Program</p></h3></b><br>")),
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed';' >Columbia University</p></h3></b><br>")),
                                column(width = 12, align = "center", 
                                       socialButton(url = "https://www.facebook.com/columbia", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
                                       socialButton(url = "https://www.linkedin.com/in/columbia-university-ms-in-actuarial-science-program-29512515b/", type = "linkedin"), HTML("&nbsp&nbsp&nbsp&nbsp"),
@@ -547,7 +530,7 @@ ui = dashboardPagePlus(
                         HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Mortality Analysis Calculator</p></h2></b>", 
                                     "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     The Mortality Analysis Calculator (MAC) is a tool to analyze mortality information from the
-                                    Human Mortality Database (HMD) and Cause of Death Datababse. Users will directly interact with 
+                                    Human Mortality Database (HMD) and Cause of Death Database. Users will directly interact with 
                                     our flexible interface and receive results quickly. The visualizations provide key information 
                                     presented in a simplifed and easy to understand way of looking at decomposition analysis. <h3></p>"), 
                              paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
@@ -1122,7 +1105,7 @@ ui = dashboardPagePlus(
                     tags$strong("Hi! I'm Ben!"), 
                     HTML(paste0("Get in touch with me on LinkedIn (", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), "),")),  
                     "online at", HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")), 
-                    "or by email at bh2722@columbia.edu.",
+                    "or by email at", HTML(paste0("<a href = 'mailto:bh2722@columbia.edu', target='_blank'> bh2722@columbia.edu </a>")),
                     footer = "I am a Master of Science student in Actuarial Science at Columbia University. 
                              I graduated from the University of Rochester with a Bachelor's degree in Statistics 
                              with a Certificate in Actuarial Science. I like to work on projects with statistical 
@@ -1193,7 +1176,7 @@ ui = dashboardPagePlus(
                         accordionItem(
                             id = 6,
                             title = "Are there courses to learn more about mortality decomposition?",
-                            color = "primary",
+                            color = "info",
                             collapsed = FALSE,
                             HTML(paste0("<a ref = 'https://sps.columbia.edu/academics/masters/actuarial-science', 
                             target = '_blank'> Columbia University's Master of Science in Actuarial Science </a> program provide classes 
@@ -1203,7 +1186,7 @@ ui = dashboardPagePlus(
                         accordionItem(
                             id = 7,
                             title = "Who can I contact if I have questions and feedback for the MAC?",
-                            color = "warning",
+                            color = "info",
                             collapsed = FALSE,
                             HTML(paste0("We would love to hear feedback from our users to improve the web application, and 
                             continue to develop more functionality. You can directly email 
@@ -1213,7 +1196,7 @@ ui = dashboardPagePlus(
                         accordionItem(
                             id = 8,
                             title = "What do the version numbers mean?",
-                            color = "warning",
+                            color = "info",
                             collapsed = FALSE,
                             HTML(paste0("The version numbers for the MAC allow users to know which version the MAC
                                         is on. The semantic versioning will allow a quick understanding of the type
