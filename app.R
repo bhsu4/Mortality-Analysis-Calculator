@@ -51,7 +51,7 @@ logotitle <- shinyDashboardLogoDIY(boldText = "", mainText = "MortalityViz", tex
 theme_custom <- shinyDashboardThemeDIY(
     
     ### general
-    appFontFamily = ""
+    appFontFamily = "Arial"
     ,appFontColor = "rgb(0,0,0)"
     ,primaryFontColor = "rgb(0,0,0)"
     ,infoFontColor = "rgb(0,0,0)"
@@ -163,7 +163,7 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                           title = "Visit my Github"),
                                           class = "dropdown", 
                                           style="color: #000; background-color: #b3b3b3; 
-                                                      font-size:135% ;"), titleWidth = 175
+                                                      font-size:135% ;"), titleWidth = 200
                             )
 
 flipBox2 <- function(..., back_content, id, front_title = NULL, back_title = NULL, 
@@ -350,13 +350,12 @@ ui = dashboardPagePlus(
         title = HTML(glue::glue(
             '<span class="logo-mini">{"<strong>mac</strong>"}</span>
              <span class="logo-lg">{""}</span>'
-        )), titleWidth = 175, 
+        )), titleWidth = 200, 
         tags$li(a(href = "javascript:void(window.open('https://github.com/bhsu4', '_blank'))",
                   icon("github", "fa-1.5x"),
                   title = "Visit my Github"),
                 class = "dropdown", 
-                style="color: #000; background-color: #b3b3b3; 
-                                                      font-size:135% ;")
+                style="color: #000; background-color: #b3b3b3; font-size:135% ;")
     ),
     # Dashboard Page Setup ----------------------------------------------------
     #dbHeader,
@@ -366,24 +365,23 @@ ui = dashboardPagePlus(
     
     # Dashboard Sidebar -------------------------------------------------------
     dashboardSidebar(
-        width = 175,
+        width = 200,
         sidebarUserPanel("",
-                         subtitle = a(href = "#", HTML("Welcome to MAC!")),
+                         subtitle = a(href = "tab_home", HTML("<p style = 'font-size: 14px'>Welcome to MAC!</p>")),
                          # Image file should be in www/ subdir
                          image = "mushu.jpg"
         ), tags$br(),
         sidebarMenu(id = "tabs_all",
-            menuItem("HOME", tabName = "tab_home", icon = icon("home")), 
-            menuItem("DECOMPOSITION", #tabName = "tab_le", 
+            menuItem("Home", tabName = "tab_home", icon = icon("home")), 
+            menuItem("Decomposition", #tabName = "tab_le", 
                      icon = icon("desktop"), startExpanded = TRUE,
                      menuSubItem("Overview", tabName = "tab_le", icon = icon("clipboard-list")),
                      menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
                      menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
-            menuItem("LEARN MORE", tabName = "tab_learnmore", icon = icon("lightbulb"), startExpanded = TRUE, 
-                     menuSubItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
-                     menuSubItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
-                     menuSubItem("Community", tabName = "tab_community", icon = icon("users"))),
-            menuItem("LATEST NEWS", tabName = "tab_news", icon = icon("file-alt")),
+            menuItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
+            menuItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
+            menuItem("Community", tabName = "tab_community", icon = icon("users")),
+            menuItem("Latest News", tabName = "tab_news", icon = icon("file-alt")),
             menuItem("FAQ", tabName = "tab_qa", icon = icon("question-circle"))#, 
             #HTML(paste0(
             #    "<br><br><br><br><br><br><br><br><br>",
@@ -422,29 +420,30 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_home", HTML(paste0('<nobr><b><h3 style = "font-family: Roboto Condensed">Mortality Analysis Calculator v.1.0.0</h3></b></nobr>')), hr(),
+            "tab_home", HTML(paste0('<nobr><b><h3>Mortality Analysis Calculator v.1.0.0</h3></b></nobr>')), hr(),
             fluidRow(
                     box(
                         title = "", 
                         status = "success",
-                        width = 4, height = 500,
+                        width = 4, height = 600,
                         column(width = 12, align = "center",
                                         img(src = "compass-icon.png", width=100),
-                        HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; font-family: Roboto Condensed'>Explore</p></h2></b>",
+                        div(style="display:inline-block; width:100%; text-align: center;",
+                        HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black;' >Explore</p></h2></b>",
                         "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                         Guided learning with explanation on the depths of mortality decomposition analysis. 
                         Follow step by step process to explore the technical details of mortality decomposition. </p>")), 
-                        div(style="display:inline-block; width:100%; text-align: center;", 
+                        #div(style="display:inline-block; width:100%; text-align: center;", 
                             actionButton(inputId='explore_more', label="Let's Explore", icon = icon("plus")))
                         )
                     ), 
                     box(
                         title = "",
                         status = "primary",
-                        width = 4, height = 500, 
+                        width = 4, height = 600, 
                         column(width = 12, align = "center",
                                img(src = "book-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black ; font-family: Roboto Condensed'>Documentation</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black ;' >Documentation</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                Find documentation and walkthrough of code for different decomposition functions. 
                                Work your way towards understanding decomposition analysis inside and out. </p>")), 
@@ -455,10 +454,10 @@ ui = dashboardPagePlus(
                     box(
                         title = "",
                         status = "warning",
-                        width = 4, height = 500, 
+                        width = 4, height = 600, 
                         column(width = 12, align = "center",
                                img(src = "users-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; font-family: Roboto Condensed'>Community</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; '>Community</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                Get your questions answered by our community of actuaries and developers. 
                                Connect with us to build your network, and see the latest projects being worked on. </p>")), 
@@ -476,21 +475,21 @@ ui = dashboardPagePlus(
                         status = "danger",
                         width = 8, height = 425, 
                         column(width = 12, align = "center",
-                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ; font-family: Roboto Condensed'>Learn About Actuarial Science</p></h2></b>"))),
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ;'>Learn About Actuarial Science</p></h2></b>"))),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed'>Career & Learning</p></h3></b><br>")),
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://soa.org', target='_blank'> Society of Actuaries </a><h4>", "<br>")),
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://sps.columbia.edu/academics/masters/actuarial-science', target='_blank'> Columbia University Masters in Actuarial Science </a><h4>"))
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey;'>Career & Learning</p></h3></b><br>")),
+                               HTML(paste0("<h4><a href='https://soa.org', target='_blank'> Society of Actuaries </a><h4>", "<br>")),
+                               HTML(paste0("<h4><a href='https://sps.columbia.edu/academics/masters/actuarial-science', target='_blank'> Columbia University Masters in Actuarial Science </a><h4>"))
                         ),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey ; font-family: Roboto Condensed'>Professional Development</p></h3></b><br>")),
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://www.soa.org/prof-dev/pdopportunities/?epsremainingpath=/&filters=Opportunity_Type[ECOURSE]&pagesize=All&view=', target='_blank'> SOA E-Course</a><h4>")) 
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey ;' >Professional Development</p></h3></b><br>")),
+                               HTML(paste0("<h4><a href='https://www.soa.org/prof-dev/pdopportunities/?epsremainingpath=/&filters=Opportunity_Type[ECOURSE]&pagesize=All&view=', target='_blank'> SOA E-Course</a><h4>")) 
                         ),
                         column(width = 4, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed'>Additional Resources</p></h3></b><br>")),
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://pathways.soa.org/' target='_blank'> Educational Pathways</a><h4>", "<br>")), 
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://beanactuary.org', target='_blank'> Be An Actuary</a><h4>", "<br>")), 
-                               HTML(paste0("<h4 style = 'font-family: Roboto Condensed'><a href='https://www.soa.org/resources/soa-explorer/', target='_blank'> SOA Explorer</a><h4>"))
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey;' >Additional Resources</p></h3></b><br>")),
+                               HTML(paste0("<h4><a href='https://pathways.soa.org/' target='_blank'> Educational Pathways</a><h4>", "<br>")), 
+                               HTML(paste0("<h4><a href='https://beanactuary.org', target='_blank'> Be An Actuary</a><h4>", "<br>")), 
+                               HTML(paste0("<h4><a href='https://www.soa.org/resources/soa-explorer/', target='_blank'> SOA Explorer</a><h4>"))
                         )
                         
                     ), 
@@ -499,9 +498,9 @@ ui = dashboardPagePlus(
                         status = "danger",
                         width = 4, height = 425, 
                         column(width = 12, align = "center",
-                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ; font-family: Roboto Condensed'; >Support Us</p></h2></b>"))),
+                               HTML(paste0("<b><h2><p style = 'text-align: left ; color: black; margin-top: -25px; margin-bottom: 25px ; '; >Support Us</p></h2></b>"))),
                         column(width = 12, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed';>Society of Actuaries</p></h3></b><br>")),
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; ';>Society of Actuaries</p></h3></b><br>")),
                                column(width = 12, align = "center", 
                                    socialButton(url = "https://www.facebook.com/SocietyofActuaries", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
                                    socialButton(url = "https://www.twitter.com/soactuaries", type = "twitter"), HTML("&nbsp&nbsp&nbsp&nbsp"),
@@ -509,7 +508,7 @@ ui = dashboardPagePlus(
                                )
                         ), 
                         column(width = 12, align = "left", 
-                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; font-family: Roboto Condensed';' >Columbia University</p></h3></b><br>")),
+                               HTML(paste0("<b><h3><p style = 'text-align: left ; color: grey; ';' >Columbia University</p></h3></b><br>")),
                                column(width = 12, align = "center", 
                                       socialButton(url = "https://www.facebook.com/columbia", type = "facebook"), HTML("&nbsp&nbsp&nbsp&nbsp"),
                                       socialButton(url = "https://www.linkedin.com/in/columbia-university-ms-in-actuarial-science-program-29512515b/", type = "linkedin"), HTML("&nbsp&nbsp&nbsp&nbsp"),
@@ -527,13 +526,13 @@ ui = dashboardPagePlus(
                 column(width = 12,
                     column(width = 8, 
                     mainPanel(title = "", width = NULL,
-                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Mortality Analysis Calculator</p></h2></b>", 
-                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Mortality Analysis Calculator</p></h2></b>", 
+                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px; '>
                                     The Mortality Analysis Calculator (MAC) is a tool to analyze mortality information from the
                                     Human Mortality Database (HMD) and Cause of Death Database. Users will directly interact with 
                                     our flexible interface and receive results quickly. The visualizations provide key information 
                                     presented in a simplifed and easy to understand way of looking at decomposition analysis. <h3></p>"), 
-                             paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                             paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
                                     As we navigate into the future, emerging technology and innovations contine to play a major 
                                     role in the extroadinary decline in human mortality. Improvements in economic and social conditions
                                     have contributed to the increased health status of the population. To quantify such dynamics, 
@@ -541,8 +540,8 @@ ui = dashboardPagePlus(
                                     This will provide more information about our population of interest.<h3></p>"))
                     ), 
                     mainPanel(title = "", width = NULL,
-                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Decomposition of Mortality</p></h2></b>", 
-                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                        HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; '>Decomposition of Mortality</p></h2></b>", 
+                                    "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px; '>
                                     Mortality decomposition is a tool to explain the underlying changes in its components. 
                                     The central aim is to attribute the difference in an aggregate index to better examine specific
                                     contributions. <h3></p><br>"))
@@ -553,8 +552,8 @@ ui = dashboardPagePlus(
             ),
             column(width = 12, 
                 column(width = 3, 
-                    flipBox2(id = 1, main_img = "number1-icon.svg", height = 500,
-                          front_title = "Life Expectancy", back_title = "Functionality in MAC",
+                    flipBox2(id = 1, main_img = "number1-icon.svg", height = 600,
+                          front_title = HTML(paste0("<p>Life Expectancy</p>")), back_title = "Functionality in MAC",
                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                           We've seen an increase in life expectancy since the second half of the twentieth
                                           century driven by underlying mortality improvement. Learn how life expectancy
@@ -568,7 +567,7 @@ ui = dashboardPagePlus(
                     )
                 ),
                 column(width = 3, 
-                    flipBox2(id = 2, main_img = "number2-icon.svg", height = 500,
+                    flipBox2(id = 2, main_img = "number2-icon.svg", height = 600,
                          front_title = "Life Preparancy", back_title = "Functionality in MAC",
                                 HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                             There is a growing need to promote retirement preparedness that goes beyond looking 
@@ -584,9 +583,9 @@ ui = dashboardPagePlus(
                     )
                 ),
                 column(width = 3, 
-                    flipBox2(id = 3, main_img = "number3-icon.svg", height = 500,
+                    flipBox2(id = 3, main_img = "number3-icon.svg", height = 600,
                         front_title = "Gender Gap", back_title = "Functionality in MAC", 
-                               HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
+                               HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px;font-size: 17px'>
                                    Gender is the focal point of all analysis of mortality. Demographers study gender to assess 
                                    and gain information on a population. Take a deeper dive into the gender gap, and better 
                                    understand gender relations. </p>")) 
@@ -600,7 +599,7 @@ ui = dashboardPagePlus(
                      )
                 ),
                 column(width = 3, 
-                    flipBox2(id = 4, main_img = "number4-icon.svg", height = 500,
+                    flipBox2(id = 4, main_img = "number4-icon.svg", height = 600,
                         front_title = "Mortality Chapters", back_title = "Functionality in MAC",
                                 HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                      Cause-specific mortality provide relevant information about the health status of the population.
@@ -620,7 +619,7 @@ ui = dashboardPagePlus(
                        status = "success",
                        width = 12,  
                        column(width = 12, align = "center",
-                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; padding-bottom:10px'>Get Started Now!</p></h2></b>", 
+                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ;'>Get Started Now!</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Explore the Mortality Analysis Calculator, and start your mortality decomposition journey!
                                     Take a dive into decomposition analysis by age or by age and cause-of-death. Spend your
@@ -632,8 +631,8 @@ ui = dashboardPagePlus(
                    )
             ),
             column(width = 12,
-                   box(title = "", width = 6,
-                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Keep Up To Date With Latest News</p></h2></b>", 
+                   box(title = "", width = 6, height = 300,
+                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ; '>Keep Up To Date With Latest News</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Read about the latest news within the industry, and how it will influence future actuarial 
                                     work. Keep up to date on fixes and new updates to the Mortality 
@@ -641,8 +640,8 @@ ui = dashboardPagePlus(
                                     div(style="display:inline-block; width:100%; text-align: center;", 
                                         actionButton(inputId='news_more', label="Latest News"))
                    ),
-                   box(title = "", width = 6, 
-                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Shape Future Releases</p></h2></b>", 
+                   box(title = "", width = 6, height = 300,
+                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ; '>Shape Future Releases</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Browse frequently asked questions and look at the responses answered by our team.
                                     Share your ideas about mortality decomposition and web development with the community. <h3></p>")), 
@@ -657,8 +656,8 @@ ui = dashboardPagePlus(
                 column(width = 12,
                    column(width = 8, 
                       mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Documentation for MAC</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; '>Documentation for MAC</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
                                             Mortality decomposition is a tool to explain the underlying changes in its components. 
                                             The central aim is to attribute the difference in an aggregate index to better examine specific contributions. 
                                             For the MAC documentation, life expectancy will be used for simplicity. In addition, decomposing mortality
@@ -669,8 +668,8 @@ ui = dashboardPagePlus(
                                             A quick introduction will be provided in the subsequent section to clarify on this concept. <h3></p>"))
                       ), 
                       mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Introduction to Decomposition</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Introduction to Decomposition</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px; '>
                                             Given our aggregate index of life expectancy, we can decompose contributions by age
                                             groups into what Arriage refers to as 'direct' and 'indirect' effects of mortality change.
                                             Direct Effects are defined as the change in life expectancy within a particular 
@@ -686,12 +685,12 @@ ui = dashboardPagePlus(
                       )
                    )
                 ),
-                column(width = 10, align = "center", img(src = "decomp.png")),
+                column(width = 10, align = "center", img(src = "decomp.jpg")),
                 column(width = 12,
                    column(width = 8, 
                       mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px'>Stepwise Decomposition</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Stepwise Decomposition</p></h2></b>", 
+                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
                                             The following illustration above was taken from the 
                                             <a href='https://www.springer.com/gp/book/9783030376666' target='_blank'><em><b> 
                                             International Handbook of Health Expectancies (Jagger, Crimmins, Saito, de Carvallho Yokota, 
@@ -701,7 +700,7 @@ ui = dashboardPagePlus(
                                             Given that decomposition can be generalized into direct, indirect, and interactive effects, 
                                             in which the sum is equivalent to the aggregate index. We are able to estimate contributions 
                                             through the step-wise decomposition. <h3></p>"),
-                                     paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
+                                     paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
                                             In the illustration, there are two populations, A, and B with ages 0, 1, 2, 3. 
                                             The age-specific death rates are provided by the m-vector, and life expectancy 
                                             at birth is defined as e0. In step 2, the change in the life expectancy between 
@@ -737,7 +736,7 @@ ui = dashboardPagePlus(
                         'SARS-CoV2' that causes the respiratory disease named 'coronavirus disease 2019' (COVID-19).  While original detection 
                         occurred in China, the U.S. Centers for Disease Control and Prevention (CDC) note that the disease is now detected in 60 
                         locations internationally, including the United States.", HTML("</br>"),
-                        div(style="display:inline-block; width:180%; text-align: center;", actionButton(inputId='ab1', label="Learn More", 
+                        div(style="display:inline-block; width:170%; text-align: center;", actionButton(inputId='ab1', label="Learn More", 
                                             icon = icon("plus"), 
                                             onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
                     ),
@@ -764,11 +763,12 @@ ui = dashboardPagePlus(
                         description = "Society of Actuaries",
                         "The 2020 Health Meeting Webcast Series features ten days of ten Health tracks, allowing attendees 
                         to create their own Health Meeting experience by mixing and matching which days and webcasts fit their 
-                        professional development needs.",
-                        div(style="display:inline-block; width:180%; text-align: center;", 
+                        professional development needs.", HTML("</br>"),
+                        div(style="display:inline-block; width:170%; text-align: center;", 
                             actionButton(inputId='ab2', label="Learn More", icon = icon("plus"), 
-                                         onclick ="window.open('https://www.soa.org/prof-dev/pdopportunities/?filters=Topic[T_HLTHWC]&view=grid', '_blank')")),
-                        userPostMedia(src = "health-webcast.png")
+                                         onclick ="window.open('https://www.soa.org/prof-dev/pdopportunities/?filters=Topic[T_HLTHWC]&view=grid', '_blank')")), 
+                        HTML("</br></br>"),
+                        userPostMedia(src = "health-webcast.jpg")
                     )
                 ),
                 box(
@@ -811,7 +811,7 @@ ui = dashboardPagePlus(
                 box(
                     title = "", 
                     status = "warning",
-                    width = 4, height = 750,
+                    width = 4, height = 900,
                     column(width = 12, align = "center",
                            img(src = "heart-icon.png", width=100),
                            HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Life Expectancy</p></h2></b>",
@@ -830,7 +830,7 @@ ui = dashboardPagePlus(
                 box(
                     title = "", 
                     status = "danger",
-                    width = 4, height = 750,
+                    width = 4, height = 900,
                     column(width = 12, align = "center",
                            img(src = "money-icon.png", width=100),
                            HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Life Preparancy</p></h2></b>",
@@ -850,7 +850,7 @@ ui = dashboardPagePlus(
                 box(
                     title = "", 
                     status = "success",
-                    width = 4, height = 750,
+                    width = 4, height = 900,
                     column(width = 12, align = "center",
                            img(src = "chapter-icon.png", width=100),
                            HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Mortality Chapter</p></h2></b>",
@@ -1099,7 +1099,7 @@ ui = dashboardPagePlus(
                     width = 4,
                     src = "me.png",
                     background = TRUE,
-                    backgroundUrl = "https://cdn.hipwallpaper.com/i/55/63/hYxHpB.jpg",
+                    backgroundUrl = "wallpaper.jpg",
                     closable = FALSE, collapsible = FALSE,
                     HTML(paste0("<br>", "<h4><p style = 'text-align: center ; color: black'>Lead Developer</p></h4></b>")), hr(),
                     tags$strong("Hi! I'm Ben!"), 
@@ -1718,7 +1718,7 @@ server <- shinyServer(function(input, output, session){
         
         #slickR
         output$slickr <- renderSlickR({
-            imgs <- c("soa_banner.png", "sps_banner.png")
+            imgs <- c("soa_banner.jpg", "sps_banner.jpg")
             slickR(imgs)
         })
         
