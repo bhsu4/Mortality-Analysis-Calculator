@@ -150,15 +150,6 @@ theme_custom <- shinyDashboardThemeDIY(
     ,tableBorderRowSize = 1
 )
 
-convertMenuItem <- function(mi,tabName) {
-    mi$children[[1]]$attribs['data-toggle']="tab"
-    mi$children[[1]]$attribs['data-value'] = tabName
-    if(length(mi$attribs$class)>0 && mi$attribs$class=="treeview"){
-        mi$attribs$class=NULL
-    }
-    mi
-}
-
 dbHeader <- dashboardHeaderPlus(title = tagList(
                                         a(href = "javascript:void(window.open('https://google.com', '_blank'))",
                                                          tags$img(src='MortalityViz.png', class = 'logo-lg',
@@ -175,6 +166,178 @@ dbHeader <- dashboardHeaderPlus(title = tagList(
                                               title = "Contact Us", height = "20px", width = "20px")),
                                         class = 'dropdown'), titleWidth = 300
                             )
+
+flipBox2 <- function(..., back_content, id, front_title = NULL, back_title = NULL, 
+                     front_btn_text = "More", back_btn_text = "Back to main", 
+                     header_img = NULL, main_img = NULL, width = 6, height = 500) {
+    
+    if (is.null(id)) stop("card id cannot be null and must be unique")
+    
+    flipBoxTag <- shiny::tags$div(
+        class = paste0("col sm-", width),
+        shiny::tags$div(
+            class = "rotate-container",
+            style = paste("height: ", height , "px;", sep = ""),
+            # Front
+            shiny::tags$div(
+                class = paste0("card card-front-", id , " text-center"),
+                style = "background-color: #ffffff;",
+                
+                shiny::tags$div(
+                    style = paste("height: ", 0.85*height , "px;", sep = ""), #front button
+                    # background
+                    shiny::tags$div(class = paste0("card-background-", id)),
+                    shiny::tags$div(
+                        class = "card-block",
+                        shiny::tags$img(
+                            class = "avatar",
+                            src = main_img,
+                            alt = "Avatar", 
+                            style = "height: 100px;"
+                        ),
+                        shiny::tags$h3(class = "card-title", front_title),
+                        shiny::tags$p(...)
+                    ),
+                ),
+                shiny::tags$button(
+                    id = paste0("btn-", id, "-front"),
+                    class = "btn btn-primary btn-rotate",
+                    shiny::tags$i(class = "fa fa-long-arrow-right"), 
+                    front_btn_text      
+                )
+                
+            ),
+            # back
+            
+            # back
+            shiny::tags$div(
+                class = paste0("card card-back-", id , " text-center"),
+                style = "background-color: #ffffff;",
+                shiny::tags$div(
+                    style = paste("height: ", 0.85*height , "px;", sep = ""), #back button
+                    shiny::br(),
+                    shiny::tags$div(
+                        class = "card-header",
+                        shiny::tags$p(
+                            shiny::h4(back_title)
+                        )
+                    ),
+                    shiny::hr(),
+                    shiny::tags$div(
+                        class = "card-block",
+                        shiny::tags$p(back_content), 
+                        
+                    )
+                ),
+                shiny::tags$button(
+                    id = paste0("btn-", id, "-back"),
+                    class = "btn btn-primary btn-rotate",
+                    shiny::tags$i(class = "fa fa-long-arrow-left"), 
+                    back_btn_text      
+                )
+            )
+        )
+    )
+    
+    shiny::tagList(
+        shiny::singleton(
+            shiny::tags$head(
+                # CSS
+                shiny::tags$style(
+                    shiny::HTML(
+                        paste0(
+                            "/* Card styles for rotation */
+              .rotate-container {
+                position: relative;
+               }
+               .rotate-container .card-front-", id, ", .rotate-container .card-back-", id," {
+                width: 100%;
+                height: 100%;
+                -webkit-transform: perspective(600px) rotateY(0deg);
+                transform: perspective(600px) rotateY(0deg);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+                transition: all 0.5s linear 0s;
+               }
+               .rotate-container .card-back-", id, " {
+                -webkit-transform: perspective(1600px) rotateY(180deg);
+                transform: perspective(1600px) rotateY(180deg);
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+               }
+               .rotate-container .rotate-card-front-", id, " {
+                -webkit-transform: perspective(1600px) rotateY(-180deg);
+                transform: perspective(1600px) rotateY(-180deg);
+               }
+               .rotate-container .rotate-card-back-", id, " {
+                -webkit-transform: perspective(1600px) rotateY(0deg);
+                transform: perspective(1600px) rotateY(0deg);
+               }
+               
+               /* Modified card styles */
+               .card {
+                box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.5);
+               }
+               .card .card-header p {
+                margin: 0;
+               }
+               
+               .card .card-background-", id, " {
+                background: url('", header_img, "');
+                height: 8em;
+                background-position: center center;
+                background-size: cover;
+               }
+               .card .avatar {
+                max-width: 6em;
+                max-height: 6em;
+                margin-top: -4em;
+                margin-bottom: 1em;
+                border: 4px solid white;
+                border-radius: 50%;
+                background: radial-gradient(#e3e3e3, #329A7C, #109381);
+               }
+               .card .btn {
+                margin-bottom: 1em;
+                cursor: pointer;
+               }
+               .card .social-links li {
+                margin: 0.5em;
+               }
+               .card .social-links a {
+                font-size: 1.5em;
+               }
+               " 
+                        )
+                    )
+                ),
+                # Javascript
+                shiny::tags$script(
+                    shiny::HTML(
+                        paste0(
+                            "$(function() {
+                // For card rotation
+                $('#btn-", id,"-front').click(function(){
+                  $('.card-front-", id,"').addClass(' rotate-card-front-", id, "');
+                  $('.card-back-", id,"').addClass(' rotate-card-back-", id, "');
+                });
+                $('#btn-", id,"-back').click(function(){
+                  $('.card-front-", id,"').removeClass(' rotate-card-front-", id, "');
+                  $('.card-back-", id,"').removeClass(' rotate-card-back-", id, "');
+                });
+              });
+              "
+                        )
+                    )
+                )
+            )
+        ),
+        flipBoxTag
+    )
+}
+
 
 ui = dashboardPagePlus(
     
@@ -407,7 +570,7 @@ ui = dashboardPagePlus(
             ),
             column(width = 12, 
                 column(width = 3, 
-                    flipBox(id = 1, main_img = "number1-icon.svg", height = 1000,
+                    flipBox2(id = 1, main_img = "number1-icon.svg", height = 500,
                           front_title = "Life Expectancy", back_title = "Functionality in MAC",
                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                           We've seen an increase in life expectancy since the second half of the twentieth
@@ -422,7 +585,7 @@ ui = dashboardPagePlus(
                     )
                 ),
                 column(width = 3, 
-                    flipBox(id = 2, main_img = "number2-icon.svg", 
+                    flipBox2(id = 2, main_img = "number2-icon.svg", height = 500,
                          front_title = "Life Preparancy", back_title = "Functionality in MAC",
                                 HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                             There is a growing need to promote retirement preparedness that goes beyond looking 
@@ -438,8 +601,8 @@ ui = dashboardPagePlus(
                     )
                 ),
                 column(width = 3, 
-                    flipBox(id = 3, main_img = "number3-icon.svg",
-                        front_title = "Gender Gap", back_title = "Functionality in MAC",
+                    flipBox2(id = 3, main_img = "number3-icon.svg", height = 500,
+                        front_title = "Gender Gap", back_title = "Functionality in MAC", 
                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                    Gender is the focal point of all analysis of mortality. Demographers study gender to assess 
                                    and gain information on a population. Take a deeper dive into the gender gap, and better 
@@ -454,7 +617,7 @@ ui = dashboardPagePlus(
                      )
                 ),
                 column(width = 3, 
-                    flipBox(id = 4, main_img = "number4-icon.svg",
+                    flipBox2(id = 4, main_img = "number4-icon.svg", height = 500,
                         front_title = "Mortality Chapters", back_title = "Functionality in MAC",
                                 HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                      Cause-specific mortality provide relevant information about the health status of the population.
