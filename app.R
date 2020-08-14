@@ -834,7 +834,7 @@ ui = dashboardPagePlus(
                                        "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                         A life preparancy age might be commonly defined as the age at which nth percentile of a population 
                                         at which an age x will survive to. (e.g. The age to which 10 percent of a population that has 
-                                        already reached age 65 is expected to livve in the future) </p>")), 
+                                        already reached age 65 is expected to live in the future) </p>")), 
                            blockQuote("[There is] a growing need for the actuarial profession around the world to
                                promote retirement plans that include lifetime income options....
                                Longevity risk, however, is a much more delicate issue than simply noting the 
@@ -1803,7 +1803,7 @@ server <- shinyServer(function(input, output, session){
                                             min = 1855, max = 2016, value = c(1855, 2016)),
                    "Northern Ireland" = sliderInput("range_t", label = "Years Selected",
                                                     min = 1922, max = 2016, value = c(1922, 2016)),
-                   "U.S.A" = sliderInput("range_t", label = "Years Selected",
+                   "USA" = sliderInput("range_t", label = "Years Selected",
                                          min = 1933, max = 2017, value = c(1933, 2017)),
                    "Ukraine" = sliderInput("range_t", label = "Years Selected",
                                            min = 1959, max = 2013, value = c(1959, 2013))
