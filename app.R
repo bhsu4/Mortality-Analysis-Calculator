@@ -2388,10 +2388,10 @@ server <- shinyServer(function(input, output, session){
                                                                  "Proportion: ", paste0(round(perct*100, 4), "%")), 
                         hoverinfo = "text", orientation = 'h') %>% 
                     config(displayModeBar = FALSE) %>% 
-                    layout(barmode="overlay", title = paste0("Changes in Rate per 100,000 (",
+                    layout(barmode="overlay", title = paste0("Changes in Rate per 1000 (",
                                                              input$range_tcod[1], "-", input$range_tcod[2], ", ", 
                                                              input$CODGender, ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
+                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 1000)", 
                                categoryarray = ~diagn, 
                                categoryorder = "array", size = 8, tickangle = 0,
                                showgrid = FALSE), 
@@ -2444,10 +2444,10 @@ server <- shinyServer(function(input, output, session){
                                              "Change: ", round(rate, 4), '</br>',
                                              "Proportion: ", paste0(round(perct*100, 4), "%")), 
                               hoverinfo = "text", orientation = 'h') %>% 
-                    layout(barmode="group", title = paste0("Changes in Death Rate per 100,000 (",
+                    layout(barmode="group", title = paste0("Changes in Death Rate per 1000 (",
                                                            input$range_tcod[1], "-", input$range_tcod[2], ", ", 
                                                            paste(input$heatGender, collapse = "/"), ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 100,000)", 
+                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 1000)", 
                                                                categoryarray = ~diagn, 
                                                                categoryorder = "array", size = 10, tickangle = 0, showgrid = FALSE), 
                            yaxis = list(title = "", autorange="reversed", showgrid = TRUE))
