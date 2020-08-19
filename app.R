@@ -530,10 +530,10 @@ ui = dashboardPagePlus(
                                     The Mortality Analysis Calculator (MAC) is a tool to analyze mortality information from the
                                     Human Mortality Database (HMD) and Cause of Death Database. Users will directly interact with 
                                     our flexible interface and receive results quickly. The visualizations provide key information 
-                                    presented in a simplifed and easy to understand way of looking at decomposition analysis. <h3></p>"), 
+                                    presented in a simplified and easy to understand way of looking at decomposition analysis. <h3></p>"), 
                              paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
-                                    As we navigate into the future, emerging technology and innovations contine to play a major 
-                                    role in the extroadinary decline in human mortality. Improvements in economic and social conditions
+                                    As we navigate into the future, emerging technology and innovations continue to play a major 
+                                    role in the extraordinary decline in human mortality. Improvements in economic and social conditions
                                     have contributed to the increased health status of the population. To quantify such dynamics, 
                                     techniques such as mortality decomposition analysis allow us to determine mortality contributions. 
                                     This will provide more information about our population of interest.<h3></p>"))
@@ -670,7 +670,7 @@ ui = dashboardPagePlus(
                                 HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Introduction to Decomposition</p></h2></b>", 
                                             "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px; '>
                                             Given our aggregate index of life expectancy, we can decompose contributions by age
-                                            groups into what Arriage refers to as 'direct' and 'indirect' effects of mortality change.
+                                            groups into what Arriaga refers to as 'direct' and 'indirect' effects of mortality change.
                                             Direct Effects are defined as the change in life expectancy within a particular 
                                             age group, due to underlying changes in the mortality within that age group. The specific
                                             calculations take the proportion of survivors at each age group and multiply it by the
@@ -817,7 +817,7 @@ ui = dashboardPagePlus(
                                         subset are expected to lie longer than life expectancy, and half are not expected to survive to
                                         life expectancy) </p>"), 
                                 paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
-                                        Life expectancy is an integral part of how insurance compmanies are able to determine 
+                                        Life expectancy is an integral part of how insurance companies are able to determine 
                                         longevity predictions. It provides a general estimation of the number of years a person 
                                         will survive, and influences much of retirement and estate planning. Though, not a definitive 
                                         number that captures individual lifestyle choices, family history, and other factors, 
@@ -854,10 +854,10 @@ ui = dashboardPagePlus(
                                        "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                         Mortality chapters provide an additional dimension to our analysis by looking deeper
                                         at the cause-specific mortality rates. (e.g. Chapters may include: cancer, 
-                                        respiratory, preganancy/childbirth, etc.) </p>"), 
+                                        respiratory, pregnancy/childbirth, etc.) </p>"), 
                                paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                       Cause-specific mortality provide essential information about mortality trends.
-                                      Analysis by cause of death categories allow actuaries to design products that may accomodate 
+                                      Analysis by cause of death categories allow actuaries to design products that may accommodate  
                                       for these different needs. Past historical information can provide insight on latest mortality
                                       trends to ensure the health status of the population. </p>"))
                     ) 
@@ -1125,7 +1125,7 @@ ui = dashboardPagePlus(
                             collapsed = FALSE,
                             HTML(paste0("There are plenty of academic research papers that have been published, and continue to be
                             pushed out to help better understand mortality. Simply browsing academic journals would be a
-                            great place to start, and get exposed to interesting and applicational ways decomposition analysis
+                            great place to start, and get exposed to interesting ways decomposition analysis
                             is being used in mortality studies. In addition, another source would be the
                             <a href='https://www.soa.org/programs/mortality-longevity/' target='_blank'> Society of Actuaries 
                             Mortality & Longevity Strategic Research</a> provides the latest updates on mortality related topics 
@@ -1726,87 +1726,87 @@ server <- shinyServer(function(input, output, session){
             if(is.null(input$heatCountry)) return()
             switch(input$heatCountry, 
                    "Australia" = sliderInput("range_t", label = "Years Selected",
-                                             min = 1921, max = 2018, value = c(1921, 2018)),
+                                             min = 1921, max = 2018, value = c(1921, 2018), sep = ""),
                    "Austria" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1947, max = 2017, value = c(1947, 2017)),
+                                           min = 1947, max = 2017, value = c(1947, 2017), sep = ""),
                    "Belarus" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1959, max = 2018, value = c(1959, 2018)),
+                                           min = 1959, max = 2018, value = c(1959, 2018), sep = ""),
                    "Belgium" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1841, max = 2018, value = c(1841, 2018)),
+                                           min = 1841, max = 2018, value = c(1841, 2018), sep = ""),
                    "Bulgaria" = sliderInput("range_t", label = "Years Selected",
-                                            min = 1947, max = 2018, value = c(1947, 2017)),
+                                            min = 1947, max = 2018, value = c(1947, 2017), sep = ""),
                    "Canada" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1921, max = 2016, value = c(1921, 2016)),
+                                          min = 1921, max = 2016, value = c(1921, 2016), sep = ""),
                    "Chile" = sliderInput("range_t", label = "Years Selected",
-                                         min = 1992, max = 2008, value = c(1992, 2008)),
+                                         min = 1992, max = 2008, value = c(1992, 2008), sep = ""),
                    "Czech Republic" = sliderInput("range_t", label = "Years Selected",
-                                                  min = 1950, max = 2018, value = c(1950, 2018)),
+                                                  min = 1950, max = 2018, value = c(1950, 2018), sep = ""),
                    "Denmark" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1835, max = 2019, value = c(1835, 2019)),
+                                           min = 1835, max = 2019, value = c(1835, 2019), sep = ""),
                    "Estonia" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1959, max = 2017, value = c(1959, 2017)),
+                                           min = 1959, max = 2017, value = c(1959, 2017), sep = ""),
                    "Finland" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1878, max = 2018, value = c(1878, 2018)),
+                                           min = 1878, max = 2018, value = c(1878, 2018), sep = ""),
                    "France" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1816, max = 2017, value = c(1816, 2018)),
+                                          min = 1816, max = 2017, value = c(1816, 2018), sep = ""),
                    "Germany" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1990, max = 2017, value = c(1990, 2017)),
+                                           min = 1990, max = 2017, value = c(1990, 2017), sep = ""),
                    "Greece" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1981, max = 2017, value = c(1981, 2017)),
+                                          min = 1981, max = 2017, value = c(1981, 2017), sep = ""),
                    "Hungary" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1950, max = 2017, value = c(1950, 2017)),
+                                           min = 1950, max = 2017, value = c(1950, 2017), sep = ""),
                    "Iceland" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1838, max = 2018, value = c(1838, 2018)),
+                                           min = 1838, max = 2018, value = c(1838, 2018), sep = ""),
                    "Ireland" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1950, max = 2018, value = c(1950, 2017)),
+                                           min = 1950, max = 2018, value = c(1950, 2017), sep = ""),
                    "Israel" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1983, max = 2016, value = c(1983, 2016)),
+                                          min = 1983, max = 2016, value = c(1983, 2016), sep = ""),
                    "Italy" = sliderInput("range_t", label = "Years Selected",
-                                         min = 1872, max = 2017, value = c(1872, 2017)),
+                                         min = 1872, max = 2017, value = c(1872, 2017), sep = ""),
                    "Japan" = sliderInput("range_t", label = "Years Selected",
-                                         min = 1947, max = 2018, value = c(1947, 2018)),
+                                         min = 1947, max = 2018, value = c(1947, 2018), sep = ""),
                    "Korea" = sliderInput("range_t", label = "Years Selected",
-                                         min = 2003, max = 2018, value = c(2003, 2018)),
+                                         min = 2003, max = 2018, value = c(2003, 2018), sep = ""),
                    "Latvia" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1959, max = 2017, value = c(1959, 2017)),
+                                          min = 1959, max = 2017, value = c(1959, 2017), sep = ""),
                    "Lithuania" = sliderInput("range_t", label = "Years Selected",
-                                             min = 1959, max = 2017, value = c(1959, 2017)),
+                                             min = 1959, max = 2017, value = c(1959, 2017), sep = ""),
                    "Luxembourg" = sliderInput("range_t", label = "Years Selected",
-                                              min = 1960, max = 2017, value = c(1960, 2017)),
+                                              min = 1960, max = 2017, value = c(1960, 2017), sep = ""),
                    "Netherlands" = sliderInput("range_t", label = "Years Selected",
-                                               min = 1850, max = 2018, value = c(1850, 2018)),
+                                               min = 1850, max = 2018, value = c(1850, 2018), sep = ""),
                    "New Zealand" = sliderInput("range_t", label = "Years Selected",
-                                               min = 1948, max = 2013, value = c(1948, 2013)),
+                                               min = 1948, max = 2013, value = c(1948, 2013), sep = ""),
                    "Norway" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1846, max = 2018, value = c(1846, 2018)),
+                                          min = 1846, max = 2018, value = c(1846, 2018), sep = ""),
                    "Poland" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1958, max = 2018, value = c(1958, 2018)),
+                                          min = 1958, max = 2018, value = c(1958, 2018), sep = ""),
                    "Portugal" = sliderInput("range_t", label = "Years Selected",
-                                            min = 1940, max = 2018, value = c(1940, 2018)),
+                                            min = 1940, max = 2018, value = c(1940, 2018), sep = ""),
                    "Russia" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1959, max = 2014, value = c(1959, 2014)),
+                                          min = 1959, max = 2014, value = c(1959, 2014), sep = ""),
                    "Slovakia" = sliderInput("range_t", label = "Years Selected",
-                                            min = 1950, max = 2017, value = c(1950, 2017)),
+                                            min = 1950, max = 2017, value = c(1950, 2017), sep = ""),
                    "Slovenia" = sliderInput("range_t", label = "Years Selected",
-                                            min = 1983, max = 2017, value = c(1983, 2017)),
+                                            min = 1983, max = 2017, value = c(1983, 2017), sep = ""),
                    "Spain" = sliderInput("range_t", label = "Years Selected",
-                                         min = 1908, max = 2018, value = c(1908, 2018)),
+                                         min = 1908, max = 2018, value = c(1908, 2018), sep = ""),
                    "Sweden" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1751, max = 2018, value = c(1751, 2018)),
+                                          min = 1751, max = 2018, value = c(1751, 2018), sep = ""),
                    "Switzerland" = sliderInput("range_t", label = "Years Selected",
-                                               min = 1876, max = 2018, value = c(1876, 2018)),
+                                               min = 1876, max = 2018, value = c(1876, 2018), sep = ""),
                    "Taiwan" = sliderInput("range_t", label = "Years Selected",
-                                          min = 1970, max = 2014, value = c(1970, 2014)),
+                                          min = 1970, max = 2014, value = c(1970, 2014), sep = ""),
                    "Great Britain" = sliderInput("range_t", label = "Years Selected",
-                                                 min = 1841, max = 2016, value = c(1841, 2016)),
+                                                 min = 1841, max = 2016, value = c(1841, 2016), sep = ""),
                    "Scotland" = sliderInput("range_t", label = "Years Selected",
-                                            min = 1855, max = 2016, value = c(1855, 2016)),
+                                            min = 1855, max = 2016, value = c(1855, 2016), sep = ""),
                    "Northern Ireland" = sliderInput("range_t", label = "Years Selected",
-                                                    min = 1922, max = 2016, value = c(1922, 2016)),
+                                                    min = 1922, max = 2016, value = c(1922, 2016), sep = ""),
                    "USA" = sliderInput("range_t", label = "Years Selected",
-                                         min = 1933, max = 2017, value = c(1933, 2017)),
+                                         min = 1933, max = 2017, value = c(1933, 2017), sep = ""),
                    "Ukraine" = sliderInput("range_t", label = "Years Selected",
-                                           min = 1959, max = 2013, value = c(1959, 2013))
+                                           min = 1959, max = 2013, value = c(1959, 2013), sep = "")
             )
         })
         
@@ -1816,28 +1816,28 @@ server <- shinyServer(function(input, output, session){
             switch(input$CODCountry, 
                    "Canada" = sliderInput("range_tcod",
                                           label = "Years Selected",
-                                          min = 1950, max = 2009, value = c(1950, 2009)),
+                                          min = 1950, max = 2009, value = c(1950, 2009), sep = ""),
                    "Czech Republic" = sliderInput("range_tcod",
                                                   label = "Years Selected",
-                                                  min = 1950, max = 2013, value = c(1950, 2013)),
+                                                  min = 1950, max = 2013, value = c(1950, 2013), sep = ""),
                    "France" = sliderInput("range_tcod",
                                           label = "Years Selected",
-                                          min = 1958, max = 2013, value = c(1958, 2013)),
+                                          min = 1958, max = 2013, value = c(1958, 2013), sep = ""),
                    "United Kingdom" = sliderInput("range_tcod",
                                                   label = "Years Selected",
-                                                  min = 1950, max = 2014, value = c(1950, 2014)),
+                                                  min = 1950, max = 2014, value = c(1950, 2014), sep = ""),
                    "Japan" = sliderInput("range_tcod",
                                          label = "Years Selected",
-                                         min = 1950, max = 2013, value = c(1950, 2013)),
+                                         min = 1950, max = 2013, value = c(1950, 2013), sep = ""),
                    "Norway" = sliderInput("range_tcod",
                                           label = "Years Selected",
-                                          min = 1951, max = 2012, value = c(1951, 2012)),
+                                          min = 1951, max = 2012, value = c(1951, 2012), sep = ""),
                    "Sweden" = sliderInput("range_tcod",
                                           label = "Years Selected",
-                                          min = 1952, max = 2012, value = c(1952, 2012)),
+                                          min = 1952, max = 2012, value = c(1952, 2012), sep = ""),
                    "USA" = sliderInput("range_tcod",
                                         label = "Years Selected",
-                                        min = 1959, max = 2015, value = c(1959, 2015))
+                                        min = 1959, max = 2015, value = c(1959, 2015), sep = "")
             )
         })
         
