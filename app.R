@@ -345,7 +345,6 @@ ui = dashboardPagePlus(
         left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
                                 "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by Benjamin Hsu</a> - </medium></p>"))
     ),
-    
     dashboardHeader(
         title = HTML(glue::glue(
             '<span class="logo-mini">{"<strong>mac</strong>"}</span>
@@ -1684,6 +1683,25 @@ GenGap_AgeCOD <- function(cntry, t){
 
 
 server <- shinyServer(function(input, output, session){ 
+        
+        #manual changing
+        observeEvent(input$tabs_all, {
+          # Drop the leading '#' symbol
+          hash <- substring(getUrlHash(), 2)
+          
+          # This is so we don't 'update' to the tab we're already in (since clicking on 
+          # the sidebar already switches tabs.)
+          if (hash != input$tabs_all) {
+            # The 'push' argument is necessary so that the hash change event occurs and
+            # so that the other observer is triggered.
+            updateQueryString(paste0("#", input$tabs_all), mode = "push")
+          }
+        }, ignoreInit = TRUE)
+        
+        observeEvent(getUrlHash(), {
+          hash <- substring(getUrlHash(), 2)
+          updateTabItems(session, "tabs_all", hash)
+        })
 
         #homepage reactie action buttons
         observeEvent(input$explore_more, {
@@ -2495,7 +2513,7 @@ server <- shinyServer(function(input, output, session){
                     chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
                }
             }
-            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/100000", "Proportion (%)")
+            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/1000", "Proportion (%)")
             chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
             chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
             chapter_rates_select_ord}, 
