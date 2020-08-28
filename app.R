@@ -2730,7 +2730,7 @@ server <- shinyServer(function(input, output, session){
                           cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
-                                                                   input$CODGender, ", ", input$CODCountry, ")"), 
+                                                                   input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")"), 
                           font = list(size = 8), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
@@ -2758,7 +2758,7 @@ server <- shinyServer(function(input, output, session){
                           cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
-                                                                   "Female - Male", ", ", input$CODCountry, ")"), 
+                                                                   "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
                           font = list(size = 8), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
@@ -2824,7 +2824,7 @@ server <- shinyServer(function(input, output, session){
                           cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
-                                                                   input$CODGender, ", ", input$CODCountry, ")"), 
+                                                                   input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")"), 
                           font = list(size = 8), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
@@ -2848,7 +2848,7 @@ server <- shinyServer(function(input, output, session){
                           cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
-                                                                   "Female - Male", ", ", input$CODCountry, ")"), 
+                                                                   "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
                           font = list(size = 8), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
@@ -2915,7 +2915,7 @@ server <- shinyServer(function(input, output, session){
                       cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
                       plot_method = c("plotly"), main = paste0("Gender Gap in Life Expectancy (", 
                                                                input$range_tcod[1], ", ",
-                                                               "Female - Male", ", ", input$CODCountry, ")"), 
+                                                               "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
                       font = list(size = 8), custom_hovertext = hover_text2, 
                       key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                 layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
