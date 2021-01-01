@@ -602,30 +602,14 @@ ui = dashboardPagePlus(
                 )
             ), 
             column(width = 12, style = "padding-top:20px;",
-                   box(title = "",
-                       status = "success",
-                       width = 12,  
-                       column(width = 12, align = "center",
-                                    HTML(paste0("<br><b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ;'>Get Started Now!</p></h2></b>", 
+                   box(title = "", width = 6, height = 300,
+                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ; '>Get Started Now!</p></h2></b>", 
                                                 "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
                                     Explore the Mortality Analysis Calculator, and start your mortality decomposition journey!
                                     Take a dive into decomposition analysis by age or by age and cause-of-death. Spend your
                                     time learning more about how the population's health status have changed. <h3></p>")),
                                     div(style="display:inline-block; width:100%; text-align: center; font-size: 40px", 
                                         actionButton(inputId='start_more', label="Get Started"))
-                              
-                          )
-                   )
-            ),
-            column(width = 12,
-                   box(title = "", width = 6, height = 300,
-                                    HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ; '>Keep Up To Date With Latest News</p></h2></b>", 
-                                                "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px'>
-                                    Read about the latest news within the industry, and how it will influence future actuarial 
-                                    work. Keep up to date on fixes and new updates to the Mortality 
-                                    Analysis Calculator. Browse new ideas that will be implemented, and developed. <h3></p>")),
-                                    div(style="display:inline-block; width:100%; text-align: center;", 
-                                        actionButton(inputId='news_more', label="Latest News"))
                    ),
                    box(title = "", width = 6, height = 300,
                                     HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; margin-top: -25px; margin-bottom: 25px ; '>Shape Future Releases</p></h2></b>", 
@@ -942,13 +926,9 @@ ui = dashboardPagePlus(
                               tabPanel(title = "Contribution to Gender",
                                        tags$br(),
                                        fluidRow(
-                                           column(width = 8,
+                                           column(width = 12,
                                                   withSpinner(plotlyOutput("GapAge", height = 600)) 
-                                           ), 
-                                           column(width = 4, 
-                                                  withSpinner(DT::dataTableOutput("GapAgeTable", width = "100%", height = 400))
                                            )
-                                           
                                        ), 
                               )
                        )
@@ -2485,7 +2465,7 @@ server <- shinyServer(function(input, output, session){
                        showlegend = FALSE) %>% config(displayModeBar = FALSE)
         })
         
-        output$GapAgeTable <- renderDataTable(gap_age()[[1]], options = list(searching = FALSE, lengthMenu = c(15, 25, 50)))
+        #output$GapAgeTable <- renderDataTable(gap_age()[[1]], options = list(searching = FALSE, lengthMenu = c(15, 25, 50)))
         
     ### - start of decomposition by age and COD - ###
         
