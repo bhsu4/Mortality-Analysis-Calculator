@@ -331,7 +331,7 @@ ui = dashboardPagePlus(
     title = "Mortality Analysis Calculator",
     footer = dashboardFooter(
         left_text = HTML(paste0("<script>", "var today = new Date();", "var yyyy = today.getFullYear();", "</script>", 
-                                "<p style = 'text-align: center;'><medium>&copy; - <a href='https://www.linkedin.com/in/benjamin-hsu-10b33a97/' target='_blank'> Developed by Benjamin Hsu</a> - </medium></p>"))
+                                "<p style = 'text-align: center;'><medium> <a href='https://www.soa.org' target='_blank'> &copy; Society of Actuaries </a> </medium></p>"))
     ),
     dashboardHeader(
         title = HTML(glue::glue(
@@ -369,7 +369,8 @@ ui = dashboardPagePlus(
             menuItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
             menuItem("Community", tabName = "tab_community", icon = icon("users")),
             menuItem("Latest News", tabName = "tab_news", icon = icon("file-alt")),
-            menuItem("FAQ", tabName = "tab_qa", icon = icon("question-circle"))#, 
+            menuItem("Instructions", tabName = "tab_instructions", icon = icon("book")),
+            menuItem("FAQ", tabName = "tab_qa", icon = icon("question-circle")) #, 
             #HTML(paste0(
             #    "<br><br><br><br><br><br><br><br><br>",
             #    "<table style='margin-left:auto; margin-right:auto;'>",
@@ -407,7 +408,7 @@ ui = dashboardPagePlus(
     tabItems(
         # About - tab_introduction of the web application -------------------------------------------------------
         tabItem(
-            "tab_home", HTML(paste0('<nobr><b><h3>Mortality Analysis Calculator v.1.0.1</h3></b></nobr>')), hr(),
+            "tab_home", HTML(paste0('<nobr><b><h3>Mortality Analysis Calculator v.1.0.2</h3></b></nobr>')), hr(),
             fluidPage(
                     box(
                         title = "", style="position:absolute;width:100%;padding-bottom:62.75%;",
@@ -570,7 +571,7 @@ ui = dashboardPagePlus(
                 ),
                 column(width = 3, 
                     flipBox2(id = 3, main_img = "number3-icon.svg", height = 700,
-                        front_title = "Gender Gap", back_title = "Functionality in MAC", 
+                        front_title = "Gender", back_title = "Functionality in MAC", 
                                HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px;font-size: 17px'>
                                    Gender is the focal point of all analysis of mortality. Demographers study gender to assess 
                                    and gain information on a population. Take a deeper dive into the gender gap, and better 
@@ -586,7 +587,7 @@ ui = dashboardPagePlus(
                 ),
                 column(width = 3, 
                     flipBox2(id = 4, main_img = "number4-icon.svg", height = 700,
-                        front_title = "Mortality Chapters", back_title = "Functionality in MAC",
+                        front_title = "Cause of Death", back_title = "Functionality in MAC",
                                 HTML(paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
                                      Cause-specific mortality provide relevant information about the health status of the population.
                                      Track the leading causes of death, and identify challenges and interventions needed 
@@ -837,9 +838,9 @@ ui = dashboardPagePlus(
                     width = 4, height = 1200,
                     column(width = 12, align = "center",
                            img(src = "chapter-icon.png", width=100),
-                           HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Mortality Chapter</p></h2></b>",
+                           HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black'>Cause of Death</p></h2></b>",
                                        "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
-                                        Mortality chapters provide an additional dimension to our analysis by looking deeper
+                                        Cause of death provide an additional dimension to our analysis by looking deeper
                                         at the cause-specific mortality rates. (e.g. Chapters may include: cancer, 
                                         respiratory, pregnancy/childbirth, etc.) </p>"), 
                                paste0("<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
@@ -928,7 +929,7 @@ ui = dashboardPagePlus(
                                               withSpinner(plotlyOutput("LineLP", height = 400)), 
                                        ), 
                                        column(width = 2, 
-                                              numericInput("z", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
+                                              numericInput("z", "Percentile", value = 90, min = 0, max = 100, step = 5)
                                               )
                                     
                                     ), HTML('<hr style = "color: #ecf2f7;">'), tags$br(), 
@@ -938,7 +939,7 @@ ui = dashboardPagePlus(
                                        )
                                    )
                               ),
-                              tabPanel(title = "Contribution to Gender Gap",
+                              tabPanel(title = "Contribution to Gender",
                                        tags$br(),
                                        fluidRow(
                                            column(width = 8,
@@ -1011,14 +1012,11 @@ ui = dashboardPagePlus(
                 column(width = 12,
                        
                        tabBox(width = NULL, title = tagList(shiny::icon("hand-holding-heart"), "By Age/COD"), 
-                                   tabPanel(title = "Mortality Chapters by Country", id = "tabset22", 
+                                   tabPanel(title = "Cause of Death by Country", id = "tabset22", 
                                             tags$br(),
                                             fluidRow(
-                                                column(width = 6,
+                                                column(width = 12,
                                                        withSpinner(plotlyOutput("Animate_MCBar", height = 800))
-                                                ), 
-                                                column(width = 6, 
-                                                       withSpinner(DT::dataTableOutput("Animate_Table"))
                                                 )
                                             )
                                    ),
@@ -1045,12 +1043,12 @@ ui = dashboardPagePlus(
                                                        withSpinner(plotlyOutput("HeatMapLP_COD", height = 600)), 
                                                 ), 
                                                 column(width = 2, 
-                                                       numericInput("CODz", "Percentile", value = 0.9, min = 0, max = 1, step = 0.1)
+                                                       numericInput("CODz", "Percentile", value = 90, min = 0, max = 100, step = 5)
                                                 )
                                                
                                             )
                                   ),
-                                  tabPanel(title = "Contribution to Gender Gap",
+                                  tabPanel(title = "Contribution to Gender",
                                            tags$br(),
                                            fluidRow(
                                                column(width = 12,
@@ -1097,7 +1095,143 @@ ui = dashboardPagePlus(
                              me via LinkedIn or my email above.")
             )
         ), 
-    
+        # Instructions Manual 
+        tabItem( 
+          "tab_instructions",
+          
+          boxPlus(
+            title = HTML("<h4 style = 'text-align: center;'><b> User Manual </b></p><hr>"), 
+            closable = FALSE, 
+            width = NULL,
+            status = "warning", 
+            solidHeader = FALSE, 
+            collapsible = FALSE,
+            enable_dropdown = FALSE,
+            fluidRow(
+              column(width = 12, 
+              a(HTML("<h5 style = 'text-align: left;'><b> Get Started </b></p>"), href = "#started"),
+              "Before you start exploring the Mortality Analysis Calculator, we will get you acquainted with the inputs.", HTML("</br>"), 
+              HTML("<br><ul><li>There are panels on the left for navigation around the Mortality Analysis Calculator. 
+                                Decomposition analysis is split into two tabs: by age or by age and cause of death.</li>, 
+                        <br><li>Each decomposition analysis consists of multiple tabs that will require inputs from the 
+                                country, gender, and age of interest, along with a specific time frame we want to observe. These 
+                                inputs will be introduced further below. </li><br></ul>"),
+              
+              a(HTML("<h5 style = 'text-align: left;'><b> Selecting Inputs </b></p>"), href = "#selectinputs"),
+              h5("For both mortality decomposition by age and by age/cause of death, the graphs and plots will require inputs specifying 
+                  a specific country, age group, gender, and historical time frame. The inputs box as shown below, will be on each decomposition 
+                  page. These inputs will flow through to each tab for life expectancy, life preparancy, and gender. Please note that the only
+                  difference between decomposition by age and by age/cause of death is the inclusion of input age. Any questions regarding 
+                  the objectives of the tool can be found in the question mark box. Below you can familiarize yourself
+                  to parameter setting without any results displaying. Please try to:"), 
+              HTML("<br><ul><li>Select a country from a drop down menu</li>, 
+                        <br><li>Type an age of interest into the box</li>
+                        <br><li>Choose gender(s)</li>
+                        <br><li>Use the slider to choose your historical time frame</li>
+                        <br><li>Press the question mark box for more information on the objectives of the tool, and the analysis/exhibits</ul>"),
+              HTML("</br>"), 
+      
+              boxPlus(title = "Choose Parameters", closable = FALSE, width = NULL, 
+                     status = "danger", collapsible = TRUE, solidHeader = TRUE, 
+                     enable_dropdown = TRUE, dropdown_icon = "sticky-note",
+                     fluidRow(
+                       column(width = 3,
+                              fluidRow(
+                                column(width = 6,
+                                       selectInput("testCountry", "Selected Country", 
+                                                   choices = c("Taiwan", "U.K.", "Scotland", "U.S.A", "Ukraine"), 
+                                                   selectize = TRUE)
+                                ), 
+                                column(width = 4, 
+                                       numericInput("testAge", "Input Age", value = 0, min = 0, max = 105, step = 5)
+                                ),
+                                column(width = 2, 
+                                       actionButton(
+                                         inputId = "TestQA",
+                                         label = "",
+                                         icon = icon("question-circle"),
+                                         style="color: #fff; background-color: #b3b3b3; 
+                                                border-color: #b3b3b3; padding:2px; font-size:78% ; 
+                                                width: 20px; height: 20px")
+                                )
+                              ),
+                              fluidRow(
+                                column(width = 12,
+                                       checkboxGroupButtons(
+                                         inputId = "TestGender", label = "Gender", 
+                                         choices = c("Male", "Female"), selected = "Male", 
+                                         justified = TRUE, status = "primary")
+                                )
+                              )
+                       ), 
+                       column(width = 9, 
+                              # Input: Specification of range within an interval ----
+                              wellPanel( 
+                                sliderInput("range_test",
+                                            label = "Years Selected",
+                                            min = 1950, max = 2009, value = c(1950, 2009), sep = "")
+                              ) # wellPanel
+                       ) # column
+                   ) #fluidrow
+               ), #boxplus
+              a(HTML("<h5 style = 'text-align: left;'><b> Objectives </b></p>"), href = "#objective"),
+              h5("Mortality decomposition is a tool to explain the underlying changes in its components. The central aim is to attribute 
+                  the difference in an aggregate index to better examine specific contributions. Taking an aggregate index of life expectancy 
+                  for example, we can decompose contributions by age groups into what 'direct' and 'indirect' effects of mortality 
+                  change. Direct effects are defined as the change in life expectancy within a particular age group, due to underlying changes
+                  in the mortality within that age group. Indirect effects are defined as the change in life expectancy to an age group due to 
+                  changes in another age interval. This will take into account the impact of the number of survivors from one age interval on 
+                  subsequent age intervals. Lastly, interactive effects consist of any outside effects that result in changes in life 
+                  expectancy, not explained by the age group. The total of the direct, indirect, and interactive effects will be equivalent 
+                  to the total effect, or in this case, the total change in the life expectancy. This is a rudimentary example that can be 
+                  extended to other key metrics in the mortality decomposition analysis performed in the Mortality Analysis Calculator. Here 
+                  we provide our objectives of assessing each metric:"), 
+              HTML("<br><ul><li><b>Life Expectancy</b>: The mortality decomposition of the changes in life expectancy allows us to assess 
+                                   each age group, along with the cause of death's attributed contribution to the total change in life expectancy. </li>, 
+                        <br><li><b>Life Preparancy</b>: A closer look at the age a population will survive to. This will allow us to have a better
+                                   understanding of longevity risk amongst our population of interest.</li>
+                        <br><li><b>Gender</b>: We take a deeper dive into life expectancy's gender specific contributions, and the any differences
+                                   that can be attributed to gender gap.</li>
+                        <br><li><b>Cause of Death</b>: Cause-specific mortality will provide us an additional dimension in mortality decomposition  
+                                   analysis. It allows us to track the population's health status, and any mortality trends underlying the changes in 
+                                   life expectancy we saw previously.</ul>"), HTML("<br>"),
+              a(HTML("<h5 style = 'text-align: left;'><b> Sample Outputs </b></p>"), href = "#graphs"),
+              h5("The majority of our exhibits in the Mortality Analysis Calculator will be shown using barplots, heatmaps, and line plots.
+                  The visualizations will present our results in an understandable manner. Objectives regarding the analysis for mortality 
+                  decomposition by age or by age/cause of death were specified in the previous section. Please note that the sample exhibits
+                  presented below are only for demonstration, and the analysis is not just restricted to one metric (e.g. life expectancy). 
+                  These exhibits can extend to life expectancy, life preparancy, gender contribution, and cause of death statistics. 
+                  Below we present a couple of ways our results were presented:"), 
+              HTML("<br><ul><li><b>Barplot for Changes in Life Expectancy</b>: We provide a breakdown of the changes in life expectancy
+                                between 2000 and 2010 for males in Taiwan across each age group. Users may hover over the bars to gain a 
+                                better estimation of the changes in year for a specific age group. The Mortality Analysis Calculator will 
+                                provide additional functionality, where users may press on each bar and see a breakdown of the bar. 
+                                This functionality is not shown in our sample output. </li> 
+                        <br><li><b>Heatmap for Changes in Life Expectancy</b>: We provide a breakdown of the changes in life expectancy 
+                                between 2000 and 2010 for males in Taiwan across all age groups while showing each group's contribution. Users
+                                may hover over each shaded box within the heatmap to gain a better estimation of the contribution by age 
+                                group to the changes in life expectancy. The heatmap is a consistent exhibit across both mortality decomposition
+                                by age or by age/cause of death.</li>
+                        <br><li><b>Lineplot for Life Preparancy per Age Group</b>: We provide a lineplot of the life preparancy per age
+                                age group at the 90th percentile between 2000 and 2010 for both males and females in Taiwan. Users may 
+                                hover over each point within the lineplot to gain a better estimation of the life preparancy estimate. 
+                                In addition, users can click on the legend specific label to include or remove specific lines in the plot.</ul>"),
+              HTML("<hr></br></br>"), 
+                fluidRow(
+                  column(width = 6,
+                         plotlyOutput("test_barplot", height = 350)), 
+                  column(width = 6, 
+                         plotlyOutput("test_heatmap", height = 350))
+                ), HTML("<hr>"),
+                fluidRow(
+                  column(width = 12, 
+                         plotlyOutput("test_lineplot", height = 350))
+                )
+              )
+            )
+          )
+        ), 
+        
         tabItem( 
             "tab_qa", HTML(paste0("<nobr><b><h3>Frequently Asked Questions</h3></b></nobr>")), hr(),
             fluidRow(
@@ -1351,11 +1485,11 @@ change5x1_LP <- function(cntry, t1, t2, z){
     lx_t2_F<-as.matrix(lx_t2_F[,-ncol(lx_t2_F)])
     
     ##We'll compute the amount of survivors considered necessary to define the life preparancy per age
-    survivors_male_t1[1,]<-as.matrix((1-z)*lx_t1_M)##survivors used as reference for life preparancy males
-    survivors_male_t2[1,]<-as.matrix((1-z)*lx_t2_M)
-    survivors_female_t1[1,]<-as.matrix((1-z)*lx_t1_F)##survivors used as reference for life preparanacy female
-    survivors_female_t2[1,]<-as.matrix((1-z)*lx_t2_F)
-    ##We now compute the lifepreparancy per age for every age and the years of interest
+    survivors_male_t1[1,]<-as.matrix((1-z/100)*lx_t1_M)##survivors used as reference for life preparancy males
+    survivors_male_t2[1,]<-as.matrix((1-z/100)*lx_t2_M)
+    survivors_female_t1[1,]<-as.matrix((1-z/100)*lx_t1_F)##survivors used as reference for life preparanacy female
+    survivors_female_t2[1,]<-as.matrix((1-z/100)*lx_t2_F)
+    ##We now compute the life preparancy per age for every age and the years of interest
     for(x in 1:(ages)){
         #This counts the last position of the survivor vector that exceeds the required number of 
         #survivors based on the percentile
@@ -1862,7 +1996,7 @@ server <- shinyServer(function(input, output, session){
                     HTML("<b>Life Preparancy:</b> The user can observe the change in life preparancy, and compute the 
                          effects attributable to each relevant age group(s)."),
                     tags$br(), tags$br(),
-                    HTML("<b>Gender Gap:</b> The user can observe the gender gap in life expectancy, and compute the 
+                    HTML("<b>Gender:</b> The user can observe the gender gap in life expectancy, and compute the 
                          effects attributable to each relevant age group(s)."), 
                     tags$br(), tags$br(),
                     icon("heart")
@@ -1879,13 +2013,13 @@ server <- shinyServer(function(input, output, session){
                             style = "color: steelblue;"), tags$br(), 
                     HTML("<em><b>Select Country, Time Interval, Gender, and Input Age of Interest</b></em>"), 
                     tags$br(), tags$br(), tags$br(),
-                    HTML("<b>Mortality Chapters:</b> The user can compute death rate for each cause-specific mortality to relevant age group(s)."),
+                    HTML("<b>Cause of Death:</b> The user can compute death rate for each cause-specific mortality to relevant age group(s)."),
                     tags$br(), tags$br(),
                     HTML("<b>Life Expectancy:</b> The user can compute the effects attributable to selected age group."),
                     tags$br(), tags$br(),
                     HTML("<b>Life Preparancy:</b> The user can compute the effects attributable to selected age group."),
                     tags$br(), tags$br(),
-                    HTML("<b>Gender Gap:</b> The user can compute the gender gap effects attributable to selected age group."), 
+                    HTML("<b>Gender:</b> The user can compute the gender gap effects attributable to selected age group."), 
                     tags$br(), tags$br(),
                     icon("hand-holding-heart")
                 ),
@@ -1894,7 +2028,18 @@ server <- shinyServer(function(input, output, session){
         })
         
         # generate country list for by age sections
-    
+        sample_info <- reactive({
+          sample_info <- read.csv("sampleoutput.csv", row.names = 1)
+          colnames(sample_info) <- gsub("\\.", " ", colnames(sample_info))
+          return(sample_info)
+        })
+        
+        sample_info2 <- reactive({
+          sample_info2 <- read.csv("sampleoutput2.csv")
+          return(sample_info2)
+        })
+        
+        # actual analysis used reactives
         country_info <- reactive({
             read.csv("List_Countries.csv")
         })
@@ -2018,6 +2163,11 @@ server <- shinyServer(function(input, output, session){
         
         
         output$BarplotLE <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$heatGender) >0, "Please Select Gender(s)")
+            )
+          
             #gender select
             if (length(input$heatGender) == 1){
                 if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
@@ -2113,6 +2263,12 @@ server <- shinyServer(function(input, output, session){
         
         
         output$BarplotLE_specific <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$heatGender) >0, "Please Select Gender(s)")
+            )
+          
+            #once gender selected
             if (length(input$heatGender) == 1){
                 if (input$heatGender == "Male"){ res_gender <- res()[[1]] }
                 else if (input$heatGender == "Female"){ res_gender <- res()[[2]]}
@@ -2208,7 +2364,13 @@ server <- shinyServer(function(input, output, session){
             return(change5x1_LP(chosen_country, input$range_t[1], input$range_t[2], input$z))
         })
         
-        output$LineLP <- renderPlotly(
+        output$LineLP <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$heatGender) >0, "Please Select Gender(s)")
+            )
+            
+            #once gender selected
             plot_ly(LP_res()[[1]], x = ~initial, y = ~malet1, name = paste("Male", input$range_t[1]), 
                     type = 'scatter', mode = 'lines+markers',  
                     line = list(color = "#FDB863", dash = "dot"), 
@@ -2222,18 +2384,23 @@ server <- shinyServer(function(input, output, session){
                 add_trace(y = ~femalet2, name = paste("Female", input$range_t[2]), mode = 'lines+markers',
                           line = list(color = "#92CCDE", dash = "dash"), 
                           marker = list(color = "#92CCDE", symbol = "circle", size = 10)) %>% 
-                layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(input$z*100), " Percentile ", 
+                layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(input$z), " Percentile ", 
                                       "(", input$range_t[1], "-", input$range_t[2], ", ", input$heatCountry, ")"),
                        legend = list(orientation = "v", xanchor = "left", x = 0.10), 
                        font = list(size = 8), 
                        xaxis = list(title = "Age", size = 8, tickangle = 0), 
                        yaxis = list(title = "Life Preparancy (Years)", size = 8, tickangle = 0)) %>% 
                 config(displayModeBar = FALSE)
-        )
+         })
         
         
         output$HeatMapLP <- renderPlotly({
-            
+            #we need to select gender
+            shiny::validate(
+              need(length(input$heatGender) >0, "")
+            )
+          
+            #start of analysis
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
@@ -2304,11 +2471,16 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$GapAge <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$heatGender) >0, "Please Select Gender(s)")
+            )
+          
             plot_ly(gap_age()[[2]], x = ~age_interest, y = ~value, color = ~variable, type= 'bar', 
                     hoverinfo = "text", text = ~paste0("Age Group: ", age_interest, '</br></br>', 
                                                        "Contribution: ", variable, '</br>',
                                                        "Value: ", round(value, 4)))  %>%  
-                layout(title = paste0("Contributions to Gender Gap in Life Expectancy (", input$range_t[1], ")" ), 
+                layout(title = paste0("Contributions to Gender in Life Expectancy (", input$range_t[1], ")" ), 
                        yaxis = list(title = 'Contribution (Male - Female)'), barmode = 'stack', 
                        xaxis = list(title = "Age", categoryarray = names(gap_age()[[2]]), 
                                     categoryorder = "array", size = 8, tickangle = 0), 
@@ -2359,16 +2531,12 @@ server <- shinyServer(function(input, output, session){
             return(chapter_rates_select)
         })
         
-        # for maintaining the state of drill-down variables
-        Animate_MCBar <- reactiveVal()
-
-        # when clicking on a category, 
-        observeEvent(event_data("plotly_click", source = "Animate_MCBar"), {
-            Animate_MCBar(event_data("plotly_click", source = "Animate_MCBar")$y)
-        })
-        
-        
         output$Animate_MCBar <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$CODGender) >0, "Please Select Gender(s)")
+            )
+          
             #gender select
             if (length(input$CODGender) == 1){
                 
@@ -2381,15 +2549,11 @@ server <- shinyServer(function(input, output, session){
                 chapter_rates_diff <- merge(chapter_rates_diff, chapters20(), by = "chapter")
                 
                 #if no click
-                if (is.null(Animate_MCBar())){
-                    chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = "#FDB863")
-                }
-                else{
-                    chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#8073AC", "#FDB863"))
-                }
+                chapter_rates_select_diff <- chapter_rates_diff %>% mutate(curr_col = "#FDB863")
+                
                 #plot barplot
                 plot_ly(chapter_rates_select_diff, x = ~rate, y = ~diagn, type = "bar", marker = list(color = ~curr_col),
-                        source = "Animate_MCBar", text = ~paste0("Chapter: ", diagn, '</br></br>', 
+                        source = "Animate_MCBar", text = ~paste0("Cause of Death: ", diagn, '</br></br>', 
                                                                  "Change: ", round(rate, 4), '</br>',
                                                                  "Proportion: ", paste0(round(perct*100, 4), "%")), 
                         hoverinfo = "text", orientation = 'h') %>% 
@@ -2435,7 +2599,7 @@ server <- shinyServer(function(input, output, session){
                 #plot 
                 plot_ly(data = chapter_rates_select_diff1, x = ~rate, y = ~diagn, type = "bar", 
                         name = input$CODGender[1], marker = list(color = ~curr_col),
-                        source = "Animate_MCBar", text = ~paste0("Chapter: ", diagn, '</br></br>', 
+                        source = "Animate_MCBar", text = ~paste0("Cause of Death: ", diagn, '</br></br>', 
                                                                  "Gender: ", input$CODGender[1], '</br>', 
                                                                  "Year: ", paste0(input$range_tcod[1], "-", input$range_tcod[2]), '</br>',  
                                                                  "Change: ", round(rate, 4), '</br>',
@@ -2444,7 +2608,7 @@ server <- shinyServer(function(input, output, session){
                     config(displayModeBar = FALSE) %>% 
                     add_trace(data = chapter_rates_select_diff2, x = ~rate, y = ~diagn, type = "bar", 
                               name = input$CODGender[2], marker = list(color = ~curr_col), 
-                              text = ~paste0("Chapter: ", diagn, '</br></br>', 
+                              text = ~paste0("Cause of Death: ", diagn, '</br></br>', 
                                              "Gender: ", input$CODGender[2], '</br>', 
                                              "Year: ", paste0(input$range_tcod[1], "-", input$range_tcod[2]), '</br>', 
                                              "Change: ", round(rate, 4), '</br>',
@@ -2460,53 +2624,7 @@ server <- shinyServer(function(input, output, session){
             }
         })
         
-        output$Animate_Table <- DT::renderDataTable({
-            if (length(input$CODGender) == 1){
-                if (is.null(Animate_MCBar())){
-                    chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
-                                                      chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
-                }
-                else{
-                    chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
-                                                                                           which(chapters20()$diagn %in% Animate_MCBar()) &
-                                                                                     chapter_rates_select()$Gender == input$CODGender),],
-                                                             chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord2 <- merge(chapter_rates_select()[-which(chapter_rates_select()$chapter == 
-                                                                                           which(chapters20()$diagn %in% Animate_MCBar()) &
-                                                                                     chapter_rates_select()$Gender == input$CODGender),], 
-                                                             chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord1 <- chapter_rates_select_ord1[order(chapter_rates_select_ord1$diagn, chapter_rates_select_ord1$year),]
-                    chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
-                    #change column names
-                    chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
-                }
-            }
-            else{
-                if (is.null(Animate_MCBar())){
-                    chapter_rates_select_ord <- merge(chapter_rates_select()[which(chapter_rates_select()$Gender == input$CODGender),], 
-                                                      chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord <- chapter_rates_select_ord[order(chapter_rates_select_ord$diagn, chapter_rates_select_ord$year),]
-                }
-                else{
-                    chapter_rates_select_ord1 <- merge(chapter_rates_select()[which(chapter_rates_select()$chapter == 
-                                                                                        which(chapters20()$diagn %in% Animate_MCBar())),],
-                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord2 <- merge(chapter_rates_select()[-which(chapter_rates_select()$chapter == 
-                                                                                        which(chapters20()$diagn %in% Animate_MCBar())),], 
-                                                       chapters20(), by = "chapter")[, c("diagn", "year", "Gender", "rate", "perct")]
-                    chapter_rates_select_ord1 <- chapter_rates_select_ord1[order(chapter_rates_select_ord1$diagn, chapter_rates_select_ord1$year),]
-                    chapter_rates_select_ord2 <- chapter_rates_select_ord2[order(chapter_rates_select_ord2$diagn, chapter_rates_select_ord2$year),]
-                    #rbind two columns
-                    chapter_rates_select_ord <- rbind(chapter_rates_select_ord1, chapter_rates_select_ord2)
-               }
-            }
-            colnames(chapter_rates_select_ord) <- c("Mortality Chapter", "Year", "Gender", "Death Rate/1000", "Proportion (%)")
-            chapter_rates_select_ord[,"Proportion (%)"] <- chapter_rates_select_ord[,"Proportion (%)"]*100
-            chapter_rates_select_ord[,4:5] <- round(chapter_rates_select_ord[,4:5], 4)
-            chapter_rates_select_ord}, 
-            options = list(searching = FALSE, lengthMenu = c(20, 40)), rownames = FALSE
-        )
+       
         
         # output
         Changes_age_cause <- reactive({
@@ -2548,6 +2666,11 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$BarplotLE_AgeCOD <- renderPlotly({
+            #we need to select gender
+            shiny::validate(
+              need(length(input$CODGender) >0, "Please Select Gender(s)")
+            )
+          
             #gender select
             if (length(input$CODGender) == 1){
                 if (input$CODGender == "Male"){ res_gender <- Changes_age_cause()[[1]] }
@@ -2629,6 +2752,12 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$BarplotLE_specificAgeCOD <- renderPlotly({
+          
+          #we need to select gender
+          shiny::validate(
+            need(length(input$CODGender) >0, "Please Select Gender(s)")
+          )
+          
             if (length(input$CODGender) == 1){
                 if (input$CODGender == "Male"){ res_gender <- Changes_age_cause()[[1]] }
                 else if (input$CODGender == "Female"){ res_gender <- Changes_age_cause()[[2]]}
@@ -2647,7 +2776,7 @@ server <- shinyServer(function(input, output, session){
                     inner_join(chapters20(), by = c("rowname" = "chapter")) %>% 
                     plot_ly(x = ~rowname, y = ~contribution, source = "BarplotLE_specificAgeCOD", 
                             type = "bar", marker = list(color = ~curr_color), 
-                            hoverinfo = "text", text = ~paste0("Mortality Chapter: ", diagn, '</br></br>', 
+                            hoverinfo = "text", text = ~paste0("Cause of Death: ", diagn, '</br></br>', 
                                                                "Contribution: ", round(contribution, 4), '</br>')) %>% 
                     config(displayModeBar = FALSE) %>% 
                     layout(barmode="overlay",
@@ -2656,7 +2785,7 @@ server <- shinyServer(function(input, output, session){
                                           input$CODGender, ", ", BarplotLE_AgeCOD(), ", ", 
                                           input$CODCountry, ")"), 
                            font = list(size = 8),
-                           xaxis = list(title = "Contribution Mortality Chapter", categoryarray = ~rowname, 
+                           xaxis = list(title = "Contribution Cause of Death", categoryarray = ~rowname, 
                                         categoryorder = "array", size = 8, tickangle = 0),
                            yaxis = list(title = "Contribution (Years)"))
             }
@@ -2698,6 +2827,13 @@ server <- shinyServer(function(input, output, session){
         
        ###heatmap COD
         output$HeatMap_AgeCOD <- renderPlotly({
+          
+          #we need to select gender
+          shiny::validate(
+            need(length(input$CODGender) >0, "")
+          )
+          
+          #start of analysis if gender chosen
             chosen_country <- as.character(country_info()$Code[which(country_info()$Country == input$heatCountry)])
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
@@ -2709,7 +2845,7 @@ server <- shinyServer(function(input, output, session){
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
                 hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
-                                     "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                     "Cause of Death: ", rep(chapters20()$diagn, dim2), "<br>", 
                                      rep(input$CODGender, dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -2737,7 +2873,7 @@ server <- shinyServer(function(input, output, session){
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
                 hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
-                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            "Cause of Death: ", rep(chapters20()$diagn, dim2), "<br>", 
                                             rep("Female - Male", dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -2766,7 +2902,7 @@ server <- shinyServer(function(input, output, session){
             req(input$CODCountry)
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             #life preparancy
-            res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz)
+            res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz/100)
             res[[2]][is.na(res[[2]])]<-0 #LP change males set to 0 for NAs
             res[[3]][is.na(res[[3]])]<-0 #LP change females set to 0 for NAs
             #mortality chapters
@@ -2792,7 +2928,11 @@ server <- shinyServer(function(input, output, session){
         })
         
         output$HeatMapLP_COD <- renderPlotly({
-            
+          #we need to select gender
+          shiny::validate(
+            need(length(input$CODGender) >0, "Please Select Gender(s)")
+          )
+          
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
@@ -2803,7 +2943,7 @@ server <- shinyServer(function(input, output, session){
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
                 hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
-                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            "Cause of Death: ", rep(chapters20()$diagn, dim2), "<br>", 
                                             rep(input$CODGender, dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -2827,7 +2967,7 @@ server <- shinyServer(function(input, output, session){
                 dim1 <- dim(res_gender)[[1]]
                 dim2 <- dim(res_gender)[[2]]
                 hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
-                                            "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                            "Cause of Death: ", rep(chapters20()$diagn, dim2), "<br>", 
                                             rep("Female - Male", dim1*dim2), "<br>"),
                                      byrow = FALSE, ncol = dim2)
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -2886,15 +3026,21 @@ server <- shinyServer(function(input, output, session){
             
         })
         
+        #sample outputs shown in the instructions 
+        
         output$GapAgeCOD <- renderPlotly({
-            
+            #we need to select gender
+            shiny::validate(
+              need(length(input$CODGender) >0, "Please Select Gender(s)")
+            )
+          
             scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
             
             res_gender <- Changes_age_cause_gap()[,-ncol(Changes_age_cause_gap())]
             dim1 <- dim(res_gender)[[1]]
             dim2 <- dim(res_gender)[[2]]
             hover_text <- matrix(paste0("Age: ", sapply(colnames(res_gender), function(x) rep(x, dim1)), "<br>", 
-                                        "Mortality Chapter: ", rep(chapters20()$diagn, dim2), "<br>", 
+                                        "Cause of Death: ", rep(chapters20()$diagn, dim2), "<br>", 
                                         rep("Female - Male", dim1*dim2), "<br>"),
                                  byrow = FALSE, ncol = dim2)
             hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
@@ -2912,6 +3058,75 @@ server <- shinyServer(function(input, output, session){
                                     showgrid = F, showticklabels = TRUE))
         })
         
+        
+        
+        output$test_barplot <- renderPlotly({
+          #plotting taiwan 2000-2010 as sample output imported from read csv
+          Total_male <- data.frame(le = apply(sample_info(), 2, sum, na.rm = TRUE), row.names = colnames(sample_info())) %>% 
+            rownames_to_column() %>% mutate(curr_col = "#FDB863")
+          
+          p <- plot_ly(Total_male, x = ~gsub("LE Age ", "", rowname), y = ~le, type = "bar", 
+                       source = "BarplotLE", marker = list(color = ~curr_col)) %>% 
+            config(displayModeBar = FALSE)
+          p <- layout(p, barmode="overlay",
+                      title = list(text = paste0("Changes in Life Expectancy (", 
+                                     2000, "-", 2010, ", ",
+                                     "Male", ", ", "Taiwan", ")"), font = list(size = 16)),
+                      font = list(size = 12),
+                      xaxis = list(title = "Age", categoryarray = names(Total_male), 
+                                   categoryorder = "array", size = 8, tickangle = 0), 
+                      yaxis = list(title = "Change (Years)"))
+          p 
+        })
+        
+        output$test_heatmap <- renderPlotly({
+          #plotting taiwan 2000-2010 as sample output imported from read csv
+          scale_colors <- brewer.pal(n=9, name = "YlOrRd") #selection of
+          
+          dim1 <- dim(sample_info())[[1]]
+          hover_text <- matrix(paste0((sapply(colnames(sample_info()), function(x) rep(x, dim1))), "<br>", 
+                                      rep(rownames(sample_info()), dim1), "<br>", 
+                                      rep("Male", dim1*2), "<br>"),
+                               byrow = FALSE, ncol = dim1)
+          hover_text2 <- matrix(paste(hover_text, round(as.matrix(sample_info()), 4), sep="Change: "), dim1, dim1)
+          
+          heatmaply(sample_info(), dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
+                    cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                    plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
+                                                             2000, "-", 2010, ", ",
+                                                             "Male", ", ", "Taiwan", ")"), 
+                    font = list(size = 8), custom_hovertext = hover_text2, 
+                    key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
+            layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(sample_info()))), title = "Age", 
+                                showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                   yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(sample_info())))),
+                                title = "Contribution", showgrid = F, showticklabels = TRUE))
+        })
+        
+        output$test_lineplot <- renderPlotly({
+
+          plot_ly(sample_info2(), x = ~initial, y = ~malet1, name = paste("Male", 2000), 
+                  type = 'scatter', mode = 'lines+markers',  
+                  line = list(color = "#FDB863", dash = "dot"), 
+                  marker = list(color = "#FDB863", symbol = "square", size = 10)) %>% 
+            add_trace(y = ~femalet1, name = paste("Female", 2000), mode = 'lines+markers',
+                      line = list(color = "#FD6363", dash = "dot"), 
+                      marker = list(color = "#FD6363", symbol = "square", size = 10)) %>% 
+            add_trace(y = ~malet2, name = paste("Male", 2010), mode = 'lines+markers',
+                      line = list(color = "#8073AC", dash = "dash"), 
+                      marker = list(color = "#8073AC", symbol = "circle", size = 10)) %>% 
+            add_trace(y = ~femalet2, name = paste("Female", 2010), mode = 'lines+markers',
+                      line = list(color = "#92CCDE", dash = "dash"), 
+                      marker = list(color = "#92CCDE", symbol = "circle", size = 10)) %>% 
+            layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(0.9*100), " Percentile ", 
+                                  "(", 2000, "-", 2010, ", ", "Taiwan", ")"),
+                   legend = list(orientation = "v", xanchor = "left", x = 0.10), 
+                   font = list(size = 12), 
+                   xaxis = list(title = "Age", size = 20, tickangle = 0), 
+                   yaxis = list(title = "Life Preparancy (Years)", size = 8, tickangle = 0)) %>% 
+            config(displayModeBar = FALSE)
+          
+        })
 
 })
 
