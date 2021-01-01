@@ -2085,7 +2085,7 @@ server <- shinyServer(function(input, output, session){
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                     input$range_t[1], "-", input$range_t[2], ", ",
                                                                     input$heatGender, ", ", input$heatCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -2095,57 +2095,44 @@ server <- shinyServer(function(input, output, session){
             }
             else{ 
                 #if (input$heatAggregate == "FALSE"){ 
-                    res_gender <- res()[[3]]
-                    par(mar=c(5.1,2.1,1,2.1))
-                    dim1 <- dim(res_gender)[[1]]
-                 
-                    #create hover text 
-                    row_contr <- create_hover_MF(c(rownames(res_gender)[-1], " ")) #byrow
-                    col_le <- create_hover_MF(colnames(res_gender)) #bycol
-                  
-                    mat1 <- matrix(row_contr, byrow = TRUE, ncol = dim1)
-                    mat2 <- matrix(col_le, byrow = FALSE, ncol = dim1)
-                    mat3 <- ifelse(lower.tri(mat2), "Male", "Female")
-                  
-                    mat4 <- matrix(paste(paste0(mat1, "<br>", mat2, "<br>", mat3, "<br>"), 
-                                       round(res_gender, 4), sep = "Change: "), dim1, dim1)
-                    diag(mat4) <- NA #remove diag hover text
-                  
+
+                    dim1 <- dim(res()[[1]])[[1]]
+                    dim2 <- dim(res()[[2]])[[1]]
+                    
+                    res_gender <- cbind(res()[[1]], matrix(NA, nrow = dim1, ncol = 1), res()[[2]])
+                    
+                    ##create hover text
+                    #males hover text
+                    hover_text1 <- matrix(paste0((sapply(colnames(res()[[1]]), function(x) rep(x, dim1))), "<br>", 
+                                                rep(rownames(res()[[1]]), dim1), "<br>", 
+                                                rep("Male", dim1*2), "<br>"),
+                                         byrow = FALSE, ncol = dim1)
+                    hover_textM <- matrix(paste(hover_text1, round(res()[[1]], 4), sep="Change: "), dim1, dim1)
+                    #females hover text
+                    hover_text2 <- matrix(paste0((sapply(colnames(res()[[2]]), function(x) rep(x, dim2))), "<br>", 
+                                                rep(rownames(res()[[2]]), dim2), "<br>", 
+                                                rep("Female", dim2*2), "<br>"),
+                                         byrow = FALSE, ncol = dim2)
+                    hover_textF <- matrix(paste(hover_text2, round(res()[[2]], 4), sep="Change: "), dim2, dim2)
+                    #NAs between males and females 
+                    hover_textNA <- matrix(paste0("NA<br>NA<br>NA<br>Change: NA"), dim1, 1)
+                    #final hover text
+                    mat4 <- cbind(hover_textM, hover_textNA, hover_textF)
+                    
+                    #plotting heatmap M/F side to side
                     heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
-                            cexRow = 0.65, cexCol = 0.65, 
+                            cexRow = 1, cexCol = 1, 
                             col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
                             main = paste0("Changes in Life Expectancy (", 
                                           input$range_t[1], "-", input$range_t[2], ", ",
                                           paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"),
-                            font = list(size = 8), custom_hovertext = mat4,
-                            key.title = "Changes in Years", 
+                            font = list(size = 10), custom_hovertext = mat4,
+                            key.title = "Changes in Years", margins = c(50, 100, NA, 0),
                             colorbar_xpos = 30, colorbar_ypos = 10) %>% 
-                            layout(shapes = list(type = 'line', x0 = 0, x1 = 25, y0 =25, y1 = 0, line = list(width = 1.5)),
-                                   xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
-                                   yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
-                #}
-               # else {
-               #    res_gender <- res()[[1]] + res()[[2]] 
-               #    par(mar=c(5.1,2.1,1,2.1))
-               #    dim1 <- dim(res_gender)[[1]]
-               #    hover_text <- matrix(paste0((sapply(colnames(res_gender), function(x) rep(x, dim1))), "<br>", 
-               #                                 rep(rownames(res_gender), dim1), "<br>", 
-               #                                 rep("Aggregate", dim1*2), "<br>"),
-               #                          byrow = FALSE, ncol = dim1)
-               #    hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim1)
-               #     
-               #    heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-               #              cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
-               #              plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
-               #                                                        input$range_t[1], "-", input$range_t[2], ", ",
-               #                                                        input$heatGender, ", ", input$heatCountry, ")"), 
-               #               font = list(size = 8), custom_hovertext = hover_text2, 
-               #               key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
-               #              layout(xaxis = list(ticktext = as.numeric(gsub("LE Age ", "", colnames(res_gender))), title = "Age", 
-               #                                 showgrid = F, tickangle = 0, showticklabels = TRUE), 
-               #                    yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
-               #                                 title = "Contribution", showgrid = F, showticklabels = TRUE))
-               # }
+                            layout(xaxis = list(ticktext = gsub("LE Age ", "", colnames(res_gender)), title = "Age", 
+                                                showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                                   yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
+                                                title = "Contribution", showgrid = F, showticklabels = TRUE))
             }
         })
         
@@ -2193,9 +2180,9 @@ server <- shinyServer(function(input, output, session){
                             title = paste0("Changes in Life Expectancy (", 
                                     input$range_t[1], "-", input$range_t[2], ", ",
                                     input$heatGender, ", ", input$heatCountry, ")"),
-                            font = list(size = 8),
+                            font = list(size = 10),
                             xaxis = list(title = "Age", categoryarray = names(Total_male), 
-                                         categoryorder = "array", size = 8, tickangle = 0), 
+                                         categoryorder = "array", tickangle = 0), 
                             yaxis = list(title = "Change (Years)"))
                 p 
                 
@@ -2226,9 +2213,9 @@ server <- shinyServer(function(input, output, session){
                           layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
                                                                  input$range_t[1], "-", input$range_t[2], ", ",
                                                                  paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"), 
-                                 font = list(size = 8),
+                                 font = list(size = 10),
                                  xaxis = list(title = "Age", categoryarray = names(Total_male), 
-                                              categoryorder = "array", size = 8, tickangle = 0), 
+                                              categoryorder = "array", tickangle = 0), 
                                  yaxis = list(title = "Change (Years)"))
                     p
                 #}
@@ -2291,9 +2278,9 @@ server <- shinyServer(function(input, output, session){
                                           input$range_t[1], "-", input$range_t[2], ", ",
                                           input$heatGender, ", ", BarplotLE(), ", ", 
                                           input$heatCountry, ")"), 
-                           font = list(size = 8),
+                           font = list(size = 10),
                            xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
-                                        categoryorder = "array", size = 8, tickangle = 0),
+                                        categoryorder = "array", tickangle = 0),
                            yaxis = list(title = "Contribution (Years)"))
                 }
             else{
@@ -2322,9 +2309,9 @@ server <- shinyServer(function(input, output, session){
                                                input$range_t[1], "-", input$range_t[2], ", ",
                                                paste0(input$heatGender, collapse = "/"), ", ", BarplotLE(), ", ", 
                                                input$heatCountry, ")"), 
-                                font = list(size = 8),
+                                font = list(size = 10),
                                 xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
-                                             categoryorder = "array", size = 8, tickangle = 0),
+                                             categoryorder = "array", tickangle = 0),
                                 yaxis = list(title = "Life Expectancy Change (Years)"))
                     p
                 #}
@@ -2387,9 +2374,9 @@ server <- shinyServer(function(input, output, session){
                 layout(title = paste0("Life Preparancy Per Age Group at ", scales::ordinal(input$z), " Percentile ", 
                                       "(", input$range_t[1], "-", input$range_t[2], ", ", input$heatCountry, ")"),
                        legend = list(orientation = "v", xanchor = "left", x = 0.10), 
-                       font = list(size = 8), 
-                       xaxis = list(title = "Age", size = 8, tickangle = 0), 
-                       yaxis = list(title = "Life Preparancy (Years)", size = 8, tickangle = 0)) %>% 
+                       font = list(size = 10), 
+                       xaxis = list(title = "Age", tickangle = 0), 
+                       yaxis = list(title = "Life Preparancy (Years)", tickangle = 0)) %>% 
                 config(displayModeBar = FALSE)
          })
         
@@ -2421,7 +2408,7 @@ server <- shinyServer(function(input, output, session){
                           plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
                                                                    input$range_t[1], "-", input$range_t[2], ", ",
                                                                    input$heatGender, ", ", input$heatCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(gsub("LP Age ", "", colnames(res_gender))), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -2431,35 +2418,46 @@ server <- shinyServer(function(input, output, session){
             }
             else{ 
                 #if (input$heatAggregate == "FALSE"){ 
-                res_gender <- LP_res()[[4]]
-                par(mar=c(5.1,2.1,1,2.1))
-                dim1 <- dim(res_gender)[[1]]
+                #dimensions
+                dim1 <- dim(LP_res()[[2]])[[1]]
+                dim2 <- dim(LP_res()[[3]])[[1]]                
+                res_gender <- cbind(LP_res()[[2]], matrix(NA, nrow = dim1, ncol = 1), LP_res()[[3]])
                 
-                #create hover text 
-                row_contr <- create_hover_MF(c(rownames(res_gender)[-1], " ")) #byrow
-                col_le <- create_hover_MF(colnames(res_gender)) #bycol
+                ##create hover text
+                #males hover text
+                hover_text1 <- matrix(paste0((sapply(colnames(LP_res()[[2]]), function(x) rep(x, dim1))), "<br>", 
+                                             rep(rownames(LP_res()[[2]]), dim1), "<br>", 
+                                             rep("Male", dim1*2), "<br>"),
+                                      byrow = FALSE, ncol = dim1)
+                hover_textM <- matrix(paste(hover_text1, round(LP_res()[[2]], 4), sep="Change: "), dim1, dim1)
                 
-                mat1 <- matrix(row_contr, byrow = TRUE, ncol = dim1)
-                mat2 <- matrix(col_le, byrow = FALSE, ncol = dim1)
-                mat3 <- ifelse(lower.tri(mat2), "Male", "Female")
+                #females hover text
+                hover_text2 <- matrix(paste0((sapply(colnames(LP_res()[[3]]), function(x) rep(x, dim2))), "<br>", 
+                                             rep(rownames(LP_res()[[3]]), dim2), "<br>", 
+                                             rep("Female", dim2*2), "<br>"),
+                                      byrow = FALSE, ncol = dim2)
+                hover_textF <- matrix(paste(hover_text2, round(LP_res()[[3]], 4), sep="Change: "), dim2, dim2)
                 
-                mat4 <- matrix(paste(paste0(mat1, "<br>", mat2, "<br>", mat3, "<br>"), 
-                                     round(res_gender, 4), sep = "Change: "), dim1, dim1)
-                diag(mat4) <- NA #remove diag hover text
+                #NAs between males and females 
+                hover_textNA <- matrix(paste0("NA<br>NA<br>NA<br>Change: NA"), dim1, 1)
+                #final hover text
+                mat4 <- cbind(hover_textM, hover_textNA, hover_textF)
                 
+                #plotting heatmap M/F side to side
                 heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, #sepwidth=c(1.5, 1.5),
-                          cexRow = 0.65, cexCol = 0.65, 
+                          cexRow = 1, cexCol = 1, 
                           col = scale_colors, xlab = "", ylab = "", plot_method = c("plotly"),
                           main = paste0("Changes in Life Preparancy (", 
                                         input$range_t[1], "-", input$range_t[2], ", ",
                                         paste(input$heatGender, collapse = "/"), ", ", input$heatCountry, ")"),
-                          font = list(size = 8), custom_hovertext = mat4,
-                          key.title = "Changes in Years", 
+                          font = list(size = 10), custom_hovertext = mat4,
+                          key.title = "Changes in Years", margins = c(50, 100, NA, 0),
                           colorbar_xpos = 30, colorbar_ypos = 10) %>% 
-                    layout(shapes = list(type = 'line', x0 = 0, x1 = 24, y0 =24, y1 = 0, line = list(width = 1.5)),
-                           xaxis = list(title = "Age", showgrid = F, showticklabels = FALSE), 
-                           yaxis = list(title = "Contribution", showgrid = F, showticklabels = FALSE))
-                }
+                  layout(xaxis = list(ticktext = gsub("LP Age ", "", colnames(res_gender)), title = "Age", 
+                                      showgrid = F, tickangle = 0, showticklabels = TRUE), 
+                         yaxis = list(ticktext = as.numeric(gsub("Contribution Age ", "", rev(rownames(res_gender)))),
+                                      title = "Contribution", showgrid = F, showticklabels = TRUE))
+            }
         })
         
         # third tab
@@ -2483,7 +2481,7 @@ server <- shinyServer(function(input, output, session){
                 layout(title = paste0("Contributions to Gender in Life Expectancy (", input$range_t[1], ")" ), 
                        yaxis = list(title = 'Contribution (Male - Female)'), barmode = 'stack', 
                        xaxis = list(title = "Age", categoryarray = names(gap_age()[[2]]), 
-                                    categoryorder = "array", size = 8, tickangle = 0), 
+                                    categoryorder = "array", size = 10, tickangle = 0), 
                        showlegend = FALSE) %>% config(displayModeBar = FALSE)
         })
         
@@ -2561,9 +2559,9 @@ server <- shinyServer(function(input, output, session){
                     layout(barmode="overlay", title = paste0("Changes in Rate per 1000 (",
                                                              input$range_tcod[1], "-", input$range_tcod[2], ", ", 
                                                              input$CODGender, ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 1000)", 
+                           font = list(size = 10), xaxis = list(title = "Change in Rate (per 1000)", 
                                categoryarray = ~diagn, 
-                               categoryorder = "array", size = 8, tickangle = 0,
+                               categoryorder = "array", tickangle = 0,
                                showgrid = FALSE), 
                            yaxis = list(title = "", autorange="reversed", showgrid = TRUE))
             }
@@ -2582,20 +2580,12 @@ server <- shinyServer(function(input, output, session){
                 chapter_rates_diff2 <- data.frame(chapter = rep(1:(max(chapters20()$chapter))),
                                                   chapter_rates_select_t2_g2[,4:5] - chapter_rates_select_t1_g2[,4:5])
                 chapter_rates_diff2 <- merge(chapter_rates_diff2, chapters20(), by = "chapter")
+
+                #male/female -- gender 1
+                chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = "#FDB863")
+                #male/female -- gender 2
+                chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = "#FD6363")
                 
-                print(Animate_MCBar())
-                if (is.null(Animate_MCBar())){
-                    #male/female -- gender 1
-                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = "#FDB863")
-                    #male/female -- gender 2
-                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = "#FD6363")
-                }
-                else{
-                    #male/female -- gender 1
-                    chapter_rates_select_diff1 <- chapter_rates_diff1 %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#8073AC", "#FDB863"))
-                    #male/female -- gender 2
-                    chapter_rates_select_diff2 <- chapter_rates_diff2 %>% mutate(curr_col = if_else(diagn %in% Animate_MCBar(), "#92CCDE", "#FD6363"))
-                }
                 #plot 
                 plot_ly(data = chapter_rates_select_diff1, x = ~rate, y = ~diagn, type = "bar", 
                         name = input$CODGender[1], marker = list(color = ~curr_col),
@@ -2617,15 +2607,13 @@ server <- shinyServer(function(input, output, session){
                     layout(barmode="group", title = paste0("Changes in Death Rate per 1000 (",
                                                            input$range_tcod[1], "-", input$range_tcod[2], ", ", 
                                                            paste(input$heatGender, collapse = "/"), ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Change in Rate (per 1000)", 
+                           font = list(size = 10), xaxis = list(title = "Change in Rate (per 1000)", 
                                                                categoryarray = ~diagn, 
                                                                categoryorder = "array", size = 10, tickangle = 0, showgrid = FALSE), 
                            yaxis = list(title = "", autorange="reversed", showgrid = TRUE))
             }
         })
-        
-       
-        
+
         # output
         Changes_age_cause <- reactive({
             #life expectancy
@@ -2696,9 +2684,9 @@ server <- shinyServer(function(input, output, session){
                     layout(p, barmode="overlay", title = paste0("Changes in Life Expectancy (",
                                                                 input$range_tcod[1], "-", input$range_tcod[2], ", ", 
                                                                 input$CODGender, ", ", input$CODCountry, ")"),      
-                           font = list(size = 8), xaxis = list(title = "Age", 
+                           font = list(size = 10), xaxis = list(title = "Age", 
                                                                categoryarray = names(Total_age_cause[c(selected_agegrp:23),]), 
-                                                               categoryorder = "array", size = 8, tickangle = 0), 
+                                                               categoryorder = "array", tickangle = 0), 
                            yaxis = list(title = "Change (Years)"))
             }
             else{ 
@@ -2743,9 +2731,9 @@ server <- shinyServer(function(input, output, session){
                     layout(barmode="group", title = paste0("Changes in Life Expectancy (", 
                                                            input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                                            paste(input$CODGender, collapse = "/"), ", ", input$CODCountry, ")"), 
-                           font = list(size = 8),
+                           font = list(size = 10),
                            xaxis = list(title = "Age", categoryarray = names(Total_male_age_cause[c(selected_agegrp:23),]), 
-                                        categoryorder = "array", size = 8, tickangle = 0), 
+                                        categoryorder = "array", tickangle = 0), 
                            yaxis = list(title = "Change (Years)"))
                 p
             }
@@ -2784,10 +2772,12 @@ server <- shinyServer(function(input, output, session){
                                           input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                           input$CODGender, ", ", BarplotLE_AgeCOD(), ", ", 
                                           input$CODCountry, ")"), 
-                           font = list(size = 8),
-                           xaxis = list(title = "Contribution Cause of Death", categoryarray = ~rowname, 
-                                        categoryorder = "array", size = 8, tickangle = 0),
+                           font = list(size = 10),
+                           xaxis = list(tickvals = 1:20,
+                                        title = "Contribution Cause of Death", categoryarray = ~rowname, 
+                                        categoryorder = "array", tickangle = 0, showticklabels = TRUE),
                            yaxis = list(title = "Contribution (Years)"))
+                
             }
             else{
                 
@@ -2803,12 +2793,19 @@ server <- shinyServer(function(input, output, session){
                 res_gender2 = Changes_age_cause()[[2]]
                 
                 d1 <- data.frame(contribution = res_gender1[, BarplotLE_AgeCOD()]) %>% 
-                          rownames_to_column() %>% mutate(curr_color = "#8073AC") 
+                          rownames_to_column() %>% mutate(curr_color = "#8073AC") %>% 
+                          mutate(rowname = as.integer(rowname)) %>% 
+                          inner_join(chapters20(), by = c("rowname" = "chapter"))
                 d2 <- data.frame(contribution = res_gender2[, BarplotLE_AgeCOD()]) %>% 
-                          rownames_to_column() %>% mutate(curr_col = "#92CCDE") 
+                          rownames_to_column() %>% mutate(curr_col = "#92CCDE") %>% 
+                          mutate(rowname = as.integer(rowname)) %>% 
+                          inner_join(chapters20(), by = c("rowname" = "chapter"))
                 
                 p <- plot_ly(data = d1, x = ~rowname, y = ~contribution, source = "BarplotLE_specificAgeCOD", 
-                             type = "bar", marker = list(color = ~curr_color), name = "Male") %>%  config(displayModeBar = FALSE)  %>% 
+                             type = "bar", marker = list(color = ~curr_color), name = "Male", 
+                             hoverinfo = "text", text = ~paste0("Cause of Death: ", diagn, '</br></br>', 
+                                                                "Contribution: ", round(contribution, 4), '</br>')) %>%  
+                    config(displayModeBar = FALSE)  %>% 
                     add_trace(data = d2, x = ~rowname, y = ~contribution, type = "bar", 
                               name = "Female", marker = list(color = ~curr_col)) %>% 
                     layout(barmode="group",
@@ -2816,10 +2813,11 @@ server <- shinyServer(function(input, output, session){
                                           input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                           paste0(input$CODGender, collapse = "/"), ", ", BarplotLE_AgeCOD(), ", ", 
                                           input$CODCountry, ")"), 
-                           font = list(size = 8),
-                           xaxis = list(title = "Contribution Age", categoryarray = ~rowname, 
-                                        categoryorder = "array", size = 8, tickangle = 0),
-                           yaxis = list(title = "Life Expectancy Change (Years)"))
+                           font = list(size = 10),
+                           xaxis = list(tickvals = 1:20,  
+                                        title = "Contribution Cause of Death", categoryarray = ~rowname, 
+                                        categoryorder = "array", tickangle = 0, showticklabels = TRUE),
+                           yaxis = list(title = "Contribution (Years)"))
                 p
             }
             
@@ -2851,11 +2849,11 @@ server <- shinyServer(function(input, output, session){
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
                 
                 heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          cexRow = 1, cexCol = 1, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                                                    input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -2879,11 +2877,11 @@ server <- shinyServer(function(input, output, session){
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
                 
                 heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          cexRow = 1, cexCol = 1, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Expectancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                                                    "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -2902,7 +2900,7 @@ server <- shinyServer(function(input, output, session){
             req(input$CODCountry)
             chosen_country <- as.character(COD_countries()$code[which(COD_countries()$country == input$CODCountry)])
             #life preparancy
-            res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz/100)
+            res <- change5x1_LP(chosen_country, input$range_tcod[1], input$range_tcod[2], input$CODz)
             res[[2]][is.na(res[[2]])]<-0 #LP change males set to 0 for NAs
             res[[3]][is.na(res[[3]])]<-0 #LP change females set to 0 for NAs
             #mortality chapters
@@ -2949,11 +2947,11 @@ server <- shinyServer(function(input, output, session){
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
                 
                 heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          cexRow = 1, cexCol = 1, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                                                    input$CODGender, ", ", input$CODAge, ", ", input$CODCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -2973,11 +2971,11 @@ server <- shinyServer(function(input, output, session){
                 hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
                 
                 heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-                          cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                          cexRow = 1, cexCol = 1, col = scale_colors,  
                           plot_method = c("plotly"), main = paste0("Changes in Life Preparancy (", 
                                                                    input$range_tcod[1], "-", input$range_tcod[2], ", ",
                                                                    "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
-                          font = list(size = 8), custom_hovertext = hover_text2, 
+                          font = list(size = 10), custom_hovertext = hover_text2, 
                           key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                     layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                         showgrid = F, tickangle = 0, showticklabels = TRUE), 
@@ -3046,11 +3044,11 @@ server <- shinyServer(function(input, output, session){
             hover_text2 <- matrix(paste(hover_text, round(res_gender, 4), sep="Change: "), dim1, dim2)
             
             heatmaply(res_gender, dendrogram = "none", Rowv = FALSE, Colv = FALSE, 
-                      cexRow = 0.9, cexCol = 0.9, col = scale_colors,  
+                      cexRow = 1, cexCol = 1, col = scale_colors,  
                       plot_method = c("plotly"), main = paste0("Gender Gap in Life Expectancy (", 
                                                                input$range_tcod[1], ", ",
                                                                "Female - Male", ", ", input$CODAge, ", ", input$CODCountry, ")"), 
-                      font = list(size = 8), custom_hovertext = hover_text2, 
+                      font = list(size = 10), custom_hovertext = hover_text2, 
                       key.title = "Changes in Years", colorbar_xpos = 30, colorbar_ypos = 10) %>% 
                 layout(xaxis = list(ticktext = as.numeric(colnames(res_gender)), title = "Age", 
                                     showgrid = F, tickangle = 0, showticklabels = TRUE), 
