@@ -430,12 +430,12 @@ ui = dashboardPagePlus(
                         width = 4, height = 600,
                         column(width = 12, align = "center",
                                img(src = "book-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black ;' >Documentation</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black ;' >User Manual</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
-                               Find documentation and walkthrough of code for different decomposition functions. 
+                               Find instructions and a walkthrough of how to navigate the Mortality Analysis Calculator. 
                                Work your way towards understanding decomposition analysis inside and out. </p>")), 
                                div(style="display:inline-block; width:100%; text-align: center;", 
-                                   actionButton(inputId='docu_more', label="See Documentation", icon = icon("plus")))
+                                   actionButton(inputId='instruc_more', label="See Instructions", icon = icon("plus")))
                         )
                     ) , 
                     box(
@@ -444,12 +444,12 @@ ui = dashboardPagePlus(
                         width = 4, height = 600,
                         column(width = 12, align = "center",
                                img(src = "users-icon.png", width=100),
-                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; '>Community</p></h2></b>",
+                               HTML(paste0("<br>" ,"<b><h2><p style = 'text-align: center ; color: black; '>FAQ</p></h2></b>",
                                "<p style = 'text-align: center; line-height: 25px; vertical-align: center; padding: 15px 35px; font-size: 17px'>
-                               Get your questions answered by our community of actuaries and developers. 
-                               Connect with us to build your network, and see the latest projects being worked on. </p>")), 
+                               Browse through questions answered by our community of actuaries and developers. 
+                               See where you can get more information on mortality decomposition analysis.</p>")), 
                                div(style="display:inline-block; width:100%; text-align: center;", 
-                                   actionButton(inputId='community_more', label="Meet Us", icon = icon("plus")))
+                                   actionButton(inputId='qa_more', label="Learn More", icon = icon("plus")))
                         )
                     ), 
                     mainPanel(
@@ -1810,12 +1810,12 @@ server <- shinyServer(function(input, output, session){
             newtab <- switch(input$tabs_all, "tab_home" = "tab_explore")
             updateTabItems(session, "tabs_all", newtab)
         })
-        observeEvent(input$docu_more, {
-            newtab <- switch(input$tabs_all, "tab_home" = "tab_docu")
+        observeEvent(input$instruc_more, {
+            newtab <- switch(input$tabs_all, "tab_home" = "tab_instructions")
             updateTabItems(session, "tabs_all", newtab)
         })
-        observeEvent(input$community_more, {
-            newtab <- switch(input$tabs_all, "tab_home" = "tab_community")
+        observeEvent(input$qa_more, {
+            newtab <- switch(input$tabs_all, "tab_home" = "tab_qa")
             updateTabItems(session, "tabs_all", newtab)
         })
         
