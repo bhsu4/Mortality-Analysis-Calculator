@@ -1850,6 +1850,21 @@ server <- shinyServer(function(input, output, session){
             )
         })
         
+        observeEvent(input$TestQA, {
+          show_alert(
+            title = NULL,
+            text = tags$span(
+              tags$h3("Sample Mortality Decomposition Example",
+                      style = "color: steelblue;"), tags$br(),
+              h4("Please start off by choosing your parameters:"),
+              HTML("<ul><li>Select a country from drop down menu</li> 
+                          <li>Choose gender(s)</li>
+                          <li>Type an age of interest</li>
+                          <li>Use the slider to choose historical time frame</li></ul>")
+            ), html = TRUE
+          )
+        })
+        
         # generate country list for by age sections
         sample_info <- reactive({
           sample_info <- read.csv("sampleoutput.csv", row.names = 1)
