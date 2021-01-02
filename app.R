@@ -1783,19 +1783,29 @@ server <- shinyServer(function(input, output, session){
                 text = tags$span(
                     tags$h3("Mortality Decomposition By Age",
                             style = "color: steelblue;"), tags$br(),
-                    HTML("<em><b>Select Country, Time Interval, and Gender</b></em>"), 
-                    tags$br(), tags$br(), tags$br(),
-                    HTML("<b>Life Expectancy:</b> The user can compute the effects attributable to each relevant age group(s)."),
-                    tags$br(), tags$br(),
-                    HTML("<b>Life Preparancy:</b> The user can observe the change in life preparancy, and compute the 
-                         effects attributable to each relevant age group(s)."),
-                    tags$br(), tags$br(),
-                    HTML("<b>Gender:</b> The user can observe the gender gap in life expectancy, and compute the 
-                         effects attributable to each relevant age group(s)."), 
-                    tags$br(), tags$br(),
-                    icon("heart")
-                ),
-                html = TRUE
+                    h4("Please start off by choosing your parameters:"),
+                    HTML("<ul><li>Select a country from drop down menu</li> 
+                          <li>Choose gender(s)</li>
+                          <li>Use the slider to choose historical time frame</li></ul>"),
+                    tags$br(),
+                    HTML("<b>Life Expectancy</b>"), 
+                    h4("Users can find the total change in life expectancy for their population
+                        of interest displayed in a barchart. The bar chart has click functionality
+                        enabled that further allows a decomposition of the effects attributable 
+                        to each relevant age group(s). The heatmap will present the decomposition 
+                        of the changes in life expectancy across all age groups."),
+                    tags$br(), 
+                    HTML("<b>Life Preparancy</b>"),
+                    h4("Users can look at the estimated life preparancy at a specified percentile
+                        for the population of interest displayed in a line plot. Please click on the
+                        legend labels to disable or add certain lines in the plot. The heatmap will 
+                        present the decomposition of the change in life preparancy across all age groups."),
+                    tags$br(), 
+                    HTML("<b>Gender Contribution</b>"),
+                    h4("Users can look at the estimated gender gap between males and females to life
+                        expectancy for the population of interest displayed in a barchart.
+                        The results are computed for the effects attributable to each relevant age group(s).") 
+                ), html = TRUE
             )
         })
         
@@ -1803,19 +1813,38 @@ server <- shinyServer(function(input, output, session){
             show_alert(
                 title = "",
                 text = tags$span(
-                    tags$h3("Mortality Decomposition By Age + Cause of Death",
-                            style = "color: steelblue;"), tags$br(), 
-                    HTML("<em><b>Select Country, Time Interval, Gender, and Input Age of Interest</b></em>"), 
-                    tags$br(), tags$br(), tags$br(),
-                    HTML("<b>Cause of Death:</b> The user can compute death rate for each cause-specific mortality to relevant age group(s)."),
-                    tags$br(), tags$br(),
-                    HTML("<b>Life Expectancy:</b> The user can compute the effects attributable to selected age group."),
-                    tags$br(), tags$br(),
-                    HTML("<b>Life Preparancy:</b> The user can compute the effects attributable to selected age group."),
-                    tags$br(), tags$br(),
-                    HTML("<b>Gender:</b> The user can compute the gender gap effects attributable to selected age group."), 
-                    tags$br(), tags$br(),
-                    icon("hand-holding-heart")
+                  tags$h3("Mortality Decomposition By Age/COD",
+                          style = "color: steelblue;"), tags$br(),
+                  h4("Please start off by choosing your parameters:"),
+                  HTML("<ul><li>Select a country from drop down menu</li> 
+                          <li>Choose gender(s)</li>
+                          <li>Type an age of interest</li>
+                          <li>Use the slider to choose historical time frame</li></ul>"),
+                  tags$br(),
+                  HTML("<b>Cause of Death</b>"), 
+                  h4("Users can find the change in death rate per 100,000 in the population of
+                      interest for each cause of death. The change in the proportion of total 
+                      death rate between the historical time frame is also calculated. "),
+                  HTML("<b>Life Expectancy</b>"), 
+                  h4("Users can find the total change in life expectancy for their population
+                      of interest displayed in a barchart. The bar chart has click functionality
+                      enabled that further allows a decomposition of the effects attributable 
+                      to each relevant cause of death. The heatmap will present the decomposition 
+                      of the changes in life expectancy across all age groups and cause of deaths."),
+                  tags$br(), 
+                  HTML("<b>Life Preparancy</b>"),
+                  h4("Users can look at the estimated life preparancy at a specified percentile
+                      for the population of interest displayed in a heatmap. The heatmap will 
+                      present the decomposition of the change in life preparancy across all age groups
+                      and cause of deaths. When both genders are selected, a difference in life preparancy
+                      between the two genders are instead calculated."),
+                  tags$br(), 
+                  HTML("<b>Gender Contribution</b>"),
+                  h4("Users can look at the estimated gender gap between males and females to life
+                      expectancy for the population of interest displayed in a barchart.
+                      The results are computed for the effects attributable to each relevant age group(s)
+                      and cause of deaths. Regardless of which gender is selected here, a difference will 
+                      always be shown to present gender gap contributions."),
                 ),
                 html = TRUE
             )
