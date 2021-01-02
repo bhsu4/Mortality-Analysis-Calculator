@@ -366,9 +366,6 @@ ui = dashboardPagePlus(
                      menuSubItem("By Age", tabName = "DecAge", icon = icon("chevron-right")), #icon("hand-holding-heart")),
                      menuSubItem("By Age/COD", tabName = "DecAgeCOD", icon = icon("chevron-right"))), #icon("hand-holding-usd"))), #, "tab_le"),
             menuItem("Explore", tabName = "tab_explore", icon = icon("compass")), 
-            menuItem("Documentation", tabName = "tab_docu", icon = icon("book")), 
-            menuItem("Community", tabName = "tab_community", icon = icon("users")),
-            menuItem("Latest News", tabName = "tab_news", icon = icon("file-alt")),
             menuItem("Instructions", tabName = "tab_instructions", icon = icon("book")),
             menuItem("FAQ", tabName = "tab_qa", icon = icon("question-circle")) #, 
             #HTML(paste0(
@@ -621,156 +618,6 @@ ui = dashboardPagePlus(
                    )
             )
         )),
-        tabItem(
-            "tab_docu", 
-            fluidRow(
-                column(width = 12,
-                   column(width = 8, 
-                      mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px; '>Documentation for MAC</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
-                                            Mortality decomposition is a tool to explain the underlying changes in its components. 
-                                            The central aim is to attribute the difference in an aggregate index to better examine specific contributions. 
-                                            For the MAC documentation, life expectancy will be used for simplicity. In addition, decomposing mortality
-                                            has different formulations published by 
-                                            <a href='https://scholar.google.com/scholar?q=Andreev%2C%20Evgeny%20M.%20%281982%29%2C%20Method%20komponent%20v%20analize%20prichin%20smerti.%20%28Component%20method%20applied%20to%20life%20expectancy%20analysis%29.%20Vestnik%20Statistiki%20%28Herald%20of%20Statistics%29%2Cn%C2%B0%209%2C%20pp.%2042%E2%80%9347.%20%28In%20Russian%29.' target='_blank'> Andreev 1982</a>, 
-                                            <a href='https://www.jstor.org/stable/1532986?seq=1' target='_blank'> Pressat 1985</a>, 
-                                            <a href='https://link.springer.com/article/10.2307/2061029' target='_blank'> Arriaga 1984</a>.
-                                            A quick introduction will be provided in the subsequent section to clarify on this concept. <h3></p>"))
-                      ), 
-                      mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Introduction to Decomposition</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px; '>
-                                            Given our aggregate index of life expectancy, we can decompose contributions by age
-                                            groups into what Arriaga refers to as 'direct' and 'indirect' effects of mortality change.
-                                            Direct Effects are defined as the change in life expectancy within a particular 
-                                            age group, due to underlying changes in the mortality within that age group. The specific
-                                            calculations take the proportion of survivors at each age group and multiply it by the
-                                            temporary life expectancy from that age group to the subsequent age interval. Indirect Effects 
-                                            are defined as the change in life expectancy to an age group due to changes in another age
-                                            interval. This will take into account the impact of the number of survivors from one age interval 
-                                            on subsequent age intervals. Lastly, interactive effect consists of any outside effects that result
-                                            in changes in life expectancy, not explained by the age group. The total of the direct, indirect, 
-                                            and interactive effects will be equivalent to the total effect, or in this case, the total change
-                                            in the life expectancy. <h3></p><br>"))
-                      )
-                   )
-                ),
-                column(width = 10, align = "center", img(src = "decomp.jpg", width = 800)),
-                column(width = 12,
-                   column(width = 8, 
-                      mainPanel(title = "", width = NULL,
-                                HTML(paste0("<b><h1><p style = 'text-align: left ; color: black ; font-size: 25px;'>Stepwise Decomposition</p></h2></b>", 
-                                            "<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
-                                            The following illustration above was taken from the 
-                                            <a href='https://www.springer.com/gp/book/9783030376666' target='_blank'><em><b> 
-                                            International Handbook of Health Expectancies (Jagger, Crimmins, Saito, de Carvallho Yokota, 
-                                            Van Oyen, Robine) </b></em></a>."), HTML("<br></br>"),
-                                     paste0("<a href='https://www.demographic-research.org/volumes/vol7/14/default.htm' target='_blank'> Andreev 2002</a> 
-                                            proposed a step-wise decomposition that built on Arriaga's methodology.
-                                            Given that decomposition can be generalized into direct, indirect, and interactive effects, 
-                                            in which the sum is equivalent to the aggregate index. We are able to estimate contributions 
-                                            through the step-wise decomposition. <h3></p>"),
-                                     paste0("<h3><p style = 'text-align: left ; color: grey ; font-size: 20px;'>
-                                            In the illustration, there are two populations, A, and B with ages 0, 1, 2, 3. 
-                                            The age-specific death rates are provided by the m-vector, and life expectancy 
-                                            at birth is defined as e0. In step 2, the change in the life expectancy between 
-                                            population A and B is calculated by taking the difference in the life expectancy 
-                                            at birth. The age-specific death rate at age 0 for population B is replaced by that 
-                                            of population A's in step 3. This will allow us to find the contribution of age 0 
-                                            to the change in life expectancy. In steps 4, 5, 6, the very same replacements 
-                                            are performed on ages 1, 2, and 3. Thus, the contribution for each age to life expectancy
-                                            can be calculated. Meanwhile, the sum of the contributions are equivalent to the 
-                                            total change in life expectancy.<h3></p><br>"))
-                     )
-                  )
-               )
-            )
-        ),
-        
-        # About - tab_introduction of the web application -------------------------------------------------------
-        tabItem(
-            "tab_news", 
-            fluidRow(
-                box(
-                    title = HTML("<h4 style = 'text-align: center;'><b> Latest Industry News </b></p><hr>"),
-                    status = "primary",
-                    width = 6,
-                    userPost(
-                        id = 1,
-                        src = "mushu.jpg",
-                        author = "The SOA Explores the Role of Actuaries in the Face of the COVID-19 Situation",
-                        description = "R. Dale Hall",
-                        "R. Dale Hall, FSA, CERA, MAAA, CFA managing director of Research for the Society of Actuaries (SOA) explains 
-                        the many roles actuaries can have as COVID-19 spreads around the world.", HTML("</br></br>"),
-                        "Schaumburg, Ill., March 10, 2020 - The past few weeks have seen the emergence and spread of a novel coronavirus named 
-                        'SARS-CoV2' that causes the respiratory disease named 'coronavirus disease 2019' (COVID-19).  While original detection 
-                        occurred in China, the U.S. Centers for Disease Control and Prevention (CDC) note that the disease is now detected in 60 
-                        locations internationally, including the United States.", HTML("</br>"),
-                        div(style="display:inline-block; width:170%; text-align: center;", actionButton(inputId='ab1', label="Learn More", 
-                                            icon = icon("plus"), 
-                                            onclick ="window.open('https://www.soa.org/resources/announcements/press-releases/2020/2020-covid-19-situation/', '_blank')"))
-                    ),
-                    userPost(
-                        id = 2,
-                        src = "mushu.jpg",
-                        author = "Expanding the Human Mortality Database to Include Cause-of-Death Information",
-                        description = "Society of Actuaries",
-                        "The Human Mortality Database is a unique open-access collection of detailed mortality and population data for 38 
-                        countries with complete and reliable vital registration and census data. The HMD currently covers the United States, 
-                        almost all of Europe, including countries of the former U.S.S.R., Japan, Australia and other mostly high-income 
-                        countries with rapidly aging populations. The Human Mortality Database (HMD) contains calculations of death rates 
-                        and life tables for national populations (countries or areas), as well as the original input data used to construct 
-                        these tables and an extensive documentation. This report overviews the development and completion of the HMD data 
-                        series down to a cause of death level for an initial set of eight populations: Canada, Czech Republic, England and 
-                        Wales, France, Japan, Norway, Sweden, and the United States.", HTML("</br></br>"), 
-                        "The HMD web pages with the cause-of-death information are under development. Click here to go to the prototype 
-                        for the cause-of-death web pages, and use the username, 'hmdcod', and password, 'magali', to log in."
-                    ),
-                    userPost(
-                        id = 3,
-                        src = "mushu.jpg",
-                        author = "Join the 2020 Health Meeting Webcast Series!",
-                        description = "Society of Actuaries",
-                        "The 2020 Health Meeting Webcast Series features ten days of ten Health tracks, allowing attendees 
-                        to create their own Health Meeting experience by mixing and matching which days and webcasts fit their 
-                        professional development needs.", HTML("</br>"),
-                        div(style="display:inline-block; width:170%; text-align: center;", 
-                            actionButton(inputId='ab2', label="Learn More", icon = icon("plus"), 
-                                         onclick ="window.open('https://www.soa.org/prof-dev/pdopportunities/?filters=Topic[T_HLTHWC]&view=grid', '_blank')")), 
-                        HTML("</br></br>"),
-                        userPostMedia(src = "health-webcast.jpg")
-                    )
-                ),
-                box(
-                    title = HTML("<h4 style = 'text-align: center;'><b> Latest Updates on Web Application </b></p><hr>"),
-                    status = "warning",
-                    width = 6,
-                    userPost(
-                        id = 99,
-                        src = "me.png",
-                        author = HTML(paste0("<b>Mortality Analysis Calculator v1.0.1</b>")), 
-                        description = "Benjamin Hsu, 8/1/2020",
-                        HTML(paste0("The first update v.1.0.1 to the MAC are addressed below. <br>
-                                     <ul><li>Other country inclusions, and reactive conditional time intervals</li>
-                                         <li>Validation of decomposition results</li>
-                                         <li>Help file in decomposition needing update</li>
-                                         <li>Formatting of boxes in decomposition</li>
-                                         <li>Font consistency in MAC </li><ul>"))
-                    ),
-                    userPost(
-                        id = 100,
-                        src = "me.png",
-                        author = HTML(paste0("<b>Mortality Analysis Calculator v1.0.0</b>")),
-                        description = "Benjamin Hsu, 7/29/2020",
-                        HTML(paste0("The first launched version of the MAC will consist of mortality decomposition analysis 
-                                     for both age as well as age and cause-of-death. We are excited to share this with our 
-                                     users, and hope that you all enjoy it as much as we have enjoyed developing the web application."))
-                    )
-                    
-                )
-            )
-        ),
         # decomp by age - tab_life exp -------------------------------------------------------
         tabItem(
             "tab_le", 
@@ -1046,35 +893,6 @@ ui = dashboardPagePlus(
             )
             
         ),
-                    
-        
-        # About - tab_about ------------ introducing community, and contacts
-        tabItem( 
-            "tab_community",
-            
-            fluidRow(
-                # About - About Me - start ------------------------------------------------
-                widgetUserBox(
-                    title = "Benjamin Hsu",
-                    subtitle = "M.S. in Actuarial Science",
-                    type = NULL,
-                    width = 4, height = 450,
-                    src = "me.png",
-                    background = TRUE,
-                    backgroundUrl = "wallpaper.jpg",
-                    closable = FALSE, collapsible = FALSE,
-                    HTML(paste0("<br>", "<h4><p style = 'text-align: center ; color: black'>Lead Developer</p></h4></b>")), hr(),
-                    tags$strong("Hi! I'm Ben!"), 
-                    HTML(paste0("Get in touch with me on LinkedIn (", tags$a(href = "https://www.linkedin.com/in/benjamin-hsu-10b33a97/", "Benjamin Hsu"), "),")),  
-                    "online at", HTML(paste0(tags$a(href = "https://benjaminhsu.netlify.com", "benjaminhsu.com", target = "a()"), ",")), 
-                    "or by email at", HTML(paste0("<a href = 'mailto:bh2722@columbia.edu', target='_blank'> bh2722@columbia.edu </a>")),
-                    footer = "I am a Master of Science student in Actuarial Science at Columbia University. 
-                             I graduated from the University of Rochester with a Bachelor's degree in Statistics 
-                             with a Certificate in Actuarial Science. I like to work on projects with statistical 
-                             and machine learning. You can find more of my work on my website, or get in touch with 
-                             me via LinkedIn or my email above.")
-            )
-        ), 
         # Instructions Manual 
         tabItem( 
           "tab_instructions",
@@ -1822,10 +1640,6 @@ server <- shinyServer(function(input, output, session){
         #explore reactie action buttons
         observeEvent(input$start_more, {
             newtab <- switch(input$tabs_all, "tab_explore" = "tab_le")
-            updateTabItems(session, "tabs_all", newtab)
-        })
-        observeEvent(input$news_more, {
-            newtab <- switch(input$tabs_all, "tab_explore" = "tab_news")
             updateTabItems(session, "tabs_all", newtab)
         })
         observeEvent(input$faq_more, {
